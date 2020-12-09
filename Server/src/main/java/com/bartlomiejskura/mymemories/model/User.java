@@ -11,10 +11,10 @@ public class User {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long ID;
 
-    private String nickname;
     private String email;
+    private String password;
     private String firstName;
-    private String secondName;
+    private String lastName;
     private LocalDateTime birthday;
 
     @ManyToMany
@@ -34,14 +34,6 @@ public class User {
         this.ID = ID;
     }
 
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
     public String getEmail() {
         return email;
     }
@@ -58,12 +50,12 @@ public class User {
         this.firstName = firstName;
     }
 
-    public String getSecondName() {
-        return secondName;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setSecondName(String secondName) {
-        this.secondName = secondName;
+    public void setLastName(String secondName) {
+        this.lastName = secondName;
     }
 
     public LocalDateTime getBirthday() {
@@ -92,5 +84,13 @@ public class User {
 
     public void addFriend(User friend){
         this.friends.add(friend);
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
