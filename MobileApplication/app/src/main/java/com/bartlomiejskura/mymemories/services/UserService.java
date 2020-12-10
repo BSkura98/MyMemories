@@ -39,14 +39,14 @@ public class UserService {
         sharedPreferences = context.getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
     }
 
-    public void createNewUser(String email, String password, String firstName, String lastName, String birthday) {
+    public void createNewUser(final String email, final String password, String firstName, String lastName, String birthday, final AppCompatActivity activity) {
         User user = new User(email, password, firstName, lastName, birthday);
         String json = gson.toJson(user);
 
         RequestBody requestBody = RequestBody.create(JSON, json);
 
         Request request = new Request.Builder()
-                .url("10.0.2.2:8080/user")
+                .url("http://10.0.2.2:8080/user")
                 .post(requestBody)
                 .build();
 
@@ -60,6 +60,9 @@ public class UserService {
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try {
                     User user = gson.fromJson(response.body().string(), User.class);
+                    if(user.getEmail()==null){
+                        return;
+                    }
 
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putLong("userId", user.getId());
@@ -68,6 +71,8 @@ public class UserService {
                     editor.putString("lastName", user.getLastName());
                     editor.putString("birthday", user.getBirthday());
                     editor.apply();
+
+                    authenticate(email, password, activity);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
