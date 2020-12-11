@@ -1,13 +1,11 @@
 package com.bartlomiejskura.mymemories.services;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.bartlomiejskura.mymemories.MainActivity;
 import com.bartlomiejskura.mymemories.model.AuthenticationRequest;
 import com.bartlomiejskura.mymemories.model.AuthenticationResponse;
 import com.bartlomiejskura.mymemories.model.User;
@@ -89,38 +87,26 @@ public class UserService {
                 .url("http://10.0.2.2:8080/authenticate")
                 .post(requestBody)
                 .build();
+        Response response;
 
-        httpClient.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                System.out.println("ERROR: " + e.getMessage());
-            }
-
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                try {
-                    AuthenticationResponse authenticationResponse = gson.fromJson(response.body().string(), AuthenticationResponse.class);
-                    String jwt = authenticationResponse.getJwt();
-                    if(jwt==null){
-                        activity.runOnUiThread(new Runnable() {
-                            public void run() {
-                                Toast.makeText(activity.getBaseContext(), "Error", Toast.LENGTH_LONG).show();
-                            }
-                        });
-                        return;
+        try{
+            response = httpClient.newCall(request).execute();
+            AuthenticationResponse authenticationResponse = gson.fromJson(response.body().string(), AuthenticationResponse.class);
+            String jwt = authenticationResponse.getJwt();
+            if(jwt==null){
+                activity.runOnUiThread(new Runnable() {
+                    public void run() {
+                        Toast.makeText(activity.getBaseContext(), "Error", Toast.LENGTH_LONG).show();
                     }
-
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("token", authenticationResponse.getJwt());
-                    editor.apply();
-
-                    Intent i = new Intent(context, MainActivity.class);
-                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    context.startActivity(i);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                });
+                return;
             }
-        });
+
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("token", authenticationResponse.getJwt());
+            editor.apply();
+        }catch (IOException e){
+            System.out.println("ERROR: " + e.getMessage());
+        }
     }
 }

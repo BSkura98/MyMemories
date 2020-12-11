@@ -9,7 +9,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.bartlomiejskura.mymemories.services.UserService;
+import com.bartlomiejskura.mymemories.task.AuthenticationTask;
+import com.bartlomiejskura.mymemories.task.GetUserInformationTask;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -34,9 +35,22 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 EditText emailEditText = findViewById(R.id.emailEditText);
                 EditText passwordEditText = findViewById(R.id.passwordEditText);
-                UserService userService = new UserService(getApplicationContext());
 
-                userService.authenticate(emailEditText.getText().toString(), passwordEditText.getText().toString(), activity);
+                try{
+                    AuthenticationTask authenticationTask = new AuthenticationTask(activity, emailEditText.getText().toString(), passwordEditText.getText().toString());
+                    Boolean authenticationResult = authenticationTask.execute().get();
+                    if(!authenticationResult){
+                        return;
+                    }
+                    GetUserInformationTask getUserInformationTask = new GetUserInformationTask(activity, emailEditText.getText().toString());
+                    Boolean getUserInformationResult = getUserInformationTask.execute().get();
+                    if(!getUserInformationResult){
+                        return;
+                    }
+                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                }catch (Exception e){
+                    System.out.println("ERROR:" + e.getMessage());
+                }
             }
         });
     }

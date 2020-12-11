@@ -33,6 +33,11 @@ public class UserController {
         }
     }
 
+    @GetMapping("/getByEmail")
+    public User getUser(@RequestParam(name="email")String email){
+        return userService.getUser(email);
+    }
+
     @PutMapping
     public User editUser(@RequestBody User user){
         return userService.editUser(user);
