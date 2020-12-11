@@ -52,7 +52,7 @@ public class AuthenticationTask extends AsyncTask<Void, Void, Boolean> {
             if(jwt==null){
                 activity.runOnUiThread(new Runnable() {
                     public void run() {
-                        Toast.makeText(activity.getBaseContext(), "Error", Toast.LENGTH_LONG).show();
+                        Toast.makeText(activity.getBaseContext(), "Error: jwt is null", Toast.LENGTH_LONG).show();
                     }
                 });
             }
