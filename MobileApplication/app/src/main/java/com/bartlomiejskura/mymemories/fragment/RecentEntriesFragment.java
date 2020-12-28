@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
+import com.bartlomiejskura.mymemories.AddMemoryActivity;
 import com.bartlomiejskura.mymemories.LoginActivity;
 import com.bartlomiejskura.mymemories.R;
 
@@ -25,17 +26,12 @@ public class RecentEntriesFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_recent_entries, container, false);
 
-        Button logoutButton = view.findViewById(R.id.logoutButton);
+        Button addMemoryButton = view.findViewById(R.id.addMemoryButton);
 
-        logoutButton.setOnClickListener(new View.OnClickListener() {
+        addMemoryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SharedPreferences sharedPreferences= v.getContext().getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.remove("token");
-                editor.apply();
-
-                startActivity(new Intent(v.getContext(), LoginActivity.class));
+                startActivity(new Intent(v.getContext(), AddMemoryActivity.class));
             }
         });
 

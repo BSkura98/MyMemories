@@ -141,6 +141,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         editor.remove("firstName");
         editor.remove("lastName");
         editor.remove("birthday");
+        editor.remove("token");
         editor.apply();
 
         drawerLayout.closeDrawer(GravityCompat.START);
