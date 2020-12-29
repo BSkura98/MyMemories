@@ -15,7 +15,10 @@ public class MemoryController {
     private MemoryService memoryService;
 
     @GetMapping("/getAll")
-    public List<Memory> getAll(){
+    public List<Memory> getAll(@RequestParam(value = "userId", required = false) Long userId){
+        if (userId != null) {
+            return memoryService.getAllForUser(userId);
+        }
         return memoryService.getAll();
     }
 

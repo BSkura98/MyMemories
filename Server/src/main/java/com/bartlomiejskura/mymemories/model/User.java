@@ -1,5 +1,7 @@
 package com.bartlomiejskura.mymemories.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,6 +25,9 @@ public class User {
     @OneToMany(cascade=CascadeType.ALL)
     @JoinTable(name="friends")
     private List<User> friends;
+
+    @OneToMany(mappedBy = "memoryOwner")
+    private List<Memory> memoryList;
 
     public User(){}
 
@@ -92,5 +97,14 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @JsonManagedReference
+    public List<Memory> getMemoryList() {
+        return memoryList;
+    }
+
+    public void setMemoryList(List<Memory> memoryList) {
+        this.memoryList = memoryList;
     }
 }
