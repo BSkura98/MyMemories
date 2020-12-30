@@ -10,6 +10,15 @@ public class Memory {
     private String date;
     private User memoryOwner;
 
+    public Memory(Long id, String shortDescription, String longDescription, String creationDate, String date, User memoryOwner) {
+        this.id = id;
+        this.shortDescription = shortDescription;
+        this.longDescription = longDescription;
+        this.creationDate = creationDate;
+        this.date = date;
+        this.memoryOwner = memoryOwner;
+    }
+
     public Memory(String shortDescription, String longDescription, String creationDate, String date, User memoryOwner) {
         this.shortDescription = shortDescription;
         this.longDescription = longDescription;
@@ -56,5 +65,13 @@ public class Memory {
 
     public void setMemoryOwner(User memoryOwner) {
         this.memoryOwner = memoryOwner;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

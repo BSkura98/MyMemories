@@ -25,6 +25,10 @@ import com.bartlomiejskura.mymemories.model.Memory;
 import com.bartlomiejskura.mymemories.task.GetMemoriesTask;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class RecentEntriesFragment extends Fragment {
     private RecyclerView memoryList;
 
@@ -52,10 +56,11 @@ public class RecentEntriesFragment extends Fragment {
     public void getAllMemories(){
         try{
             GetMemoriesTask task = new GetMemoriesTask(getActivity());
-            Memory[] memories = task.execute().get();
-            if(memories ==null){
+            Memory[] memoryArray = task.execute().get();
+            if(memoryArray ==null){
                 return;
             }
+            List<Memory> memories = new ArrayList<>(Arrays.asList(memoryArray));
             MemoryListAdapter adapter = new MemoryListAdapter(
                     getContext(),
                     memories,
