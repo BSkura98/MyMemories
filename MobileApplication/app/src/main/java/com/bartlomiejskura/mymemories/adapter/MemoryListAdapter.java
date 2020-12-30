@@ -2,6 +2,7 @@ package com.bartlomiejskura.mymemories.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bartlomiejskura.mymemories.EditMemoryActivity;
 import com.bartlomiejskura.mymemories.R;
 import com.bartlomiejskura.mymemories.model.Memory;
 import com.bartlomiejskura.mymemories.task.DeleteMemoryTask;
@@ -67,6 +69,13 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
                     deleteMemory(getAdapterPosition());
                 }
             });
+
+            editButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    editMemory(getAdapterPosition());
+                }
+            });
         }
 
         private void deleteMemory(int position){
@@ -83,6 +92,16 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
             }catch (Exception e){
                 e.printStackTrace();
             }
+        }
+
+        private void editMemory(int position){
+            Intent i = new Intent(activity.getApplicationContext(), EditMemoryActivity.class);
+            i.putExtra("title", memories.get(position).getShortDescription());
+            i.putExtra("description", memories.get(position).getLongDescription());
+            i.putExtra("date", memories.get(position).getDate());
+            i.putExtra("memoryId", memories.get(position).getId());
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            activity.getApplicationContext().startActivity(i);
         }
     }
 }
