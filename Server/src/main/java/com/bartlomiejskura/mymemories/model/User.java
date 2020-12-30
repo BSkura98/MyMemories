@@ -26,9 +26,6 @@ public class User {
     @JoinTable(name="friends")
     private List<User> friends;
 
-    @OneToMany(mappedBy = "memoryOwner")
-    private List<Memory> memoryList;
-
     public User(){}
 
     public Long getID() {
@@ -97,14 +94,5 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    @JsonManagedReference
-    public List<Memory> getMemoryList() {
-        return memoryList;
-    }
-
-    public void setMemoryList(List<Memory> memoryList) {
-        this.memoryList = memoryList;
     }
 }
