@@ -7,12 +7,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bartlomiejskura.mymemories.EditMemoryActivity;
+import com.bartlomiejskura.mymemories.MemoryActivity;
 import com.bartlomiejskura.mymemories.R;
 import com.bartlomiejskura.mymemories.model.Memory;
 import com.bartlomiejskura.mymemories.task.DeleteMemoryTask;
@@ -53,6 +55,7 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
     public class MyViewHolder extends RecyclerView.ViewHolder {
         TextView memoryTitle, memoryDate, memoryDescription;
         Button deleteButton, editButton;
+        LinearLayout memoryLinearLayout;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -62,6 +65,7 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
             memoryDescription = itemView.findViewById(R.id.memoryDescription);
             deleteButton = itemView.findViewById(R.id.deleteButton);
             editButton = itemView.findViewById(R.id.editButton);
+            memoryLinearLayout = itemView.findViewById(R.id.memoryLinearLayout);
 
             deleteButton.setOnClickListener(new View.OnClickListener(){
                 @Override
@@ -74,6 +78,13 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
                 @Override
                 public void onClick(View v) {
                     editMemory(getAdapterPosition());
+                }
+            });
+
+            memoryLinearLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startMemoryActivity(getAdapterPosition());
                 }
             });
         }
@@ -99,6 +110,17 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
             i.putExtra("title", memories.get(position).getShortDescription());
             i.putExtra("description", memories.get(position).getLongDescription());
             i.putExtra("date", memories.get(position).getDate());
+            i.putExtra("memoryId", memories.get(position).getId());
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            activity.getApplicationContext().startActivity(i);
+        }
+
+        private void startMemoryActivity(int position){
+            Intent i = new Intent(activity.getApplicationContext(), MemoryActivity.class);
+            i.putExtra("title", memories.get(position).getShortDescription());
+            i.putExtra("description", memories.get(position).getLongDescription());
+            i.putExtra("date", memories.get(position).getDate());
+            i.putExtra("creationDate", memories.get(position).getCreationDate());
             i.putExtra("memoryId", memories.get(position).getId());
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             activity.getApplicationContext().startActivity(i);
