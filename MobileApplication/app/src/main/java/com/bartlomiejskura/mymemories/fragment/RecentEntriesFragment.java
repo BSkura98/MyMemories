@@ -1,14 +1,11 @@
 package com.bartlomiejskura.mymemories.fragment;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,15 +15,19 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bartlomiejskura.mymemories.AddMemoryActivity;
-import com.bartlomiejskura.mymemories.LoginActivity;
 import com.bartlomiejskura.mymemories.R;
 import com.bartlomiejskura.mymemories.adapter.MemoryListAdapter;
 import com.bartlomiejskura.mymemories.model.Memory;
 import com.bartlomiejskura.mymemories.task.GetMemoriesTask;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 public class RecentEntriesFragment extends Fragment {
@@ -61,6 +62,20 @@ public class RecentEntriesFragment extends Fragment {
                 return;
             }
             List<Memory> memories = new ArrayList<>(Arrays.asList(memoryArray));
+            Collections.sort(memories, new Comparator<Memory>() {
+                @Override
+                public int compare(Memory memory1, Memory memory2) {
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-ddd hh:mm:ss");
+                    try {
+                        Date strDate1 = sdf.parse(memory1.getDate().replace("T"," "));
+                        Date strDate2 = sdf.parse(memory2.getDate().replace("T"," "));
+                        return strDate1.before(strDate2)?1:-1;
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                        return 0;
+                    }
+                }
+            });
             MemoryListAdapter adapter = new MemoryListAdapter(
                     getContext(),
                     memories,
