@@ -12,33 +12,29 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.bartlomiejskura.mymemories.model.Memory;
 import com.bartlomiejskura.mymemories.model.User;
-import com.bartlomiejskura.mymemories.task.AuthenticationTask;
 import com.bartlomiejskura.mymemories.task.CreateMemoryTask;
-import com.bartlomiejskura.mymemories.task.GetUserInformationTask;
-import com.google.gson.Gson;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.RequestBody;
 
-public class AddMemoryActivity extends AppCompatActivity {
+public class AddMemoryActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private TextView dateTextView, timeTextView;
     private int day, month, year, hour, minute;
     private SharedPreferences sharedPreferences;
+    private int memoryPriority=90;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,10 +44,15 @@ public class AddMemoryActivity extends AppCompatActivity {
         final EditText titleEditText = findViewById(R.id.titleEditText);
         final EditText description = findViewById(R.id.descriptionEditText);
         final Button addMemoryButton = findViewById(R.id.addMemoryButton);
+        final Spinner prioritySpinner = findViewById(R.id.prioritySpinner);
         dateTextView = findViewById(R.id.dateTextView);
         timeTextView = findViewById(R.id.timeTextView);
 
         sharedPreferences = getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.priorities, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        prioritySpinner.setAdapter(adapter);
+        prioritySpinner.setOnItemSelectedListener(this);
 
         dateTextView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,14 +84,12 @@ public class AddMemoryActivity extends AppCompatActivity {
             return;
         }
 
-        //LocalDateTime date = LocalDateTime.of(year, month+1, day, hour, minute);
-        //DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         Calendar calendar = Calendar.getInstance();
         calendar.set(year, month, day, hour, minute);
 
         Long memoryOwnerId = sharedPreferences.getLong("userId", 0);
-        Memory memory = new Memory(title, description, sdf.format(Calendar.getInstance().getTime()).replace(" ", "T"), sdf.format(calendar.getTime()).replace(" ", "T"), new User(memoryOwnerId));
+        Memory memory = new Memory(title, description, sdf.format(Calendar.getInstance().getTime()).replace(" ", "T"), sdf.format(calendar.getTime()).replace(" ", "T"), new User(memoryOwnerId), memoryPriority);
         final AddMemoryActivity activity = this;
 
         try{
@@ -142,7 +141,6 @@ public class AddMemoryActivity extends AppCompatActivity {
         TimePickerDialog timePickerDialog = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker timePicker, int hour1, int minute1) {
-                //Log.i(TAG, "onTimeSet: " + hour + minute);
                 Calendar calendar1 = Calendar.getInstance();
                 calendar1.set(Calendar.HOUR_OF_DAY, hour1);
                 calendar1.set(Calendar.MINUTE, minute1);
@@ -154,5 +152,22 @@ public class AddMemoryActivity extends AppCompatActivity {
         }, HOUR, MINUTE, is24HourFormat);
 
         timePickerDialog.show();
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        String selected = parent.getItemAtPosition(position).toString();
+        if(selected.equals("High")){
+            memoryPriority=90;
+        }else if(selected.equals("Medium")){
+            memoryPriority = 50;
+        }else if(selected.equals("Low")){
+            memoryPriority = 10;
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 }

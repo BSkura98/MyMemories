@@ -16,10 +16,16 @@ public class MemoryActivity extends AppCompatActivity {
         TextView descriptionTextView = findViewById(R.id.descriptionTextView);
         TextView dateTextView = findViewById(R.id.dateTextView);
         TextView creationDateTextView = findViewById(R.id.creationDateTextView);
+        TextView priorityTextView = findViewById(R.id.priorityTextView);
 
         titleTextView.setText(getIntent().getStringExtra("title"));
         descriptionTextView.setText(getIntent().getStringExtra("description"));
         dateTextView.setText(getIntent().getStringExtra("date"));
         creationDateTextView.setText(getIntent().getStringExtra("creationDate"));
+        priorityTextView.setText(getPriorityOption(getIntent().getIntExtra("memoryPriority",0)));
+    }
+
+    private String getPriorityOption(int priority){
+        return priority==10?"Low":(priority==50?"Medium":"High");
     }
 }

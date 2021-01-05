@@ -19,17 +19,26 @@ import com.bartlomiejskura.mymemories.R;
 import com.bartlomiejskura.mymemories.model.Memory;
 import com.bartlomiejskura.mymemories.task.DeleteMemoryTask;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.MyViewHolder> {
     private Context context;
     private List<Memory> memories;
     private Activity activity;
+    private int memoryPriority = 0;
+    private List<Memory> hidden = new ArrayList<>();
 
     public MemoryListAdapter(Context context, List<Memory> memories, Activity activity) {
         this.context = context;
         this.memories = memories;
         this.activity = activity;
+        sort(memories);
     }
 
     @NonNull
@@ -50,6 +59,46 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
     @Override
     public int getItemCount() {
         return memories.size();
+    }
+
+    public void setMemoryPriority(int memoryPriority){
+        this.memoryPriority = memoryPriority;
+        List<Memory> memoriesToHide = new ArrayList<>();
+        List<Memory> memoriesToShow = new ArrayList<>();
+        for(Memory memory:memories){
+            if(!(memory.getMemoryPriority()>=memoryPriority)){
+                memoriesToHide.add(memory);
+            }
+        }
+        memories.removeAll(memoriesToHide);
+        hidden.addAll(memoriesToHide);
+        for(Memory memory:hidden){
+            if(memory.getMemoryPriority()>=memoryPriority){
+                memoriesToShow.add(memory);
+            }
+        }
+        memories.addAll(memoriesToShow);
+        hidden.removeAll(memoriesToShow);
+        notifyDataSetChanged();
+
+        sort(memories);
+    }
+
+    public void sort(List<Memory> memories){
+        Collections.sort(memories, new Comparator<Memory>() {
+            @Override
+            public int compare(Memory memory1, Memory memory2) {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-ddd hh:mm:ss");
+                try {
+                    Date strDate1 = sdf.parse(memory1.getDate().replace("T"," "));
+                    Date strDate2 = sdf.parse(memory2.getDate().replace("T"," "));
+                    return strDate1.before(strDate2)?1:-1;
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    return 0;
+                }
+            }
+        });
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
@@ -111,6 +160,7 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
             i.putExtra("description", memories.get(position).getLongDescription());
             i.putExtra("date", memories.get(position).getDate());
             i.putExtra("memoryId", memories.get(position).getId());
+            i.putExtra("memoryPriority", memories.get(position).getMemoryPriority());
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             activity.getApplicationContext().startActivity(i);
         }
@@ -122,6 +172,7 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
             i.putExtra("date", memories.get(position).getDate());
             i.putExtra("creationDate", memories.get(position).getCreationDate());
             i.putExtra("memoryId", memories.get(position).getId());
+            i.putExtra("memoryPriority", memories.get(position).getMemoryPriority());
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             activity.getApplicationContext().startActivity(i);
         }

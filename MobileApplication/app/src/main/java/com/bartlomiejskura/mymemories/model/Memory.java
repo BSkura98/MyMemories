@@ -1,30 +1,31 @@
 package com.bartlomiejskura.mymemories.model;
 
-import java.time.LocalDateTime;
-
 public class Memory {
     private Long id;
     private String shortDescription;
     private String longDescription;
     private String creationDate;
     private String date;
+    private int memoryPriority;
     private User memoryOwner;
 
-    public Memory(Long id, String shortDescription, String longDescription, String creationDate, String date, User memoryOwner) {
+    public Memory(Long id, String shortDescription, String longDescription, String creationDate, String date, User memoryOwner, int memoryPriority) {
         this.id = id;
         this.shortDescription = shortDescription;
         this.longDescription = longDescription;
         this.creationDate = creationDate;
         this.date = date;
         this.memoryOwner = memoryOwner;
+        this.memoryPriority = memoryPriority;
     }
 
-    public Memory(String shortDescription, String longDescription, String creationDate, String date, User memoryOwner) {
+    public Memory(String shortDescription, String longDescription, String creationDate, String date, User memoryOwner, int memoryPriority) {
         this.shortDescription = shortDescription;
         this.longDescription = longDescription;
         this.creationDate = creationDate;
         this.date = date;
         this.memoryOwner = memoryOwner;
+        this.memoryPriority = memoryPriority;
     }
 
     public String getShortDescription() {
@@ -73,5 +74,13 @@ public class Memory {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public int getMemoryPriority() {
+        return memoryPriority;
+    }
+
+    public void setMemoryPriority(int memoryPriority) {
+        this.memoryPriority = memoryPriority;
     }
 }

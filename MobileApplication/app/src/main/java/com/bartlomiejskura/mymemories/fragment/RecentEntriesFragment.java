@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,17 +24,13 @@ import com.bartlomiejskura.mymemories.model.Memory;
 import com.bartlomiejskura.mymemories.task.GetMemoriesTask;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 
-public class RecentEntriesFragment extends Fragment {
+public class RecentEntriesFragment extends Fragment implements AdapterView.OnItemSelectedListener {
     private RecyclerView memoryList;
+    private MemoryListAdapter adapter;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Nullable
@@ -41,6 +40,12 @@ public class RecentEntriesFragment extends Fragment {
 
         FloatingActionButton addMemoryButton = view.findViewById(R.id.addMemoryButton);
         memoryList = view.findViewById(R.id.memoryList);
+        final Spinner prioritySpinner = view.findViewById(R.id.prioritySpinner);
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.priorities_filter, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        prioritySpinner.setAdapter(adapter);
+        prioritySpinner.setOnItemSelectedListener(this);
 
         addMemoryButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,21 +67,7 @@ public class RecentEntriesFragment extends Fragment {
                 return;
             }
             List<Memory> memories = new ArrayList<>(Arrays.asList(memoryArray));
-            Collections.sort(memories, new Comparator<Memory>() {
-                @Override
-                public int compare(Memory memory1, Memory memory2) {
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-ddd hh:mm:ss");
-                    try {
-                        Date strDate1 = sdf.parse(memory1.getDate().replace("T"," "));
-                        Date strDate2 = sdf.parse(memory2.getDate().replace("T"," "));
-                        return strDate1.before(strDate2)?1:-1;
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                        return 0;
-                    }
-                }
-            });
-            MemoryListAdapter adapter = new MemoryListAdapter(
+            adapter = new MemoryListAdapter(
                     getContext(),
                     memories,
                     getActivity()
@@ -86,5 +77,30 @@ public class RecentEntriesFragment extends Fragment {
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        String selected = parent.getItemAtPosition(position).toString();
+        if(selected.equals("High")){
+            adapter.setMemoryPriority(90);
+        }else if(selected.equals("Medium")){
+            adapter.setMemoryPriority(50);
+        }else if(selected.equals("Low")){
+            adapter.setMemoryPriority(10);
+        }else if(selected.equals("All")){
+            adapter.setMemoryPriority(0);
+        }
+        memoryList.post(new Runnable() {
+            @Override
+            public void run() {
+                adapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 }
