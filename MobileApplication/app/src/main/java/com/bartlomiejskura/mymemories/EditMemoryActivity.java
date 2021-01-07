@@ -23,10 +23,13 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.bartlomiejskura.mymemories.model.Memory;
+import com.bartlomiejskura.mymemories.model.Tag;
 import com.bartlomiejskura.mymemories.model.User;
+import com.bartlomiejskura.mymemories.task.CreateOrGetTagTask;
 import com.bartlomiejskura.mymemories.task.EditMemoryTask;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 
 public class EditMemoryActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
@@ -43,10 +46,12 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
         final String title = getIntent().getStringExtra("title");
         final String description = getIntent().getStringExtra("description");
         final String date = getIntent().getStringExtra("date");
+        final String category = getIntent().getStringExtra("category");
         memoryPriority = getIntent().getIntExtra("memoryPriority", 0);
 
         final EditText titleEditText = findViewById(R.id.titleEditText);
         final EditText descriptionEditText = findViewById(R.id.descriptionEditText);
+        final EditText categoryEditText = findViewById(R.id.categoryEditText);
         final Button editMemoryButton = findViewById(R.id.editMemoryButton);
         final Spinner prioritySpinner = findViewById(R.id.prioritySpinner);
         dateTextView = findViewById(R.id.dateTextView);
@@ -54,10 +59,13 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
 
         titleEditText.setText(title);
         descriptionEditText.setText(description);
-        dateTextView.setText(date);
-
+        if(category !=null&&!category.isEmpty()){
+            categoryEditText.setText(category);
+        }
+        //dateTextView.setText(date);
         dateTextView.setText(date.substring(8, 10) + "-" + date.substring(5, 7) + "-" + date.substring(0, 4));
         timeTextView.setText(date.substring(11, 16));
+
 
         sharedPreferences = getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.priorities, android.R.layout.simple_spinner_item);
@@ -84,13 +92,13 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
-                editMemory(titleEditText.getText().toString(), descriptionEditText.getText().toString());
+                editMemory(titleEditText.getText().toString(), descriptionEditText.getText().toString(), categoryEditText.getText().toString());
             }
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void editMemory(String title, String description){
+
+    private void editMemory(String title, String description, String category){
         if (title.isEmpty()) {
             Toast.makeText(getApplicationContext(), "Title field cannot be empty!", Toast.LENGTH_SHORT).show();
             return;
@@ -101,7 +109,14 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
         calendar.set(year, month, day, hour, minute);
 
         Long memoryOwnerId = sharedPreferences.getLong("userId", 0);
-        Memory memory = new Memory(getIntent().getLongExtra("memoryId", 0), title, description, sdf.format(Calendar.getInstance().getTime()).replace(" ", "T"), sdf.format(calendar.getTime()).replace(" ", "T"), new User(memoryOwnerId), memoryPriority);
+        Tag tag = null;
+        if(!category.isEmpty()){
+            tag = getCategory(category);
+            if(tag==null){
+                return;
+            }
+        }
+        Memory memory = new Memory(getIntent().getLongExtra("memoryId", 0), title, description, sdf.format(Calendar.getInstance().getTime()).replace(" ", "T"), sdf.format(calendar.getTime()).replace(" ", "T"), new User(memoryOwnerId), memoryPriority, tag);
         final EditMemoryActivity activity = this;
 
         try{
@@ -115,6 +130,18 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
             startActivity(i);
         }catch (Exception e){
             System.out.println("ERROR:" + e.getMessage());
+        }
+    }
+
+    private Tag getCategory(String category){
+        final EditMemoryActivity activity = this;
+
+        try{
+            CreateOrGetTagTask task = new CreateOrGetTagTask(activity, category);
+            return task.execute().get();
+        }catch (Exception e){
+            System.out.println("ERROR:" + e.getMessage());
+            return null;
         }
     }
 

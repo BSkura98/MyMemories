@@ -20,10 +20,11 @@ public class Memory {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User memoryOwner;
+    @ManyToOne
+    @JoinColumn(name = "tag_id")
+    private Tag tag;
     @ManyToMany(mappedBy = "sharedMemories")
     private List<User> memoryFriends;
-    @ManyToMany(mappedBy = "memories")
-    private List<Tag> tags;
 
     public Memory(){}
 
@@ -99,11 +100,11 @@ public class Memory {
         this.memoryFriends = memoryFriends;
     }
 
-    public List<Tag> getTags() {
-        return tags;
+    public Tag getTag() {
+        return tag;
     }
 
-    public void setTags(List<Tag> tags) {
-        this.tags = tags;
+    public void setTag(Tag tag) {
+        this.tag = tag;
     }
 }

@@ -17,6 +17,7 @@ import com.bartlomiejskura.mymemories.EditMemoryActivity;
 import com.bartlomiejskura.mymemories.MemoryActivity;
 import com.bartlomiejskura.mymemories.R;
 import com.bartlomiejskura.mymemories.model.Memory;
+import com.bartlomiejskura.mymemories.model.Tag;
 import com.bartlomiejskura.mymemories.task.DeleteMemoryTask;
 
 import java.text.ParseException;
@@ -161,6 +162,11 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
             i.putExtra("date", memories.get(position).getDate());
             i.putExtra("memoryId", memories.get(position).getId());
             i.putExtra("memoryPriority", memories.get(position).getMemoryPriority());
+
+            Tag tag = memories.get(position).getTag();
+            if(tag!=null){
+                i.putExtra("category", memories.get(position).getTag().getName());
+            }
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             activity.getApplicationContext().startActivity(i);
         }
@@ -173,6 +179,11 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
             i.putExtra("creationDate", memories.get(position).getCreationDate());
             i.putExtra("memoryId", memories.get(position).getId());
             i.putExtra("memoryPriority", memories.get(position).getMemoryPriority());
+
+            Tag tag = memories.get(position).getTag();
+            if(tag!=null){
+                i.putExtra("category", memories.get(position).getTag().getName());
+            }
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             activity.getApplicationContext().startActivity(i);
         }

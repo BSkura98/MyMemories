@@ -23,8 +23,10 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.bartlomiejskura.mymemories.model.Memory;
+import com.bartlomiejskura.mymemories.model.Tag;
 import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.task.CreateMemoryTask;
+import com.bartlomiejskura.mymemories.task.CreateOrGetTagTask;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -43,6 +45,7 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
 
         final EditText titleEditText = findViewById(R.id.titleEditText);
         final EditText description = findViewById(R.id.descriptionEditText);
+        final EditText categoryEditText = findViewById(R.id.categoryEditText);
         final Button addMemoryButton = findViewById(R.id.addMemoryButton);
         final Spinner prioritySpinner = findViewById(R.id.prioritySpinner);
         dateTextView = findViewById(R.id.dateTextView);
@@ -72,13 +75,13 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
-                addMemory(titleEditText.getText().toString(), description.getText().toString());
+                addMemory(titleEditText.getText().toString(), description.getText().toString(), categoryEditText.getText().toString());
             }
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void addMemory(String title, String description){
+
+    private void addMemory(String title, String description, String category){
         if (title.isEmpty()) {
             Toast.makeText(getApplicationContext(), "Title field cannot be empty!", Toast.LENGTH_SHORT).show();
             return;
@@ -89,7 +92,14 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
         calendar.set(year, month, day, hour, minute);
 
         Long memoryOwnerId = sharedPreferences.getLong("userId", 0);
-        Memory memory = new Memory(title, description, sdf.format(Calendar.getInstance().getTime()).replace(" ", "T"), sdf.format(calendar.getTime()).replace(" ", "T"), new User(memoryOwnerId), memoryPriority);
+        Tag tag = null;
+        if(!category.isEmpty()){
+            tag = getCategory(category);
+            if(tag==null){
+                return;
+            }
+        }
+        Memory memory = new Memory(title, description, sdf.format(Calendar.getInstance().getTime()).replace(" ", "T"), sdf.format(calendar.getTime()).replace(" ", "T"), new User(memoryOwnerId), memoryPriority, tag);
         final AddMemoryActivity activity = this;
 
         try{
@@ -103,6 +113,17 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
             startActivity(i);
         }catch (Exception e){
             System.out.println("ERROR:" + e.getMessage());
+        }
+    }
+    private Tag getCategory(String category){
+        final AddMemoryActivity activity = this;
+
+        try{
+            CreateOrGetTagTask task = new CreateOrGetTagTask(activity, category);
+            return task.execute().get();
+        }catch (Exception e){
+            System.out.println("ERROR:" + e.getMessage());
+            return null;
         }
     }
 

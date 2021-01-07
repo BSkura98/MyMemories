@@ -1,5 +1,6 @@
 package com.bartlomiejskura.mymemories.model;
 
+
 public class Memory {
     private Long id;
     private String shortDescription;
@@ -8,8 +9,9 @@ public class Memory {
     private String date;
     private int memoryPriority;
     private User memoryOwner;
+    private Tag tag;
 
-    public Memory(Long id, String shortDescription, String longDescription, String creationDate, String date, User memoryOwner, int memoryPriority) {
+    public Memory(Long id, String shortDescription, String longDescription, String creationDate, String date, User memoryOwner, int memoryPriority, Tag tag) {
         this.id = id;
         this.shortDescription = shortDescription;
         this.longDescription = longDescription;
@@ -17,15 +19,17 @@ public class Memory {
         this.date = date;
         this.memoryOwner = memoryOwner;
         this.memoryPriority = memoryPriority;
+        this.tag = tag;
     }
 
-    public Memory(String shortDescription, String longDescription, String creationDate, String date, User memoryOwner, int memoryPriority) {
+    public Memory(String shortDescription, String longDescription, String creationDate, String date, User memoryOwner, int memoryPriority, Tag tag) {
         this.shortDescription = shortDescription;
         this.longDescription = longDescription;
         this.creationDate = creationDate;
         this.date = date;
         this.memoryOwner = memoryOwner;
         this.memoryPriority = memoryPriority;
+        this.tag = tag;
     }
 
     public String getShortDescription() {
@@ -82,5 +86,13 @@ public class Memory {
 
     public void setMemoryPriority(int memoryPriority) {
         this.memoryPriority = memoryPriority;
+    }
+
+    public Tag getTag() {
+        return tag;
+    }
+
+    public void setTag(Tag tag) {
+        this.tag = tag;
     }
 }
