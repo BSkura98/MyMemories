@@ -32,7 +32,6 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
     private Context context;
     private List<Memory> memories;
     private Activity activity;
-    private int memoryPriority = 0;
     private List<Memory> hidden = new ArrayList<>();
 
     public MemoryListAdapter(Context context, List<Memory> memories, Activity activity) {
@@ -63,7 +62,6 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
     }
 
     public void setMemoryPriority(int memoryPriority){
-        this.memoryPriority = memoryPriority;
         List<Memory> memoriesToHide = new ArrayList<>();
         List<Memory> memoriesToShow = new ArrayList<>();
         for(Memory memory:memories){

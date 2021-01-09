@@ -18,6 +18,15 @@ public class TagService {
     }
 
     public Tag addTag(Tag tag){
+        if(tag.getUser()==null){
+            return null;
+        }
+        try{
+            Tag t = tagRepository.findByNameAndUserId(tag.getName(), tag.getUser().getID());
+            if(t != null){
+                return t;
+            }
+        }catch (NullPointerException ignored){ }
         return tagRepository.save(tag);
     }
 
