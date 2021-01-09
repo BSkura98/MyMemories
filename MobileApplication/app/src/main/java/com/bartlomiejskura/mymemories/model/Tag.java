@@ -1,16 +1,22 @@
 package com.bartlomiejskura.mymemories.model;
 
+import java.util.List;
+
 public class Tag {
     private Long id;
     private String name;
+    private User user;
+    private List<Memory> memories;
 
-    public Tag(Long id, String name) {
+    public Tag(Long id, String name, User user) {
         this.id = id;
         this.name = name;
+        this.user = user;
     }
 
-    public Tag(String name) {
+    public Tag(String name, User user) {
         this.name = name;
+        this.user = user;
     }
 
     public Long getId() {
@@ -27,5 +33,21 @@ public class Tag {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public List<Memory> getMemories() {
+        return memories;
+    }
+
+    public void setMemories(List<Memory> memories) {
+        this.memories = memories;
     }
 }

@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 
 import com.bartlomiejskura.mymemories.model.Tag;
+import com.bartlomiejskura.mymemories.model.User;
 import com.google.gson.Gson;
 
 import okhttp3.MediaType;
@@ -15,7 +16,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class CreateOrGetTagTask extends AsyncTask<Void, Void, Tag> {
-    private final MediaType JSON = MediaType.get("application/json; charset=utf-8");
+    private final MediaType JSON = MediaType.get("application/json");
     private Activity activity;
     private OkHttpClient httpClient = new OkHttpClient();
     private Gson gson = new Gson();
@@ -32,7 +33,7 @@ public class CreateOrGetTagTask extends AsyncTask<Void, Void, Tag> {
 
     @Override
     protected Tag doInBackground(Void... voids) {
-        Tag tag = new Tag(category);
+        Tag tag = new Tag(category, new User(sharedPreferences.getLong("userId", 0)));
         String json = gson.toJson(tag);
 
         RequestBody requestBody = RequestBody.create(JSON, json);

@@ -31,6 +31,7 @@ import java.util.List;
 public class RecentEntriesFragment extends Fragment implements AdapterView.OnItemSelectedListener {
     private RecyclerView memoryList;
     private MemoryListAdapter adapter;
+    private Spinner prioritySpinner;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Nullable
@@ -40,12 +41,11 @@ public class RecentEntriesFragment extends Fragment implements AdapterView.OnIte
 
         FloatingActionButton addMemoryButton = view.findViewById(R.id.addMemoryButton);
         memoryList = view.findViewById(R.id.memoryList);
-        final Spinner prioritySpinner = view.findViewById(R.id.prioritySpinner);
+        prioritySpinner = view.findViewById(R.id.prioritySpinner);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.priorities_filter, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         prioritySpinner.setAdapter(adapter);
-        prioritySpinner.setOnItemSelectedListener(this);
 
         addMemoryButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,6 +74,8 @@ public class RecentEntriesFragment extends Fragment implements AdapterView.OnIte
             );
             memoryList.setAdapter(adapter);
             memoryList.setLayoutManager(new LinearLayoutManager(getContext()));
+
+            prioritySpinner.setOnItemSelectedListener(this);
         }catch (Exception e){
             e.printStackTrace();
         }
