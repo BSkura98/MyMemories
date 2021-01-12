@@ -11,7 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MemoryActivity"></activity>
+        <activity android:name=".CategoryActivity"></activity>
+        <activity android:name=".MemoryActivity" />
         <activity android:name=".EditMemoryActivity" />
         <activity android:name=".AddMemoryActivity" />
         <activity android:name=".MainActivity" />

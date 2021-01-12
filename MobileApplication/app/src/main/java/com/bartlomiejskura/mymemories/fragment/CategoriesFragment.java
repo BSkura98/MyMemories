@@ -8,14 +8,54 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bartlomiejskura.mymemories.R;
+import com.bartlomiejskura.mymemories.adapter.CategoryListAdapter;
+import com.bartlomiejskura.mymemories.adapter.MemoryListAdapter;
+import com.bartlomiejskura.mymemories.model.Memory;
+import com.bartlomiejskura.mymemories.model.Tag;
+import com.bartlomiejskura.mymemories.task.GetCategoriesTask;
+import com.bartlomiejskura.mymemories.task.GetMemoriesTask;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class CategoriesFragment extends Fragment {
+    private RecyclerView categoryList;
+    private CategoryListAdapter adapter;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_categories, container, false);
+
+        categoryList = view.findViewById(R.id.categoryList);
+
+        getAllCategories();
+
         return view;
+    }
+
+    public void getAllCategories(){
+        try{
+            GetCategoriesTask task = new GetCategoriesTask(getActivity());
+            Tag[] categoryArray = task.execute().get();
+            if(categoryArray ==null){
+                return;
+            }
+            List<Tag> categories = new ArrayList<>(Arrays.asList(categoryArray));
+            adapter = new CategoryListAdapter(
+                    getContext(),
+                    categories,
+                    getActivity()
+            );
+            categoryList.setAdapter(adapter);
+            categoryList.setLayoutManager(new LinearLayoutManager(getContext()));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }

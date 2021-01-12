@@ -1,6 +1,7 @@
 package com.bartlomiejskura.mymemories.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
 import java.util.List;
@@ -18,7 +19,6 @@ public class Tag {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @JsonBackReference
     @OneToMany(mappedBy = "tag")
     private List<Memory> memories;
 
@@ -48,6 +48,7 @@ public class Tag {
         this.user = user;
     }
 
+    @JsonManagedReference
     public List<Memory> getMemories() {
         return memories;
     }

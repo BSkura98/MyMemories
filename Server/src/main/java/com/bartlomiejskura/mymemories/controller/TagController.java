@@ -15,7 +15,10 @@ public class TagController {
     private TagService tagService;
 
     @GetMapping("/getAll")
-    public List<Tag> getAll(){
+    public List<Tag> getAll(@RequestParam(value = "userId", required = false) Long userId){
+        if (userId != null) {
+            return tagService.getAllForUser(userId);
+        }
         return tagService.getAll();
     }
 

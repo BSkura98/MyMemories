@@ -1,5 +1,8 @@
 package com.bartlomiejskura.mymemories.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -100,6 +103,7 @@ public class Memory {
         this.memoryFriends = memoryFriends;
     }
 
+    @JsonBackReference
     public Tag getTag() {
         return tag;
     }

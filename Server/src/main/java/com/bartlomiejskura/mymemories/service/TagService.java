@@ -1,8 +1,11 @@
 package com.bartlomiejskura.mymemories.service;
 
 import com.bartlomiejskura.mymemories.exception.EntityNotFoundException;
+import com.bartlomiejskura.mymemories.model.Memory;
 import com.bartlomiejskura.mymemories.model.Tag;
+import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.repository.TagRepository;
+import com.bartlomiejskura.mymemories.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,8 +16,16 @@ public class TagService {
     @Autowired
     private TagRepository tagRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     public List<Tag> getAll(){
         return tagRepository.findAll();
+    }
+
+    public List<Tag> getAllForUser(Long userId) {
+        User user = this.userRepository.findById(userId).orElseThrow();
+        return this.tagRepository.findAllByUser(user);
     }
 
     public Tag addTag(Tag tag){
