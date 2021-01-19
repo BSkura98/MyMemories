@@ -52,8 +52,8 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
     @Override
     public void onBindViewHolder(@NonNull MemoryListAdapter.MyViewHolder holder, int position) {
         holder.memoryTitle.setText(memories.get(position).getShortDescription());
-        holder.memoryDate.setText(memories.get(position).getDate());
         holder.memoryDescription.setText(memories.get(position).getLongDescription());
+        holder.memoryDate.setText(getFormattedDate(memories.get(position).getDate()));
     }
 
     @Override
@@ -83,7 +83,7 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
         sort(memories);
     }
 
-    public void sort(List<Memory> memories){
+    private void sort(List<Memory> memories){
         Collections.sort(memories, new Comparator<Memory>() {
             @Override
             public int compare(Memory memory1, Memory memory2) {
@@ -98,6 +98,11 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
                 }
             }
         });
+    }
+
+    private String getFormattedDate(String date){
+        String[] dateElements = date.replace("T", " ").replace("-", " ").replace(":"," ").split(" ");
+        return dateElements[2]+"-"+dateElements[1]+"-"+dateElements[0]+" "+dateElements[3]+":"+dateElements[4]+":"+dateElements[5];
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
