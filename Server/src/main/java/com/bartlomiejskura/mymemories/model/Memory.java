@@ -16,7 +16,7 @@ public class Memory {
 
     private String shortDescription;
     private String longDescription;
-    private String imagePath;
+    private String imageUrl;
     private LocalDateTime creationDate;
     private LocalDateTime date;
     private int memoryPriority;
@@ -53,14 +53,6 @@ public class Memory {
 
     public void setLongDescription(String longDescription) {
         this.longDescription = longDescription;
-    }
-
-    public String getImagePath() {
-        return imagePath;
-    }
-
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
     }
 
     public LocalDateTime getCreationDate() {
@@ -110,5 +102,13 @@ public class Memory {
 
     public void setTag(Tag tag) {
         this.tag = tag;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

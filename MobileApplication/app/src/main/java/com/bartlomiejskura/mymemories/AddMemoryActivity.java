@@ -1,22 +1,28 @@
 package com.bartlomiejskura.mymemories;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -27,16 +33,28 @@ import com.bartlomiejskura.mymemories.model.Tag;
 import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.task.CreateMemoryTask;
 import com.bartlomiejskura.mymemories.task.CreateOrGetTagTask;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 
 public class AddMemoryActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+    private Memory memory = new Memory();
     private TextView dateTextView, timeTextView;
+    private ImageView memoryImage;
+    private ImageButton deleteImageButton;
     private int day, month, year, hour, minute;
     private SharedPreferences sharedPreferences;
     private int memoryPriority=90;
+    private StorageReference storageReference;
+
+    private static final int PICK_IMAGE_REQUEST = 1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,15 +65,21 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
         final EditText description = findViewById(R.id.descriptionEditText);
         final EditText categoryEditText = findViewById(R.id.categoryEditText);
         final Button addMemoryButton = findViewById(R.id.addMemoryButton);
+        final Button selectImageButton = findViewById(R.id.selectImageButton);
+        deleteImageButton = findViewById(R.id.deleteImageButton);
         final Spinner prioritySpinner = findViewById(R.id.prioritySpinner);
+        memoryImage = findViewById(R.id.memoryImage);
         dateTextView = findViewById(R.id.dateTextView);
         timeTextView = findViewById(R.id.timeTextView);
 
         sharedPreferences = getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
+        storageReference = FirebaseStorage.getInstance().getReference("uploads");
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.priorities, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         prioritySpinner.setAdapter(adapter);
         prioritySpinner.setOnItemSelectedListener(this);
+        deleteImageButton.setVisibility(View.GONE);
+        memoryImage.setVisibility(View.GONE);
 
         dateTextView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,11 +95,28 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
             }
         });
 
+        selectImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openFileChooser();
+            }
+        });
+
+
         addMemoryButton.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
                 addMemory(titleEditText.getText().toString(), description.getText().toString(), categoryEditText.getText().toString());
+            }
+        });
+
+        deleteImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                memory.setImageUrl(null);
+                deleteImageButton.setVisibility(View.GONE);
+                memoryImage.setVisibility(View.GONE);
             }
         });
     }
@@ -99,7 +140,15 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
                 return;
             }
         }
-        Memory memory = new Memory(title, description, sdf.format(Calendar.getInstance().getTime()).replace(" ", "T"), sdf.format(calendar.getTime()).replace(" ", "T"), new User(memoryOwnerId), memoryPriority, tag);
+        //Memory memory = new Memory(title, description, sdf.format(Calendar.getInstance().getTime()).replace(" ", "T"), sdf.format(calendar.getTime()).replace(" ", "T"), new User(memoryOwnerId), memoryPriority, tag);
+        memory.setShortDescription(title);
+        memory.setLongDescription(description);
+        memory.setCreationDate(sdf.format(Calendar.getInstance().getTime()).replace(" ", "T"));
+        memory.setDate(sdf.format(calendar.getTime()).replace(" ", "T"));
+        memory.setMemoryOwner(new User(memoryOwnerId));
+        memory.setMemoryPriority(memoryPriority);
+        memory.setTag(tag);
+
         final AddMemoryActivity activity = this;
 
         try{
@@ -190,5 +239,52 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
+    }
+
+    private void openFileChooser(){
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode ==  PICK_IMAGE_REQUEST && resultCode == RESULT_OK
+                && data != null && data.getData() != null){
+            Uri imageUri = data.getData();
+
+
+            try{
+                final StorageReference fileReference = storageReference.child(System.currentTimeMillis() + "." + getFileExtension(imageUri));
+
+                fileReference.putFile(imageUri)
+                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        deleteImageButton.setVisibility(View.VISIBLE);
+                                        memoryImage.setVisibility(View.VISIBLE);
+                                        memory.setImageUrl(uri.toString());
+                                        Picasso.get().load(uri.toString()).into(memoryImage);
+                                    }
+                                });
+
+                            }
+                        });
+            }catch (Exception e){
+                System.out.println("ERROR:" + e.getMessage());
+            }
+        }
+    }
+
+    private String getFileExtension(Uri uri) {
+        ContentResolver cR = getContentResolver();
+        MimeTypeMap mime = MimeTypeMap.getSingleton();
+        return mime.getExtensionFromMimeType(cR.getType(uri));
     }
 }

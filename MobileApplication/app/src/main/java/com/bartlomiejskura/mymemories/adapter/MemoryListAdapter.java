@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -19,6 +20,7 @@ import com.bartlomiejskura.mymemories.R;
 import com.bartlomiejskura.mymemories.model.Memory;
 import com.bartlomiejskura.mymemories.model.Tag;
 import com.bartlomiejskura.mymemories.task.DeleteMemoryTask;
+import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -54,6 +56,17 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
         holder.memoryTitle.setText(memories.get(position).getShortDescription());
         holder.memoryDescription.setText(memories.get(position).getLongDescription());
         holder.memoryDate.setText(getFormattedDate(memories.get(position).getDate()));
+
+        if(memories.get(position).getImageUrl()==null){
+            holder.memoryImage.setVisibility(View.GONE);
+        }else{
+            holder.memoryImage.setVisibility(View.VISIBLE);
+            Picasso.get()
+                    .load(memories.get(position).getImageUrl())
+                    .fit()
+                    .centerCrop()
+                    .into(holder.memoryImage);
+        }
     }
 
     @Override
@@ -109,6 +122,7 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
         TextView memoryTitle, memoryDate, memoryDescription;
         Button deleteButton, editButton;
         LinearLayout memoryLinearLayout;
+        ImageView memoryImage;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -119,6 +133,7 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
             deleteButton = itemView.findViewById(R.id.deleteButton);
             editButton = itemView.findViewById(R.id.editButton);
             memoryLinearLayout = itemView.findViewById(R.id.memoryLinearLayout);
+            memoryImage = itemView.findViewById(R.id.memoryImage);
 
             deleteButton.setOnClickListener(new View.OnClickListener(){
                 @Override
@@ -165,6 +180,7 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
             i.putExtra("date", memories.get(position).getDate());
             i.putExtra("memoryId", memories.get(position).getId());
             i.putExtra("memoryPriority", memories.get(position).getMemoryPriority());
+            i.putExtra("imageUrl", memories.get(position).getImageUrl());
 
             Tag tag = memories.get(position).getTag();
             if(tag!=null){
@@ -182,6 +198,7 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
             i.putExtra("creationDate", memories.get(position).getCreationDate());
             i.putExtra("memoryId", memories.get(position).getId());
             i.putExtra("memoryPriority", memories.get(position).getMemoryPriority());
+            i.putExtra("imageUrl", memories.get(position).getImageUrl());
 
             Tag tag = memories.get(position).getTag();
             if(tag!=null){

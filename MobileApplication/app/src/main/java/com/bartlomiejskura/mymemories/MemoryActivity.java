@@ -4,7 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 public class MemoryActivity extends AppCompatActivity {
 
@@ -20,6 +23,7 @@ public class MemoryActivity extends AppCompatActivity {
         TextView priorityTextView = findViewById(R.id.priorityTextView);
         TextView categoryTextView = findViewById(R.id.categoryTextView);
         TextView categoryLabel = findViewById(R.id.categoryLabel);
+        ImageView memoryImage = findViewById(R.id.memoryImage);
 
         titleTextView.setText(getIntent().getStringExtra("title"));
         descriptionTextView.setText(getIntent().getStringExtra("description"));
@@ -33,6 +37,18 @@ public class MemoryActivity extends AppCompatActivity {
         }else{
             categoryTextView.setVisibility(View.GONE);
             categoryLabel.setVisibility(View.GONE);
+        }
+
+        String imageUrl = getIntent().getStringExtra("imageUrl");
+
+        if(imageUrl!=null){
+            Picasso.get()
+                    .load(imageUrl)
+                    .fit()
+                    .centerCrop()
+                    .into(memoryImage);
+        }else{
+            memoryImage.setVisibility(View.GONE);
         }
     }
 

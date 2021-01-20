@@ -1,22 +1,28 @@
 package com.bartlomiejskura.mymemories;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -27,16 +33,26 @@ import com.bartlomiejskura.mymemories.model.Tag;
 import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.task.CreateOrGetTagTask;
 import com.bartlomiejskura.mymemories.task.EditMemoryTask;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Calendar;
 
 public class EditMemoryActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+    private Memory memory = new Memory();
     private TextView dateTextView, timeTextView;
+    private ImageView memoryImage;
+    private ImageButton deleteImageButton;
     private int day, month, year, hour, minute;
     private SharedPreferences sharedPreferences;
     private int memoryPriority;
+    private StorageReference storageReference;
+
+    private static final int PICK_IMAGE_REQUEST = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,12 +64,16 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
         final String date = getIntent().getStringExtra("date");
         final String category = getIntent().getStringExtra("category");
         memoryPriority = getIntent().getIntExtra("memoryPriority", 0);
+        final String imageUrl = getIntent().getStringExtra("imageUrl");
 
         final EditText titleEditText = findViewById(R.id.titleEditText);
         final EditText descriptionEditText = findViewById(R.id.descriptionEditText);
         final EditText categoryEditText = findViewById(R.id.categoryEditText);
         final Button editMemoryButton = findViewById(R.id.editMemoryButton);
+        final Button selectImageButton = findViewById(R.id.selectImageButton);
+        deleteImageButton = findViewById(R.id.deleteImageButton);
         final Spinner prioritySpinner = findViewById(R.id.prioritySpinner);
+        memoryImage = findViewById(R.id.memoryImage);
         dateTextView = findViewById(R.id.dateTextView);
         timeTextView = findViewById(R.id.timeTextView);
 
@@ -62,12 +82,21 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
         if(category !=null&&!category.isEmpty()){
             categoryEditText.setText(category);
         }
-        //dateTextView.setText(date);
         dateTextView.setText(date.substring(8, 10) + "-" + date.substring(5, 7) + "-" + date.substring(0, 4));
         timeTextView.setText(date.substring(11, 16));
+        if(imageUrl!=null){
+            memory.setImageUrl(imageUrl);
+
+            Picasso.get()
+                    .load(imageUrl)
+                    .fit()
+                    .centerCrop()
+                    .into(memoryImage);
+        }
 
 
         sharedPreferences = getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
+        storageReference = FirebaseStorage.getInstance().getReference("uploads");
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.priorities, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         prioritySpinner.setAdapter(adapter);
@@ -88,11 +117,27 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
             }
         });
 
+        selectImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openFileChooser();
+            }
+        });
+
         editMemoryButton.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
                 editMemory(titleEditText.getText().toString(), descriptionEditText.getText().toString(), categoryEditText.getText().toString());
+            }
+        });
+
+        deleteImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                memory.setImageUrl(null);
+                deleteImageButton.setVisibility(View.GONE);
+                memoryImage.setVisibility(View.GONE);
             }
         });
     }
@@ -116,7 +161,16 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
                 return;
             }
         }
-        Memory memory = new Memory(getIntent().getLongExtra("memoryId", 0), title, description, sdf.format(Calendar.getInstance().getTime()).replace(" ", "T"), sdf.format(calendar.getTime()).replace(" ", "T"), new User(memoryOwnerId), memoryPriority, tag);
+        //Memory memory = new Memory(getIntent().getLongExtra("memoryId", 0), title, description, sdf.format(Calendar.getInstance().getTime()).replace(" ", "T"), sdf.format(calendar.getTime()).replace(" ", "T"), new User(memoryOwnerId), memoryPriority, tag);
+        memory.setId(getIntent().getLongExtra("memoryId", 0));
+        memory.setShortDescription(title);
+        memory.setLongDescription(description);
+        memory.setCreationDate(sdf.format(Calendar.getInstance().getTime()).replace(" ", "T"));
+        memory.setDate(sdf.format(calendar.getTime()).replace(" ", "T"));
+        memory.setMemoryOwner(new User(memoryOwnerId));
+        memory.setMemoryPriority(memoryPriority);
+        memory.setTag(tag);
+
         final EditMemoryActivity activity = this;
 
         try{
@@ -208,5 +262,52 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
+    }
+
+    private void openFileChooser(){
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode ==  PICK_IMAGE_REQUEST && resultCode == RESULT_OK
+                && data != null && data.getData() != null){
+            Uri imageUri = data.getData();
+
+
+            try{
+                final StorageReference fileReference = storageReference.child(System.currentTimeMillis() + "." + getFileExtension(imageUri));
+
+                fileReference.putFile(imageUri)
+                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        deleteImageButton.setVisibility(View.VISIBLE);
+                                        memoryImage.setVisibility(View.VISIBLE);
+                                        memory.setImageUrl(uri.toString());
+                                        Picasso.get().load(uri.toString()).into(memoryImage);
+                                    }
+                                });
+
+                            }
+                        });
+            }catch (Exception e){
+                System.out.println("ERROR:" + e.getMessage());
+            }
+        }
+    }
+
+    private String getFileExtension(Uri uri) {
+        ContentResolver cR = getContentResolver();
+        MimeTypeMap mime = MimeTypeMap.getSingleton();
+        return mime.getExtensionFromMimeType(cR.getType(uri));
     }
 }

@@ -10,6 +10,9 @@ public class Memory {
     private int memoryPriority;
     private User memoryOwner;
     private Tag tag;
+    private String imageUrl;
+
+    public Memory(){}
 
     public Memory(Long id, String shortDescription, String longDescription, String creationDate, String date, User memoryOwner, int memoryPriority, Tag tag) {
         this.id = id;
@@ -94,5 +97,13 @@ public class Memory {
 
     public void setTag(Tag tag) {
         this.tag = tag;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }
