@@ -13,6 +13,7 @@ import java.util.List;
 public interface MemoryRepository extends JpaRepository<Memory, Long> {
     List<Memory> findAllByMemoryOwner(User memoryOwner);
     List<Memory> findAllByTag(Tag tag);
+    //List<Memory> findAllByMemoryFriends_Id(Long id);
 
     @Query("SELECT m FROM Memory m WHERE m.memoryOwner = ?1 AND m.tag = ?2")
     List<Memory> findAllByMemoryOwnerAndTag(User memoryOwner, Tag tag);

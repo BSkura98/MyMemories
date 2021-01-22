@@ -6,6 +6,7 @@ import com.bartlomiejskura.mymemories.service.MemoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -33,6 +34,15 @@ public class MemoryController {
     @GetMapping("/getAllWithShared")
     public List<Memory> getAllWithShared(@RequestParam(value = "userId") Long userId){
         return Stream.concat(memoryService.getAllForUser(userId).stream(), memoryService.getAllSharedMemoriesForUser(userId).stream())
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("/getAllForDate")
+    public List<Memory> getAllForDateWithShared(@RequestParam(value = "userId") Long userId, @RequestParam(value = "time") String time){
+        LocalDateTime date = LocalDateTime.parse(time);
+
+        return Stream.concat(memoryService.getAllForUserAndDate(userId, date).stream(),
+                memoryService.getAllSharedMemoriesForUserAndDate(userId, date).stream())
                 .collect(Collectors.toList());
     }
 

@@ -10,7 +10,9 @@ import com.bartlomiejskura.mymemories.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class MemoryService {
@@ -32,6 +34,34 @@ public class MemoryService {
         return this.memoryRepository.findAllByMemoryOwner(user);
     }
 
+    public List<Memory> getNewestForUser(Long userId) {
+        User user = this.userRepository.findById(userId).orElseThrow();
+        LocalDateTime newestDate = this.memoryRepository.findAllByMemoryOwner(user).stream()
+                .map(Memory::getDate)
+                .filter(date -> date.getYear() <= LocalDateTime.now().getYear() &&
+                        date.getDayOfYear() <= LocalDateTime.now().getDayOfYear())
+                .max(LocalDateTime::compareTo)
+                .get();
+        return this.memoryRepository.findAllByMemoryOwner(user).stream()
+                .filter(memory -> memory.getDate().getYear()==newestDate.getYear() &&
+                        memory.getDate().getDayOfYear()==newestDate.getDayOfYear())
+                .collect(Collectors.toList());
+    }
+
+    /*public List<Memory> getNewestSharedMemoriesForUser(Long userId) {
+        User user = this.userRepository.findById(userId).orElseThrow();
+        LocalDateTime newestDate = this.memoryRepository.findAllByMemoryOwner(user).stream()
+                .map(Memory::getDate)
+                .filter(date -> date.getYear() <= LocalDateTime.now().getYear() &&
+                        date.getDayOfYear() <= LocalDateTime.now().getDayOfYear())
+                .max(LocalDateTime::compareTo)
+                .get();
+        return this.memoryRepository.findAllByMemoryOwner(user).stream()
+                .filter(memory -> memory.getDate().getYear()==newestDate.getYear() &&
+                        memory.getDate().getDayOfYear()==newestDate.getDayOfYear())
+                .collect(Collectors.toList());
+    }*/
+
     public List<Memory> getAllForTag(Long tagId){
         Tag tag = this.tagRepository.findById(tagId).orElseThrow();
         return this.memoryRepository.findAllByTag(tag);
@@ -46,6 +76,24 @@ public class MemoryService {
     public List<Memory> getAllSharedMemoriesForUser(Long userId){
         User user = this.userRepository.findById(userId).orElseThrow();
         return user.getSharedMemories();
+    }
+
+    public List<Memory> getAllForUserAndDate(Long userId, LocalDateTime time){
+        User user = this.userRepository.findById(userId).orElseThrow();
+
+        return this.memoryRepository.findAllByMemoryOwner(user).stream()
+                .filter(memory -> memory.getDate().getYear()==time.getYear() &&
+                        memory.getDate().getDayOfYear()==time.getDayOfYear())
+                .collect(Collectors.toList());
+    }
+
+    public List<Memory> getAllSharedMemoriesForUserAndDate(Long userId, LocalDateTime time){
+        User user = this.userRepository.findById(userId).orElseThrow();
+
+        return user.getSharedMemories().stream()
+                .filter(memory -> memory.getDate().getYear()==time.getYear() &&
+                        memory.getDate().getDayOfYear()==time.getDayOfYear())
+                .collect(Collectors.toList());
     }
 
     public Memory addMemory(Memory memory){
