@@ -1,11 +1,15 @@
 package com.bartlomiejskura.mymemories.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "memories")
@@ -21,12 +25,17 @@ public class Memory {
     private LocalDateTime date;
     private int memoryPriority;
     @ManyToOne
+    @JsonIgnoreProperties("sharedMemories")
     @JoinColumn(name = "user_id")
     private User memoryOwner;
     @ManyToOne
     @JoinColumn(name = "tag_id")
     private Tag tag;
-    @ManyToMany(mappedBy = "sharedMemories")
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("sharedMemories")
+    @JoinTable(name="memory_user",
+    joinColumns = {@JoinColumn(name="memoryId")},
+    inverseJoinColumns = {@JoinColumn(name="userId")})
     private List<User> memoryFriends;
 
     public Memory(){}
@@ -93,6 +102,10 @@ public class Memory {
 
     public void setMemoryFriends(List<User> memoryFriends) {
         this.memoryFriends = memoryFriends;
+    }
+
+    public void addMemoryFriend(User friend){
+        memoryFriends.add(friend);
     }
 
     @JsonBackReference

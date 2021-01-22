@@ -23,6 +23,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -40,18 +41,24 @@ import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 
 public class AddMemoryActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
-    private Memory memory = new Memory();
     private TextView dateTextView, timeTextView;
     private ImageView memoryImage;
     private ImageButton deleteImageButton;
+    private LinearLayout peopleList;
+    private Button addPersonButton;
+
+    private Memory memory = new Memory();
     private int day, month, year, hour, minute;
     private SharedPreferences sharedPreferences;
     private int memoryPriority=90;
     private StorageReference storageReference;
+    private List<User> memoryFriends = new ArrayList<>();
 
     private static final int PICK_IMAGE_REQUEST = 1;
 
@@ -71,6 +78,8 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
         memoryImage = findViewById(R.id.memoryImage);
         dateTextView = findViewById(R.id.dateTextView);
         timeTextView = findViewById(R.id.timeTextView);
+        peopleList = findViewById(R.id.people_list);
+        addPersonButton = findViewById(R.id.addPersonButton);
 
         sharedPreferences = getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
         storageReference = FirebaseStorage.getInstance().getReference("uploads");
@@ -119,12 +128,23 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
                 memoryImage.setVisibility(View.GONE);
             }
         });
+
+        addPersonButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                addView();
+            }
+        });
     }
 
 
     private void addMemory(String title, String description, String category){
         if (title.isEmpty()) {
             Toast.makeText(getApplicationContext(), "Title field cannot be empty!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (!addMemoryFriends()) {
             return;
         }
 
@@ -148,6 +168,7 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
         memory.setMemoryOwner(new User(memoryOwnerId));
         memory.setMemoryPriority(memoryPriority);
         memory.setTag(tag);
+        memory.setMemoryFriends(memoryFriends);
 
         final AddMemoryActivity activity = this;
 
@@ -286,5 +307,49 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
         ContentResolver cR = getContentResolver();
         MimeTypeMap mime = MimeTypeMap.getSingleton();
         return mime.getExtensionFromMimeType(cR.getType(uri));
+    }
+
+    private void addView(){
+        final View view = getLayoutInflater().inflate(R.layout.row_add_person, null, false);
+
+        EditText emailEditText = view.findViewById(R.id.emailEditText);
+        ImageButton deletePersonButton = view.findViewById(R.id.deletePersonButton);
+
+        deletePersonButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                removeView(view);
+            }
+        });
+
+        peopleList.addView(view);
+    }
+
+    private void removeView(View view){
+        peopleList.removeView(view);
+    }
+
+    private boolean addMemoryFriends(){
+        memoryFriends.clear();
+        boolean result = true;
+
+        for(int i = 0;i <peopleList.getChildCount();i++){
+            View view = peopleList.getChildAt(i);
+
+            EditText emailEditText = view.findViewById(R.id.emailEditText);
+
+            if(!emailEditText.getText().toString().equals("")){
+                memoryFriends.add(new User(emailEditText.getText().toString().trim()));
+            }else{
+                result = false;
+                break;
+            }
+        }
+
+        if(!result){
+            Toast.makeText(this, "Email field cannot be empty!", Toast.LENGTH_SHORT).show();
+        }
+
+        return result;
     }
 }

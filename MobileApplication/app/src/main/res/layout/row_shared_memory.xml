@@ -47,19 +47,10 @@
                     android:text="Title"
                     android:textAppearance="?attr/textAppearanceHeadline6" />
 
-                <LinearLayout
-                    android:id="@+id/memoryFriendsLinearLayout"
+                <TextView
+                    android:id="@+id/memoryFriends"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/memoryFriends"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="" />
-
-                </LinearLayout>
+                    android:layout_height="wrap_content" />
 
                 <TextView
                     android:id="@+id/memoryDate"
@@ -96,14 +87,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
                     android:layout_marginRight="8dp"
-                    android:text="Edit" />
+                    android:text="Untag yourself" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/deleteButton"
-                    style="?attr/borderlessButtonStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Delete" />
             </LinearLayout>
 
         </LinearLayout>

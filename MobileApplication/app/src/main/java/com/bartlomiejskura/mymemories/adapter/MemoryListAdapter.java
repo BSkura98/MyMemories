@@ -3,6 +3,7 @@ package com.bartlomiejskura.mymemories.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,9 +20,12 @@ import com.bartlomiejskura.mymemories.MemoryActivity;
 import com.bartlomiejskura.mymemories.R;
 import com.bartlomiejskura.mymemories.model.Memory;
 import com.bartlomiejskura.mymemories.model.Tag;
+import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.task.DeleteMemoryTask;
+import com.bartlomiejskura.mymemories.task.EditMemoryTask;
 import com.squareup.picasso.Picasso;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -29,18 +33,21 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.MyViewHolder> {
     private Context context;
     private List<Memory> memories;
     private Activity activity;
     private List<Memory> hidden = new ArrayList<>();
+    private SharedPreferences sharedPreferences;
 
     public MemoryListAdapter(Context context, List<Memory> memories, Activity activity) {
         this.context = context;
         this.memories = memories;
         this.activity = activity;
         sort(memories);
+        sharedPreferences = activity.getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
     }
 
     @NonNull
@@ -66,6 +73,34 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
                     .fit()
                     .centerCrop()
                     .into(holder.memoryImage);
+        }
+
+        if(memories.get(position).getMemoryOwner().getId().equals(sharedPreferences.getLong("userId",0))){
+            if(memories.get(position).getMemoryFriends()==null||memories.get(position).getMemoryFriends().isEmpty()){
+                holder.memoryFriendLinearLayout.setVisibility(View.GONE);
+                holder.memoryFriends.setText("");
+            }else{
+                holder.memoryFriendLinearLayout.setVisibility(View.VISIBLE);
+                StringBuilder friendsText= new StringBuilder("with ");
+                for(User user:memories.get(position).getMemoryFriends()){
+                    friendsText.append(user.getFirstName()).append(" ").append(user.getLastName()).append(", ");
+                }
+                friendsText.setLength(friendsText.length()-2);
+                holder.memoryFriends.setText(friendsText);
+
+            }
+        }else{
+            holder.memoryFriendLinearLayout.setVisibility(View.VISIBLE);
+            holder.deleteButton.setVisibility(View.GONE);
+            holder.editButton.setText("Untag yourself");
+
+            User memoryOwner= memories.get(position).getMemoryOwner();
+            StringBuilder friendsText= new StringBuilder(memoryOwner.getFirstName()+" "+ memoryOwner.getLastName() + " with you, ");
+            for(User user:memories.get(position).getMemoryFriends()){
+                friendsText.append(user.getFirstName()).append(" ").append(user.getLastName()).append(", ");
+            }
+            friendsText.setLength(friendsText.length()-2);
+            holder.memoryFriends.setText(friendsText);
         }
     }
 
@@ -119,9 +154,9 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView memoryTitle, memoryDate, memoryDescription;
+        TextView memoryTitle, memoryDate, memoryDescription, memoryFriends;
         Button deleteButton, editButton;
-        LinearLayout memoryLinearLayout;
+        LinearLayout memoryLinearLayout, memoryFriendLinearLayout;
         ImageView memoryImage;
 
         public MyViewHolder(@NonNull View itemView) {
@@ -134,6 +169,8 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
             editButton = itemView.findViewById(R.id.editButton);
             memoryLinearLayout = itemView.findViewById(R.id.memoryLinearLayout);
             memoryImage = itemView.findViewById(R.id.memoryImage);
+            memoryFriendLinearLayout = itemView.findViewById(R.id.memoryFriendsLinearLayout);
+            memoryFriends = itemView.findViewById(R.id.memoryFriends);
 
             deleteButton.setOnClickListener(new View.OnClickListener(){
                 @Override
@@ -145,7 +182,11 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
             editButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    editMemory(getAdapterPosition());
+                    if(memories.get(getAdapterPosition()).getMemoryOwner().getId().equals(sharedPreferences.getLong("userId",0))){
+                        editMemory(getAdapterPosition());
+                    }else{
+                        untagYourselfFromMemory();
+                    }
                 }
             });
 
@@ -182,6 +223,12 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
             i.putExtra("memoryPriority", memories.get(position).getMemoryPriority());
             i.putExtra("imageUrl", memories.get(position).getImageUrl());
 
+            StringBuilder memoryFriendsText = new StringBuilder("");
+            for(User user:memories.get(position).getMemoryFriends()){
+                memoryFriendsText.append(user.getEmail()).append(";");
+            }
+            i.putExtra("memoryFriends", memoryFriendsText.toString());
+
             Tag tag = memories.get(position).getTag();
             if(tag!=null){
                 i.putExtra("category", memories.get(position).getTag().getName());
@@ -199,6 +246,7 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
             i.putExtra("memoryId", memories.get(position).getId());
             i.putExtra("memoryPriority", memories.get(position).getMemoryPriority());
             i.putExtra("imageUrl", memories.get(position).getImageUrl());
+            i.putExtra("memoryFriends", memoryFriends.getText());
 
             Tag tag = memories.get(position).getTag();
             if(tag!=null){
@@ -206,6 +254,25 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
             }
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             activity.getApplicationContext().startActivity(i);
+        }
+
+        private void untagYourselfFromMemory(){
+            memories.get(getAdapterPosition()).removeMemoryFriend(sharedPreferences.getLong("userId",0));
+
+            try{
+                EditMemoryTask editMemoryTask = new EditMemoryTask(activity, memories.get(getAdapterPosition()));
+                Boolean editMemoryResult = editMemoryTask.execute().get();
+                if(editMemoryResult){
+                    memories.remove(getAdapterPosition());
+                    //recycler.removeViewAt(position);
+                    notifyItemRemoved(getAdapterPosition());
+                    notifyItemRangeChanged(getAdapterPosition(), memories.size());
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

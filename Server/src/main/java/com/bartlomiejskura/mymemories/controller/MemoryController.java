@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/memory")
@@ -26,6 +28,12 @@ public class MemoryController {
             return memoryService.getAllForTag(tagId);
         }
         return memoryService.getAll();
+    }
+
+    @GetMapping("/getAllWithShared")
+    public List<Memory> getAllWithShared(@RequestParam(value = "userId") Long userId){
+        return Stream.concat(memoryService.getAllForUser(userId).stream(), memoryService.getAllSharedMemoriesForUser(userId).stream())
+                .collect(Collectors.toList());
     }
 
     @PostMapping
@@ -50,5 +58,13 @@ public class MemoryController {
     @DeleteMapping
     public void deleteMemory(@RequestParam(name="memoryId")Long memoryId){
         memoryService.deleteMemory(memoryId);
+    }
+
+    @GetMapping("/getShared")
+    public List<Memory> getSharedMemories(@RequestParam(value = "userId", required = false) Long userId, @RequestParam(value = "tagId", required = false) Long tagId){
+        if (userId != null) {
+            return memoryService.getAllSharedMemoriesForUser(userId);
+        }
+        return null;
     }
 }

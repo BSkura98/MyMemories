@@ -43,7 +43,21 @@ public class MemoryService {
         return this.memoryRepository.findAllByMemoryOwnerAndTag(user, tag);
     }
 
+    public List<Memory> getAllSharedMemoriesForUser(Long userId){
+        User user = this.userRepository.findById(userId).orElseThrow();
+        return user.getSharedMemories();
+    }
+
     public Memory addMemory(Memory memory){
+        List<User> memoryFriends = memory.getMemoryFriends();
+        if(memoryFriends!=null){
+            for(User user:memoryFriends){
+                if(user.getID()==null||user.getEmail()!=null){
+                    user.setID(userRepository.findByEmail(user.getEmail()).getID());
+                }
+            }
+            memory.setMemoryFriends(memoryFriends);
+        }
         return memoryRepository.save(memory);
     }
 

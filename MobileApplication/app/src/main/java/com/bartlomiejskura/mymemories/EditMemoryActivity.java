@@ -23,6 +23,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -40,17 +41,24 @@ import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 public class EditMemoryActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
-    private Memory memory = new Memory();
     private TextView dateTextView, timeTextView;
     private ImageView memoryImage;
     private ImageButton deleteImageButton;
+    private LinearLayout peopleList;
+    private Button addPersonButton;
+
+    private Memory memory = new Memory();
     private int day, month, year, hour, minute;
     private SharedPreferences sharedPreferences;
     private int memoryPriority;
     private StorageReference storageReference;
+    private List<User> memoryFriends = new ArrayList<>();
+    String memoryFriendsEmails;
 
     private static final int PICK_IMAGE_REQUEST = 1;
 
@@ -65,6 +73,7 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
         final String category = getIntent().getStringExtra("category");
         memoryPriority = getIntent().getIntExtra("memoryPriority", 0);
         final String imageUrl = getIntent().getStringExtra("imageUrl");
+        memoryFriendsEmails = getIntent().getStringExtra("memoryFriends");
 
         final EditText titleEditText = findViewById(R.id.titleEditText);
         final EditText descriptionEditText = findViewById(R.id.descriptionEditText);
@@ -76,6 +85,8 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
         memoryImage = findViewById(R.id.memoryImage);
         dateTextView = findViewById(R.id.dateTextView);
         timeTextView = findViewById(R.id.timeTextView);
+        peopleList = findViewById(R.id.people_list);
+        addPersonButton = findViewById(R.id.addPersonButton);
 
         titleEditText.setText(title);
         descriptionEditText.setText(description);
@@ -93,6 +104,7 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
                     .centerCrop()
                     .into(memoryImage);
         }
+        initializeMemoryFriendsList();
 
 
         sharedPreferences = getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
@@ -140,12 +152,31 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
                 memoryImage.setVisibility(View.GONE);
             }
         });
+
+        addPersonButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                addView();
+            }
+        });
+    }
+
+    private void initializeMemoryFriendsList(){
+        String[] emails =memoryFriendsEmails.split(";");
+        for(String email:emails){
+            EditText emailEditText = addView().findViewById(R.id.emailEditText);
+            emailEditText.setText(email);
+        }
     }
 
 
     private void editMemory(String title, String description, String category){
         if (title.isEmpty()) {
             Toast.makeText(getApplicationContext(), "Title field cannot be empty!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (!addMemoryFriends()) {
             return;
         }
 
@@ -170,6 +201,7 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
         memory.setMemoryOwner(new User(memoryOwnerId));
         memory.setMemoryPriority(memoryPriority);
         memory.setTag(tag);
+        memory.setMemoryFriends(memoryFriends);
 
         final EditMemoryActivity activity = this;
 
@@ -309,5 +341,50 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
         ContentResolver cR = getContentResolver();
         MimeTypeMap mime = MimeTypeMap.getSingleton();
         return mime.getExtensionFromMimeType(cR.getType(uri));
+    }
+
+    private View addView(){
+        final View view = getLayoutInflater().inflate(R.layout.row_add_person, null, false);
+
+        EditText emailEditText = view.findViewById(R.id.emailEditText);
+        ImageButton deletePersonButton = view.findViewById(R.id.deletePersonButton);
+
+        deletePersonButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                removeView(view);
+            }
+        });
+
+        peopleList.addView(view);
+        return view;
+    }
+
+    private void removeView(View view){
+        peopleList.removeView(view);
+    }
+
+    private boolean addMemoryFriends(){
+        memoryFriends.clear();
+        boolean result = true;
+
+        for(int i = 0;i <peopleList.getChildCount();i++){
+            View view = peopleList.getChildAt(i);
+
+            EditText emailEditText = view.findViewById(R.id.emailEditText);
+
+            if(!emailEditText.getText().toString().equals("")){
+                memoryFriends.add(new User(emailEditText.getText().toString().trim()));
+            }else{
+                result = false;
+                break;
+            }
+        }
+
+        if(!result){
+            Toast.makeText(this, "Email field cannot be empty!", Toast.LENGTH_SHORT).show();
+        }
+
+        return result;
     }
 }

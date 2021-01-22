@@ -23,6 +23,7 @@ public class MemoryActivity extends AppCompatActivity {
         TextView priorityTextView = findViewById(R.id.priorityTextView);
         TextView categoryTextView = findViewById(R.id.categoryTextView);
         TextView categoryLabel = findViewById(R.id.categoryLabel);
+        TextView memoryFriends = findViewById(R.id.memoryFriends);
         ImageView memoryImage = findViewById(R.id.memoryImage);
 
         titleTextView.setText(getIntent().getStringExtra("title"));
@@ -30,6 +31,11 @@ public class MemoryActivity extends AppCompatActivity {
         dateTextView.setText(getIntent().getStringExtra("date"));
         creationDateTextView.setText(getIntent().getStringExtra("creationDate"));
         priorityTextView.setText(getPriorityOption(getIntent().getIntExtra("memoryPriority",0)));
+        if(!getIntent().getStringExtra("memoryFriends").isEmpty()){
+            memoryFriends.setText(getIntent().getStringExtra("memoryFriends"));
+        }else{
+            memoryFriends.setVisibility(View.GONE);
+        }
 
         String category = getIntent().getStringExtra("category");
         if(category !=null&&!category.isEmpty()){
