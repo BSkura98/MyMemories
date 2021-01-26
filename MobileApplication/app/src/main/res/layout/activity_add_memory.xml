@@ -27,22 +27,22 @@
                 android:id="@+id/selectImageButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="40dp"
-                android:layout_marginLeft="40dp"
-                android:layout_marginTop="20dp"
-                android:text="Select image"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView8" />
+                android:layout_marginStart="10dp"
+                android:layout_marginLeft="10dp"
+                android:text="Select"
+                app:layout_constraintBottom_toBottomOf="@+id/deleteImageButton"
+                app:layout_constraintStart_toEndOf="@+id/deleteImageButton"
+                app:layout_constraintTop_toTopOf="@+id/deleteImageButton" />
 
             <ImageView
                 android:id="@+id/memoryImage"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginLeft="20dp"
-                app:layout_constraintBottom_toBottomOf="@+id/selectImageButton"
-                app:layout_constraintStart_toEndOf="@+id/selectImageButton"
-                app:layout_constraintTop_toTopOf="@+id/selectImageButton" />
+                android:layout_marginStart="10dp"
+                android:layout_marginLeft="10dp"
+                app:layout_constraintBottom_toBottomOf="@+id/textView5"
+                app:layout_constraintStart_toEndOf="@+id/textView5"
+                app:layout_constraintTop_toTopOf="@+id/textView5" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputLayout"
@@ -152,7 +152,7 @@
                 android:layout_marginStart="40dp"
                 android:layout_marginLeft="40dp"
                 android:layout_marginTop="20dp"
-                android:text="Priority:"
+                android:text="Importance:"
                 android:textSize="18sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView7" />
@@ -195,12 +195,12 @@
                 android:layout_height="25dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginLeft="10dp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:background="@null"
+                app:layout_constraintBottom_toBottomOf="@+id/memoryImage"
                 app:layout_constraintStart_toEndOf="@+id/memoryImage"
                 app:layout_constraintTop_toTopOf="@+id/memoryImage"
                 app:srcCompat="@drawable/ic_close"
-                tools:ignore="VectorDrawableCompat"
-                android:background="@null"/>
+                tools:ignore="VectorDrawableCompat" />
 
             <TextView
                 android:id="@+id/textView9"
@@ -208,11 +208,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
                 android:layout_marginLeft="40dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="30dp"
                 android:text="People"
                 android:textSize="18sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/selectImageButton" />
+                app:layout_constraintTop_toBottomOf="@+id/textView5" />
             
             <LinearLayout
                 android:id="@+id/people_list"
@@ -227,7 +227,6 @@
                 android:text="Add a person"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/ButtonStyle"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/people_list"
                 android:layout_marginStart="40dp"
@@ -235,6 +234,18 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="20dp"
                 app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:layout_marginLeft="40dp"
+                android:layout_marginTop="30dp"
+                android:text="Image"
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView8" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 

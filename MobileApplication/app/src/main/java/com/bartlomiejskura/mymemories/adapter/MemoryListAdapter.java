@@ -61,8 +61,13 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
     @Override
     public void onBindViewHolder(@NonNull MemoryListAdapter.MyViewHolder holder, int position) {
         holder.memoryTitle.setText(memories.get(position).getShortDescription());
-        holder.memoryDescription.setText(memories.get(position).getLongDescription());
         holder.memoryDate.setText(getFormattedDate(memories.get(position).getDate()));
+
+        if(memories.get(position).getLongDescription().isEmpty()){
+            holder.memoryDescription.setVisibility(View.GONE);
+        }else{
+            holder.memoryDescription.setText(memories.get(position).getLongDescription());
+        }
 
         if(memories.get(position).getImageUrl()==null){
             holder.memoryImage.setVisibility(View.GONE);
@@ -95,7 +100,10 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
             holder.editButton.setText("Untag yourself");
 
             User memoryOwner= memories.get(position).getMemoryOwner();
-            StringBuilder friendsText= new StringBuilder(memoryOwner.getFirstName()+" "+ memoryOwner.getLastName() + " with you, ");
+            StringBuilder friendsText= new StringBuilder(memoryOwner.getFirstName()+" "+ memoryOwner.getLastName() + " with you");
+            if(memories.get(position).getMemoryFriends().size()>0){
+                friendsText.append(" and ");
+            }
             for(User user:memories.get(position).getMemoryFriends()){
                 friendsText.append(user.getFirstName()).append(" ").append(user.getLastName()).append(", ");
             }

@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.nav_dates:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new DatesFragment()).commit();
-                toolbarTextView.setText("Dates");
+                toolbarTextView.setText("Select date");
                 i.putExtra("fragmentToLoad", "datesFragment");
                 break;
             case R.id.nav_memory_board:
@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 case "datesFragment":
                     getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new DatesFragment()).commit();
                     navigationView.setCheckedItem(R.id.nav_dates);
-                    toolbarTextView.setText("Dates");
+                    toolbarTextView.setText("Select date");
                     i.putExtra("fragmentToLoad", "datesFragment");
                     break;
                 case "categoriesFragment":

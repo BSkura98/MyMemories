@@ -103,6 +103,9 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
                     .fit()
                     .centerCrop()
                     .into(memoryImage);
+        }else{
+            deleteImageButton.setVisibility(View.GONE);
+            memoryImage.setVisibility(View.GONE);
         }
         initializeMemoryFriendsList();
 

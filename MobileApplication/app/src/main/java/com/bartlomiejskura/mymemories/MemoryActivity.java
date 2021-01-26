@@ -27,10 +27,17 @@ public class MemoryActivity extends AppCompatActivity {
         ImageView memoryImage = findViewById(R.id.memoryImage);
 
         titleTextView.setText(getIntent().getStringExtra("title"));
-        descriptionTextView.setText(getIntent().getStringExtra("description"));
-        dateTextView.setText(getIntent().getStringExtra("date"));
-        creationDateTextView.setText(getIntent().getStringExtra("creationDate"));
+        String description = getIntent().getStringExtra("description");
+        if(description.isEmpty()){
+            descriptionTextView.setVisibility(View.GONE);
+        }else{
+            descriptionTextView.setText(description);
+        }
         priorityTextView.setText(getPriorityOption(getIntent().getIntExtra("memoryPriority",0)));
+        String date = getIntent().getStringExtra("date");
+        String creationDate = getIntent().getStringExtra("creationDate");
+        dateTextView.setText(date.substring(8, 10) + "-" + date.substring(5, 7) + "-" + date.substring(0, 4)+" "+date.substring(11, 16));
+        creationDateTextView.setText(creationDate.substring(8, 10) + "-" + creationDate.substring(5, 7) + "-" + creationDate.substring(0, 4)+" "+creationDate.substring(11, 16));
         if(!getIntent().getStringExtra("memoryFriends").isEmpty()){
             memoryFriends.setText(getIntent().getStringExtra("memoryFriends"));
         }else{
