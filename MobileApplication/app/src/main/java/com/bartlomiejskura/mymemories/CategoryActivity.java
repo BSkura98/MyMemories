@@ -5,6 +5,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -46,7 +48,12 @@ public class CategoryActivity extends AppCompatActivity implements AdapterView.O
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         prioritySpinner.setAdapter(adapter);
 
-        getAllMemories();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                getAllMemories();
+            }
+        }).start();
     }
 
     public void getAllMemories(){
@@ -56,16 +63,22 @@ public class CategoryActivity extends AppCompatActivity implements AdapterView.O
             if(memoryArray ==null){
                 return;
             }
-            List<Memory> memories = new ArrayList<>(Arrays.asList(memoryArray));
-            adapter = new MemoryListAdapter(
-                    this,
-                    memories,
-                    this
-            );
-            memoryList.setAdapter(adapter);
-            memoryList.setLayoutManager(new LinearLayoutManager(this));
+            final List<Memory> memories = new ArrayList<>(Arrays.asList(memoryArray));
+            final CategoryActivity activity = this;
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adapter = new MemoryListAdapter(
+                            getApplicationContext(),
+                            memories,
+                            activity
+                    );
+                    memoryList.setAdapter(adapter);
+                    memoryList.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
 
-            prioritySpinner.setOnItemSelectedListener(this);
+                    prioritySpinner.setOnItemSelectedListener(activity);
+                }
+            });
         }catch (Exception e){
             e.printStackTrace();
         }

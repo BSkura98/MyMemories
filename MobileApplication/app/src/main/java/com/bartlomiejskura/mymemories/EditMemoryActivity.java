@@ -143,7 +143,12 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
-                editMemory(titleEditText.getText().toString(), descriptionEditText.getText().toString(), categoryEditText.getText().toString());
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        editMemory(titleEditText.getText().toString(), descriptionEditText.getText().toString(), categoryEditText.getText().toString());
+                    }
+                }).start();
             }
         });
 

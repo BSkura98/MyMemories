@@ -42,7 +42,13 @@ public class DatesFragment extends Fragment {
         memoryList = view.findViewById(R.id.memoryList);
         dateButton = view.findViewById(R.id.dateButton);
 
-        getAllMemoriesForDate(date);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                getAllMemoriesForDate(date);
+            }
+        }).start();
+
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
         dateButton.setText(sdf.format(date));
 
@@ -63,14 +69,19 @@ public class DatesFragment extends Fragment {
             if(memoryArray ==null){
                 return;
             }
-            List<Memory> memories = new ArrayList<>(Arrays.asList(memoryArray));
-            adapter = new MemoryListAdapter(
-                    getContext(),
-                    memories,
-                    getActivity()
-            );
-            memoryList.setAdapter(adapter);
-            memoryList.setLayoutManager(new LinearLayoutManager(getContext()));
+            final List<Memory> memories = new ArrayList<>(Arrays.asList(memoryArray));
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adapter = new MemoryListAdapter(
+                            getContext(),
+                            memories,
+                            getActivity()
+                    );
+                    memoryList.setAdapter(adapter);
+                    memoryList.setLayoutManager(new LinearLayoutManager(getContext()));
+                }
+            });
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -96,7 +107,13 @@ public class DatesFragment extends Fragment {
                 date.setDate(date1);
                 date.setMonth(month1);
                 date.setYear(year1-1900);
-                getAllMemoriesForDate(date);
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        getAllMemoriesForDate(date);
+                    }
+                }).start();
             }
         }, YEAR, MONTH, DATE);
 

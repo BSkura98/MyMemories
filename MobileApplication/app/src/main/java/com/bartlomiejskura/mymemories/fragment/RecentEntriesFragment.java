@@ -54,8 +54,12 @@ public class RecentEntriesFragment extends Fragment implements AdapterView.OnIte
             }
         });
 
-        getAllMemories();
-
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                getAllMemories();
+            }
+        }).start();
         return view;
     }
 
@@ -66,16 +70,22 @@ public class RecentEntriesFragment extends Fragment implements AdapterView.OnIte
             if(memoryArray ==null){
                 return;
             }
-            List<Memory> memories = new ArrayList<>(Arrays.asList(memoryArray));
-            adapter = new MemoryListAdapter(
-                    getContext(),
-                    memories,
-                    getActivity()
-            );
-            memoryList.setAdapter(adapter);
-            memoryList.setLayoutManager(new LinearLayoutManager(getContext()));
+            final List<Memory> memories = new ArrayList<>(Arrays.asList(memoryArray));
+            final RecentEntriesFragment fragment = this;
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adapter = new MemoryListAdapter(
+                            getContext(),
+                            memories,
+                            getActivity()
+                    );
+                    memoryList.setAdapter(adapter);
+                    memoryList.setLayoutManager(new LinearLayoutManager(getContext()));
 
-            prioritySpinner.setOnItemSelectedListener(this);
+                    prioritySpinner.setOnItemSelectedListener(fragment);
+                }
+            });
         }catch (Exception e){
             e.printStackTrace();
         }

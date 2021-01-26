@@ -2,6 +2,7 @@ package com.bartlomiejskura.mymemories;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 
 import com.bartlomiejskura.mymemories.task.AuthenticationTask;
 import com.bartlomiejskura.mymemories.task.CreateUserTask;
+import com.bartlomiejskura.mymemories.task.GetUserInformationTask;
 
 import java.util.Calendar;
 
@@ -52,29 +54,35 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
-    private void registerUser(String firstName, String lastName, String email, String password, String repeatPassword, String birthday){
+    private void registerUser(final String firstName, final String lastName, final String email, final String password, String repeatPassword, final String birthday){
         if(!isDataValid(firstName, lastName, email, password, repeatPassword, birthday)){
             return;
         }
+        final Activity activity = this;
 
-        try{
-            CreateUserTask createUserTask = new CreateUserTask(this, email, password, firstName, lastName, birthday);
-            AuthenticationTask authenticationTask = new AuthenticationTask(this, email, password);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    CreateUserTask createUserTask = new CreateUserTask(activity, email, password, firstName, lastName, birthday);
+                    AuthenticationTask authenticationTask = new AuthenticationTask(activity, email, password);
 
-            Boolean createUserResult = createUserTask.execute().get();
-            if(!createUserResult){
-                return;
+                    Boolean createUserResult = createUserTask.execute().get();
+                    if(!createUserResult){
+                        return;
+                    }
+
+                    Boolean authenticationResult = authenticationTask.execute().get();
+                    if(!authenticationResult){
+                        return;
+                    }
+
+                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                }catch (Exception e){
+                    System.out.println("ERROR:" + e.getMessage());
+                }
             }
-
-            Boolean authenticationResult = authenticationTask.execute().get();
-            if(!authenticationResult){
-                return;
-            }
-
-            startActivity(new Intent(getApplicationContext(), MainActivity.class));
-        }catch (Exception e){
-            System.out.println("ERROR:" + e.getMessage());
-        }
+        }).start();
     }
 
     private boolean isDataValid(String firstName, String lastName, String email, String password, String repeatPassword, String birthday){

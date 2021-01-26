@@ -33,24 +33,29 @@ public class LoginActivity extends AppCompatActivity {
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EditText emailEditText = findViewById(R.id.emailEditText);
-                EditText passwordEditText = findViewById(R.id.passwordEditText);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        EditText emailEditText = findViewById(R.id.emailEditText);
+                        EditText passwordEditText = findViewById(R.id.passwordEditText);
 
-                try{
-                    AuthenticationTask authenticationTask = new AuthenticationTask(activity, emailEditText.getText().toString(), passwordEditText.getText().toString());
-                    Boolean authenticationResult = authenticationTask.execute().get();
-                    if(!authenticationResult){
-                        return;
+                        try{
+                            AuthenticationTask authenticationTask = new AuthenticationTask(activity, emailEditText.getText().toString(), passwordEditText.getText().toString());
+                            Boolean authenticationResult = authenticationTask.execute().get();
+                            if(!authenticationResult){
+                                return;
+                            }
+                            GetUserInformationTask getUserInformationTask = new GetUserInformationTask(activity, emailEditText.getText().toString());
+                            Boolean getUserInformationResult = getUserInformationTask.execute().get();
+                            if(!getUserInformationResult){
+                                return;
+                            }
+                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                        }catch (Exception e){
+                            System.out.println("ERROR:" + e.getMessage());
+                        }
                     }
-                    GetUserInformationTask getUserInformationTask = new GetUserInformationTask(activity, emailEditText.getText().toString());
-                    Boolean getUserInformationResult = getUserInformationTask.execute().get();
-                    if(!getUserInformationResult){
-                        return;
-                    }
-                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                }catch (Exception e){
-                    System.out.println("ERROR:" + e.getMessage());
-                }
+                }).start();
             }
         });
     }

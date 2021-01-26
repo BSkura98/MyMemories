@@ -34,7 +34,12 @@ public class CategoriesFragment extends Fragment {
 
         categoryList = view.findViewById(R.id.categoryList);
 
-        getAllCategories();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                getAllCategories();
+            }
+        }).start();
 
         return view;
     }
@@ -46,14 +51,19 @@ public class CategoriesFragment extends Fragment {
             if(categoryArray ==null){
                 return;
             }
-            List<Tag> categories = new ArrayList<>(Arrays.asList(categoryArray));
-            adapter = new CategoryListAdapter(
-                    getContext(),
-                    categories,
-                    getActivity()
-            );
-            categoryList.setAdapter(adapter);
-            categoryList.setLayoutManager(new LinearLayoutManager(getContext()));
+            final List<Tag> categories = new ArrayList<>(Arrays.asList(categoryArray));
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adapter = new CategoryListAdapter(
+                            getContext(),
+                            categories,
+                            getActivity()
+                    );
+                    categoryList.setAdapter(adapter);
+                    categoryList.setLayoutManager(new LinearLayoutManager(getContext()));
+                }
+            });
         }catch (Exception e){
             e.printStackTrace();
         }
