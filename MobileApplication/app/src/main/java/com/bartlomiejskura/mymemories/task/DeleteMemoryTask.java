@@ -34,7 +34,7 @@ public class DeleteMemoryTask extends AsyncTask<Void, Void, Boolean> {
     @Override
     protected Boolean doInBackground(Void... voids) {
         Request request = new Request.Builder()
-                .url("http://10.0.2.2:8080/memory?memoryId="+memoryId)
+                .url("https://mymemories-2.herokuapp.com/memory?memoryId="+memoryId)
                 .delete()
                 .addHeader("Authorization", "Bearer "+sharedPreferences.getString("token", null))
                 .build();

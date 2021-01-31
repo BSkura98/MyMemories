@@ -36,7 +36,7 @@ public class CreateMemoryTask extends AsyncTask<Void, Void, Boolean> {
         RequestBody requestBody = RequestBody.create(JSON, json);
 
         Request request = new Request.Builder()
-                .url("http://10.0.2.2:8080/memory")
+                .url("https://mymemories-2.herokuapp.com/memory")
                 .post(requestBody)
                 .addHeader("Authorization", "Bearer "+sharedPreferences.getString("token", null))
                 .build();

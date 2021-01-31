@@ -39,7 +39,7 @@ public class CreateOrGetTagTask extends AsyncTask<Void, Void, Tag> {
         RequestBody requestBody = RequestBody.create(JSON, json);
 
         Request request = new Request.Builder()
-                .url("http://10.0.2.2:8080/tag")
+                .url("https://mymemories-2.herokuapp.com/tag")
                 .post(requestBody)
                 .addHeader("Authorization", "Bearer "+sharedPreferences.getString("token", null))
                 .build();

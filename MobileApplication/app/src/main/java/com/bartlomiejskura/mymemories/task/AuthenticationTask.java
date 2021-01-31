@@ -40,7 +40,7 @@ public class AuthenticationTask extends AsyncTask<Void, Void, Boolean> {
         RequestBody requestBody = RequestBody.create(JSON, json);
 
         Request request = new Request.Builder()
-                .url("http://10.0.2.2:8080/authenticate")
+                .url("https://mymemories-2.herokuapp.com/authenticate")
                 .post(requestBody)
                 .build();
         Response response;
@@ -55,6 +55,7 @@ public class AuthenticationTask extends AsyncTask<Void, Void, Boolean> {
                         Toast.makeText(activity.getBaseContext(), "Error: jwt is null", Toast.LENGTH_LONG).show();
                     }
                 });
+                return false;
             }
 
             SharedPreferences.Editor editor = sharedPreferences.edit();

@@ -33,7 +33,7 @@ public class GetMemoriesTask extends AsyncTask<Void, Void, Memory[]> {
     @Override
     protected Memory[] doInBackground(Void... voids) {
         Request request = new Request.Builder()
-                .url("http://10.0.2.2:8080/memory/getAllWithShared?userId="+sharedPreferences.getLong("userId", 0))
+                .url("https://mymemories-2.herokuapp.com/memory/getAllWithShared?userId="+sharedPreferences.getLong("userId", 0))
                 .get()
                 .addHeader("Authorization", "Bearer "+sharedPreferences.getString("token", null))
                 .build();

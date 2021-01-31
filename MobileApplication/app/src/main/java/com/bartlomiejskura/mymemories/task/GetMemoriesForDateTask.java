@@ -38,7 +38,7 @@ public class GetMemoriesForDateTask extends AsyncTask<Void, Void, Memory[]> {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
         Request request = new Request.Builder()
-                .url("http://10.0.2.2:8080/memory/getAllForDate?userId="+sharedPreferences.getLong("userId", 0)+"&time="+sdf.format(date).replace(" ", "T"))
+                .url("https://mymemories-2.herokuapp.com/memory/getAllForDate?userId="+sharedPreferences.getLong("userId", 0)+"&time="+sdf.format(date).replace(" ", "T"))
                 .get()
                 .addHeader("Authorization", "Bearer "+sharedPreferences.getString("token", null))
                 .build();

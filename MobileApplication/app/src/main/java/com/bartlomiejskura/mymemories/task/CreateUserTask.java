@@ -40,7 +40,7 @@ public class CreateUserTask extends AsyncTask<Void, Void, Boolean> {
         RequestBody requestBody = RequestBody.create(JSON, json);
 
         Request request = new Request.Builder()
-                .url("http://10.0.2.2:8080/user")
+                .url("https://mymemories-2.herokuapp.com/user")
                 .post(requestBody)
                 .build();
         Response response;
