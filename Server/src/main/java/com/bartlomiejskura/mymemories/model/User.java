@@ -1,13 +1,8 @@
 package com.bartlomiejskura.mymemories.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -16,6 +11,7 @@ public class User {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long ID;
 
+    @Column(unique = true)
     private String email;
     private String password;
     private String firstName;
