@@ -4,6 +4,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.ContentResolver;
@@ -25,7 +26,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -35,6 +35,7 @@ import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.task.CreateMemoryTask;
 import com.bartlomiejskura.mymemories.task.CreateOrGetTagTask;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -43,15 +44,16 @@ import com.squareup.picasso.Picasso;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 
 public class AddMemoryActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
-    private TextView dateTextView, timeTextView;
     private ImageView memoryImage;
-    private ImageButton deleteImageButton;
+    private ImageButton deleteImageButton, deleteTimeButton;
     private LinearLayout peopleList;
-    private Button addPersonButton;
+    private Button addPersonButton, dateButton, timeButton;
+    private TextInputLayout titleInputLayout;
 
     private Memory memory = new Memory();
     private int day, month, year, hour, minute;
@@ -63,6 +65,7 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
     private static final int PICK_IMAGE_REQUEST = 1;
 
 
+    @SuppressLint("SimpleDateFormat")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,12 +77,14 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
         final Button addMemoryButton = findViewById(R.id.addMemoryButton);
         final Button selectImageButton = findViewById(R.id.selectImageButton);
         deleteImageButton = findViewById(R.id.deleteImageButton);
+        deleteTimeButton = findViewById(R.id.deleteTimeButton);
         final Spinner prioritySpinner = findViewById(R.id.prioritySpinner);
         memoryImage = findViewById(R.id.memoryImage);
-        dateTextView = findViewById(R.id.dateTextView);
-        timeTextView = findViewById(R.id.timeTextView);
+        dateButton = findViewById(R.id.dateButton);
+        timeButton = findViewById(R.id.timeButton);
         peopleList = findViewById(R.id.people_list);
         addPersonButton = findViewById(R.id.addPersonButton);
+        titleInputLayout = findViewById(R.id.textInputLayout);
 
         sharedPreferences = getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
         storageReference = FirebaseStorage.getInstance().getReference("uploads");
@@ -89,15 +94,17 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
         prioritySpinner.setOnItemSelectedListener(this);
         deleteImageButton.setVisibility(View.GONE);
         memoryImage.setVisibility(View.GONE);
+        deleteTimeButton.setVisibility(View.GONE);
 
-        dateTextView.setOnClickListener(new View.OnClickListener() {
+        dateButton.setText(new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
+        dateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 selectDate();
             }
         });
 
-        timeTextView.setOnClickListener(new View.OnClickListener() {
+        timeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 selectTime();
@@ -134,6 +141,14 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
             }
         });
 
+        deleteTimeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                timeButton.setText("Select");
+                deleteTimeButton.setVisibility(View.GONE);
+            }
+        });
+
         addPersonButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
@@ -145,7 +160,12 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
 
     private void addMemory(String title, String description, String category){
         if (title.isEmpty()) {
-            Toast.makeText(getApplicationContext(), "Title field cannot be empty!", Toast.LENGTH_SHORT).show();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    titleInputLayout.setError("Title field cannot be empty!");
+                }
+            });
             return;
         }
 
@@ -218,7 +238,7 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
                 calendar1.set(Calendar.DATE, date);
                 String dateText = DateFormat.format("dd-MM-yyyy", calendar1).toString();
 
-                dateTextView.setText(dateText);
+                dateButton.setText(dateText);
                 year = year1;
                 month = month1;
                 day = date;
@@ -241,9 +261,11 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
                 calendar1.set(Calendar.HOUR_OF_DAY, hour1);
                 calendar1.set(Calendar.MINUTE, minute1);
                 String dateText = DateFormat.format("HH:mm", calendar1).toString();
-                timeTextView.setText(dateText);
+                timeButton.setText(dateText);
                 hour = hour1;
                 minute = minute1;
+
+                deleteTimeButton.setVisibility(View.VISIBLE);
             }
         }, HOUR, MINUTE, is24HourFormat);
 
@@ -357,4 +379,28 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
 
         return result;
     }
+
+    /*private boolean validateFields(String title, String description){
+        boolean result = true;
+        if (title.isEmpty()) {
+            result = false;
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    titleInputLayout.setError("Title field cannot be empty!");
+                }
+            });
+        }
+        if (description.isEmpty()) {
+            result = false;
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    descriptionInputLayout.setError("Title field cannot be empty!");
+                }
+            });
+        }
+
+        return result;
+    }*/
 }

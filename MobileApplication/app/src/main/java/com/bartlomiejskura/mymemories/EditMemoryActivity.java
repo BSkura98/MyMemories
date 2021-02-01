@@ -4,6 +4,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.ContentResolver;
@@ -35,6 +37,7 @@ import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.task.CreateOrGetTagTask;
 import com.bartlomiejskura.mymemories.task.EditMemoryTask;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -46,11 +49,11 @@ import java.util.Calendar;
 import java.util.List;
 
 public class EditMemoryActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
-    private TextView dateTextView, timeTextView;
     private ImageView memoryImage;
     private ImageButton deleteImageButton;
     private LinearLayout peopleList;
-    private Button addPersonButton;
+    private Button addPersonButton, dateButton, timeButton;
+    private TextInputLayout titleInputLayout;
 
     private Memory memory = new Memory();
     private int day, month, year, hour, minute;
@@ -59,9 +62,11 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
     private StorageReference storageReference;
     private List<User> memoryFriends = new ArrayList<>();
     String memoryFriendsEmails;
+    private Calendar calendar = Calendar.getInstance();;
 
     private static final int PICK_IMAGE_REQUEST = 1;
 
+    @SuppressLint("SimpleDateFormat")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,18 +88,20 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
         deleteImageButton = findViewById(R.id.deleteImageButton);
         final Spinner prioritySpinner = findViewById(R.id.prioritySpinner);
         memoryImage = findViewById(R.id.memoryImage);
-        dateTextView = findViewById(R.id.dateTextView);
-        timeTextView = findViewById(R.id.timeTextView);
+        dateButton = findViewById(R.id.dateButton);
+        timeButton = findViewById(R.id.timeButton);
         peopleList = findViewById(R.id.people_list);
         addPersonButton = findViewById(R.id.addPersonButton);
+        titleInputLayout = findViewById(R.id.textInputLayout);
 
         titleEditText.setText(title);
         descriptionEditText.setText(description);
         if(category !=null&&!category.isEmpty()){
             categoryEditText.setText(category);
         }
-        dateTextView.setText(date.substring(8, 10) + "-" + date.substring(5, 7) + "-" + date.substring(0, 4));
-        timeTextView.setText(date.substring(11, 16));
+        calendar.set(Integer.parseInt(date.substring(8, 10)), Integer.parseInt(date.substring(5, 7)), Integer.parseInt(date.substring(0, 4)), Integer.parseInt(date.substring(11, 13)), Integer.parseInt(date.substring(14, 16)));
+        dateButton.setText(date.substring(8, 10) + "-" + date.substring(5, 7) + "-" + date.substring(0, 4));
+        timeButton.setText(date.substring(11, 16));
         if(imageUrl!=null){
             memory.setImageUrl(imageUrl);
 
@@ -118,14 +125,14 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
         prioritySpinner.setOnItemSelectedListener(this);
         prioritySpinner.setSelection(memoryPriority==10?2:(memoryPriority==50?1:0));
 
-        dateTextView.setOnClickListener(new View.OnClickListener() {
+        dateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 selectDate();
             }
         });
 
-        timeTextView.setOnClickListener(new View.OnClickListener() {
+        timeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 selectTime();
@@ -180,7 +187,12 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
 
     private void editMemory(String title, String description, String category){
         if (title.isEmpty()) {
-            Toast.makeText(getApplicationContext(), "Title field cannot be empty!", Toast.LENGTH_SHORT).show();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    titleInputLayout.setError("Title field cannot be empty!");
+                }
+            });
             return;
         }
 
@@ -189,8 +201,8 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
         }
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(year, month, day, hour, minute);
+        //Calendar calendar = Calendar.getInstance();
+        //calendar.set(year, month, day, hour, minute);
 
         Long memoryOwnerId = sharedPreferences.getLong("userId", 0);
         Tag tag = null;
@@ -240,7 +252,7 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
     }
 
     private void selectDate() {
-        Calendar calendar = Calendar.getInstance();
+        //Calendar calendar = Calendar.getInstance();
         int YEAR = calendar.get(Calendar.YEAR);
         int MONTH = calendar.get(Calendar.MONTH);
         int DATE = calendar.get(Calendar.DATE);
@@ -249,13 +261,12 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
             @Override
             public void onDateSet(DatePicker datePicker, int year1, int month1, int date) {
 
-                Calendar calendar1 = Calendar.getInstance();
-                calendar1.set(Calendar.YEAR, year1);
-                calendar1.set(Calendar.MONTH, month1);
-                calendar1.set(Calendar.DATE, date);
-                String dateText = DateFormat.format("dd-MM-yyyy", calendar1).toString();
+                calendar.set(Calendar.YEAR, year1);
+                calendar.set(Calendar.MONTH, month1);
+                calendar.set(Calendar.DATE, date);
+                String dateText = DateFormat.format("dd-MM-yyyy", calendar).toString();
 
-                dateTextView.setText(dateText);
+                dateButton.setText(dateText);
                 year = year1;
                 month = month1;
                 day = date;
@@ -266,7 +277,7 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
     }
 
     private void selectTime() {
-        Calendar calendar = Calendar.getInstance();
+        //Calendar calendar = Calendar.getInstance();
         int HOUR = calendar.get(Calendar.HOUR);
         int MINUTE = calendar.get(Calendar.MINUTE);
         boolean is24HourFormat = true;
@@ -274,11 +285,10 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
         TimePickerDialog timePickerDialog = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker timePicker, int hour1, int minute1) {
-                Calendar calendar1 = Calendar.getInstance();
-                calendar1.set(Calendar.HOUR_OF_DAY, hour1);
-                calendar1.set(Calendar.MINUTE, minute1);
-                String dateText = DateFormat.format("HH:mm", calendar1).toString();
-                timeTextView.setText(dateText);
+                calendar.set(Calendar.HOUR_OF_DAY, hour1);
+                calendar.set(Calendar.MINUTE, minute1);
+                String dateText = DateFormat.format("HH:mm", calendar).toString();
+                timeButton.setText(dateText);
                 hour = hour1;
                 minute = minute1;
             }
@@ -390,7 +400,13 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
         }
 
         if(!result){
-            Toast.makeText(this, "Email field cannot be empty!", Toast.LENGTH_SHORT).show();
+            final Activity activity = this;
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(activity, "Email field cannot be empty!", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
 
         return result;
