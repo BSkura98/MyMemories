@@ -48,20 +48,6 @@ public class MemoryService {
                 .collect(Collectors.toList());
     }
 
-    /*public List<Memory> getNewestSharedMemoriesForUser(Long userId) {
-        User user = this.userRepository.findById(userId).orElseThrow();
-        LocalDateTime newestDate = this.memoryRepository.findAllByMemoryOwner(user).stream()
-                .map(Memory::getDate)
-                .filter(date -> date.getYear() <= LocalDateTime.now().getYear() &&
-                        date.getDayOfYear() <= LocalDateTime.now().getDayOfYear())
-                .max(LocalDateTime::compareTo)
-                .get();
-        return this.memoryRepository.findAllByMemoryOwner(user).stream()
-                .filter(memory -> memory.getDate().getYear()==newestDate.getYear() &&
-                        memory.getDate().getDayOfYear()==newestDate.getDayOfYear())
-                .collect(Collectors.toList());
-    }*/
-
     public List<Memory> getAllForTag(Long tagId){
         Tag tag = this.tagRepository.findById(tagId).orElseThrow();
         return this.memoryRepository.findAllByTag(tag);
@@ -119,5 +105,13 @@ public class MemoryService {
 
     public void deleteMemory(Long memoryId){
         memoryRepository.deleteById(memoryId);
+    }
+
+    public List<Memory> search(String keyword, Long userId){
+        return memoryRepository.search(keyword).stream()
+                .filter(memory -> memory.getMemoryOwner().getID().equals(userId)||
+                        memory.getMemoryFriends().stream()
+                                .anyMatch(user -> user.getID().equals(userId)))
+                .collect(Collectors.toList());
     }
 }

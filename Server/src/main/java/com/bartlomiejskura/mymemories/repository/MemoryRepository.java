@@ -17,4 +17,7 @@ public interface MemoryRepository extends JpaRepository<Memory, Long> {
 
     @Query("SELECT m FROM Memory m WHERE m.memoryOwner = ?1 AND m.tag = ?2")
     List<Memory> findAllByMemoryOwnerAndTag(User memoryOwner, Tag tag);
+
+    @Query("SELECT m FROM Memory m WHERE m.longDescription like %?1% or m.shortDescription like %?1%")
+    List<Memory> search(String keyword);
 }

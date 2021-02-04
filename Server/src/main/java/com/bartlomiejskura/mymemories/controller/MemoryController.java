@@ -77,4 +77,9 @@ public class MemoryController {
         }
         return null;
     }
+
+    @GetMapping("/search")
+    public List<Memory> search(@RequestParam(value = "keyword") String keyword, @RequestParam(value = "userId", required = false) Long userId){
+        return memoryService.search(keyword, userId);
+    }
 }
