@@ -135,9 +135,7 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
         deleteImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                memory.setImageUrl(null);
-                deleteImageButton.setVisibility(View.GONE);
-                memoryImage.setVisibility(View.GONE);
+                deleteImage(memory.getImageUrl(), false);
             }
         });
 
@@ -317,6 +315,7 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
                                     public void onSuccess(Uri uri) {
                                         deleteImageButton.setVisibility(View.VISIBLE);
                                         memoryImage.setVisibility(View.VISIBLE);
+                                        deleteImage(memory.getImageUrl(), true);
                                         memory.setImageUrl(uri.toString());
                                         Picasso.get().load(uri.toString()).into(memoryImage);
                                     }
@@ -380,27 +379,26 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
         return result;
     }
 
-    /*private boolean validateFields(String title, String description){
-        boolean result = true;
-        if (title.isEmpty()) {
-            result = false;
-            runOnUiThread(new Runnable() {
+    private void deleteImage(String imageUrl, final boolean imageViewVisible){
+        if(imageUrl !=null){
+            StorageReference photoRef = FirebaseStorage.getInstance().getReference().getStorage().getReferenceFromUrl(imageUrl);
+            photoRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
-                public void run() {
-                    titleInputLayout.setError("Title field cannot be empty!");
+                public void onSuccess(Void aVoid) {
+                    memory.setImageUrl(null);
+                    if(!imageViewVisible){
+                        deleteImageButton.setVisibility(View.GONE);
+                        memoryImage.setVisibility(View.GONE);
+                    }
                 }
             });
         }
-        if (description.isEmpty()) {
-            result = false;
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    descriptionInputLayout.setError("Title field cannot be empty!");
-                }
-            });
-        }
+    }
 
-        return result;
-    }*/
+    @Override
+    public void onBackPressed() {
+        deleteImage(memory.getImageUrl(), false);
+
+        super.onBackPressed();
+    }
 }

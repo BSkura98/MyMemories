@@ -27,7 +27,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -56,13 +55,13 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
     private TextInputLayout titleInputLayout;
 
     private Memory memory = new Memory();
-    private int day, month, year, hour, minute;
     private SharedPreferences sharedPreferences;
     private int memoryPriority;
     private StorageReference storageReference;
     private List<User> memoryFriends = new ArrayList<>();
     String memoryFriendsEmails;
-    private Calendar calendar = Calendar.getInstance();;
+    private Calendar calendar = Calendar.getInstance();
+    private String imageUrl;
 
     private static final int PICK_IMAGE_REQUEST = 1;
 
@@ -77,7 +76,7 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
         final String date = getIntent().getStringExtra("date");
         final String category = getIntent().getStringExtra("category");
         memoryPriority = getIntent().getIntExtra("memoryPriority", 0);
-        final String imageUrl = getIntent().getStringExtra("imageUrl");
+        imageUrl = getIntent().getStringExtra("imageUrl");
         memoryFriendsEmails = getIntent().getStringExtra("memoryFriends");
 
         final EditText titleEditText = findViewById(R.id.titleEditText);
@@ -103,8 +102,6 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
         dateButton.setText(date.substring(8, 10) + "-" + date.substring(5, 7) + "-" + date.substring(0, 4));
         timeButton.setText(date.substring(11, 16));
         if(imageUrl!=null){
-            memory.setImageUrl(imageUrl);
-
             Picasso.get()
                     .load(imageUrl)
                     .fit()
@@ -162,9 +159,12 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
         deleteImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                memory.setImageUrl(null);
-                deleteImageButton.setVisibility(View.GONE);
-                memoryImage.setVisibility(View.GONE);
+                if(memory.getImageUrl()!=null){
+                    deleteImage(memory.getImageUrl(), false);
+                }else{
+                    deleteImageButton.setVisibility(View.GONE);
+                    memoryImage.setVisibility(View.GONE);
+                }
             }
         });
 
@@ -200,10 +200,6 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
             return;
         }
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        //Calendar calendar = Calendar.getInstance();
-        //calendar.set(year, month, day, hour, minute);
-
         Long memoryOwnerId = sharedPreferences.getLong("userId", 0);
         Tag tag = null;
         if(!category.isEmpty()){
@@ -212,7 +208,7 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
                 return;
             }
         }
-        //Memory memory = new Memory(getIntent().getLongExtra("memoryId", 0), title, description, sdf.format(Calendar.getInstance().getTime()).replace(" ", "T"), sdf.format(calendar.getTime()).replace(" ", "T"), new User(memoryOwnerId), memoryPriority, tag);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         memory.setId(getIntent().getLongExtra("memoryId", 0));
         memory.setShortDescription(title);
         memory.setLongDescription(description);
@@ -225,11 +221,23 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
 
         final EditMemoryActivity activity = this;
 
+        boolean oldImageToDelete = true;
+        if(imageUrl == null || imageUrl.isEmpty()){
+            oldImageToDelete = false;
+        }else if(memory.getImageUrl()==null){
+            memory.setImageUrl(imageUrl);
+            oldImageToDelete = false;
+        }else if(memory.getImageUrl()!=null){
+            oldImageToDelete = true;
+        }
         try{
             EditMemoryTask editMemoryTask = new EditMemoryTask(activity, memory);
             Boolean editMemoryResult = editMemoryTask.execute().get();
             if(!editMemoryResult){
                 return;
+            }
+            if(oldImageToDelete){
+                deleteImage(imageUrl, true);//usuwanie starego zdjęcia, które wcześniej było przypisane do wspomnienia
             }
             Intent i = new Intent(getApplicationContext(), MainActivity.class);
             i.putExtra("fragmentToLoad", "recentEntriesFragment");
@@ -267,9 +275,6 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
                 String dateText = DateFormat.format("dd-MM-yyyy", calendar).toString();
 
                 dateButton.setText(dateText);
-                year = year1;
-                month = month1;
-                day = date;
             }
         }, YEAR, MONTH, DATE);
 
@@ -289,8 +294,6 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
                 calendar.set(Calendar.MINUTE, minute1);
                 String dateText = DateFormat.format("HH:mm", calendar).toString();
                 timeButton.setText(dateText);
-                hour = hour1;
-                minute = minute1;
             }
         }, HOUR, MINUTE, is24HourFormat);
 
@@ -342,6 +345,7 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
                                     public void onSuccess(Uri uri) {
                                         deleteImageButton.setVisibility(View.VISIBLE);
                                         memoryImage.setVisibility(View.VISIBLE);
+                                        deleteImage(memory.getImageUrl(), true);
                                         memory.setImageUrl(uri.toString());
                                         Picasso.get().load(uri.toString()).into(memoryImage);
                                     }
@@ -410,5 +414,28 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
         }
 
         return result;
+    }
+
+    private void deleteImage(String imageUrl, final boolean imageViewVisible){
+        if(imageUrl !=null){
+            StorageReference photoRef = FirebaseStorage.getInstance().getReference().getStorage().getReferenceFromUrl(imageUrl);
+            photoRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    memory.setImageUrl(null);
+                    if(!imageViewVisible){
+                        deleteImageButton.setVisibility(View.GONE);
+                        memoryImage.setVisibility(View.GONE);
+                    }
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        deleteImage(memory.getImageUrl(), false);
+
+        super.onBackPressed();
     }
 }
