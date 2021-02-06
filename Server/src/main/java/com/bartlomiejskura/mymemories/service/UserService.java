@@ -30,6 +30,9 @@ public class UserService {
     }
 
     public User editUser(User user){
+        if(user.getPassword()==null){
+            user.setPassword(userRepository.findByEmail(user.getEmail()).getPassword());
+        }
         return userRepository.save(user);
     }
 
