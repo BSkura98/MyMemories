@@ -7,13 +7,15 @@ public class User {
     private String firstName;
     private String lastName;
     private String birthday;
+    private String avatarUrl;
 
-    public User(Long id, String email, String password, String firstName, String lastName, String birthday) {
+    public User(Long id, String email, String firstName, String lastName, String birthday, String avatarUrl) {
         this.id = id;
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthday = birthday;
+        this.avatarUrl = avatarUrl;
     }
 
     public User(String email, String password, String firstName, String lastName, String birthday) {
@@ -78,5 +80,13 @@ public class User {
 
     public void setBirthday(String birthday) {
         this.birthday = birthday;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 }

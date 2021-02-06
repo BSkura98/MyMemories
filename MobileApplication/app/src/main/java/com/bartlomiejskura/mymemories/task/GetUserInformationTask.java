@@ -54,6 +54,7 @@ public class GetUserInformationTask extends AsyncTask<Void, Void, Boolean> {
         editor.putString("firstName", user.getFirstName());
         editor.putString("lastName", user.getLastName());
         editor.putString("birthday", user.getBirthday());
+        editor.putString("avatarUrl", user.getAvatarUrl());
         editor.apply();
         return  true;
     }
