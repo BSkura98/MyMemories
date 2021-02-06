@@ -16,6 +16,7 @@ public class User {
     private String password;
     private String firstName;
     private String lastName;
+    private String avatarUrl;
     private LocalDateTime birthday;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -100,5 +101,13 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 }
