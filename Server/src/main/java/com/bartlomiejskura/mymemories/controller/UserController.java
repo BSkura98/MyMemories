@@ -48,12 +48,56 @@ public class UserController {
         userService.deleteUser(userId);
     }
 
-    @PutMapping("/addFriend")
-    public User addFriend(@RequestBody User user, @RequestParam(name="friendId")Long friendId){
+    @PutMapping("/sendFriendRequest")
+    public User sendFriendRequest(@RequestParam(name="user1Id")Long user1Id, @RequestParam(name="user2Id")Long user2Id){
         try{
-            User friend = userService.getUser(friendId);
-            user.addFriend(friend);
-            return userService.editUser(user);
+            User user1 = userService.getUser(user1Id);
+            User user2 = userService.getUser(user2Id);
+            user2.addFriendRequest(user1);
+            return userService.editUser(user1);
+        }catch (EntityNotFoundException e){
+            return null;
+        }
+    }
+
+    @PutMapping("/removeFriendRequest")
+    public User removeFriendRequest(@RequestParam(name="user1Id")Long user1Id, @RequestParam(name="user2Id")Long user2Id){
+        try{
+            User user1 = userService.getUser(user1Id);
+            User user2 = userService.getUser(user2Id);
+            user1.removeFriendRequest(user2);
+            return userService.editUser(user1);
+        }catch (EntityNotFoundException e){
+            return null;
+        }
+    }
+
+    @PutMapping("/acceptFriendRequest")
+    public User acceptFriendRequest(@RequestParam(name="user1Id")Long user1Id, @RequestParam(name="user2Id")Long user2Id){
+        try{
+            User user1 = userService.getUser(user1Id);
+            User user2 = userService.getUser(user2Id);
+            if(user1.getFriendRequests().contains(user2)){
+                user1.removeFriendRequest(user2);
+                user1.addFriend(user2);
+                user2.addFriend(user1);
+                return userService.editUser(user1);
+            }else{
+                return null;
+            }
+        }catch (EntityNotFoundException e){
+            return null;
+        }
+    }
+
+    @PutMapping("/removeFriend")
+    public User removeFriend(@RequestParam(name="user1Id")Long user1Id, @RequestParam(name="user2Id")Long user2Id){
+        try{
+            User user1 = userService.getUser(user1Id);
+            User user2 = userService.getUser(user2Id);
+            user1.removeFriend(user2);
+            user2.removeFriend(user1);
+            return userService.editUser(user1);
         }catch (EntityNotFoundException e){
             return null;
         }

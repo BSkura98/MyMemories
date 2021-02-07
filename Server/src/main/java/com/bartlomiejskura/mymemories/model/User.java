@@ -1,5 +1,7 @@
 package com.bartlomiejskura.mymemories.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,9 +27,19 @@ public class User {
             inverseJoinColumns = {@JoinColumn(name="memoryId")})
     private List<Memory> sharedMemories;
 
-    @OneToMany(cascade=CascadeType.ALL)
-    @JoinTable(name="friends")
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"sharedMemories", "friends", "friendRequests"})
+    @JoinTable(name="friends",
+            joinColumns = {@JoinColumn(name="userId")},
+            inverseJoinColumns = {@JoinColumn(name="friendId")})
     private List<User> friends;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"sharedMemories", "friends", "friendRequests"})
+    @JoinTable(name="friend_requests",
+            joinColumns = {@JoinColumn(name="userId")},
+            inverseJoinColumns = {@JoinColumn(name="friendId")})
+    private List<User> friendRequests;
 
     public User(){}
 
@@ -95,6 +107,10 @@ public class User {
         this.friends.add(friend);
     }
 
+    public void removeFriend(User friend){
+        this.friends.remove(friend);
+    }
+
     public String getPassword() {
         return password;
     }
@@ -109,5 +125,21 @@ public class User {
 
     public void setAvatarUrl(String avatarUrl) {
         this.avatarUrl = avatarUrl;
+    }
+
+    public List<User> getFriendRequests() {
+        return friendRequests;
+    }
+
+    public void setFriendRequests(List<User> friendRequests) {
+        this.friendRequests = friendRequests;
+    }
+
+    public void addFriendRequest(User user){
+        friendRequests.add(user);
+    }
+
+    public void removeFriendRequest(User user){
+        friendRequests.remove(user);
     }
 }
