@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -27,6 +28,13 @@ public class UserService {
 
     public User getUser(String email) {
         return userRepository.findByEmail(email);
+    }
+
+    public List<User> getUsersByName(String name){
+        return userRepository.findAll().stream()
+                .filter(user -> user.getFirstName().toLowerCase().concat("_").concat(user.getLastName().toLowerCase()).contains(name.toLowerCase())
+                ||user.getLastName().toLowerCase().concat("_").concat(user.getFirstName().toLowerCase()).contains(name.toLowerCase()))
+                .collect(Collectors.toList());
     }
 
     public User editUser(User user){
