@@ -9,6 +9,8 @@ import com.bartlomiejskura.mymemories.model.User;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -55,6 +57,11 @@ public class GetUserInformationTask extends AsyncTask<Void, Void, Boolean> {
         editor.putString("lastName", user.getLastName());
         editor.putString("birthday", user.getBirthday());
         editor.putString("avatarUrl", user.getAvatarUrl());
+        List<Long> friendRequestsIds = new ArrayList<>();
+        for(User friendRequest:user.getFriendRequests()){
+            friendRequestsIds.add(friendRequest.getId());
+        }
+        editor.putString("friendRequestsIds", gson.toJson(friendRequestsIds));
         editor.apply();
         return  true;
     }

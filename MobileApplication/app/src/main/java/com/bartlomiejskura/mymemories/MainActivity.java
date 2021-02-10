@@ -18,7 +18,7 @@ import android.widget.TextView;
 
 import com.bartlomiejskura.mymemories.fragment.CategoriesFragment;
 import com.bartlomiejskura.mymemories.fragment.DatesFragment;
-import com.bartlomiejskura.mymemories.fragment.MemoryBoardFragment;
+import com.bartlomiejskura.mymemories.fragment.FriendsMemoriesFragment;
 import com.bartlomiejskura.mymemories.fragment.RecentEntriesFragment;
 import com.bartlomiejskura.mymemories.fragment.SettingsFragment;
 import com.google.android.material.navigation.NavigationView;
@@ -86,10 +86,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 toolbarTextView.setText("Select date");
                 i.putExtra("fragmentToLoad", "datesFragment");
                 break;
-            case R.id.nav_memory_board:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MemoryBoardFragment()).commit();
-                toolbarTextView.setText("Memory board");
-                i.putExtra("fragmentToLoad", "memoryBoardFragment");
+            case R.id.nav_friends:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new FriendsMemoriesFragment()).commit();
+                toolbarTextView.setText("Friends");
+                i.putExtra("fragmentToLoad", "friendsMemoriesFragment");
                 break;
             case R.id.nav_Categories:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new CategoriesFragment()).commit();
@@ -117,11 +117,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Bundle bundle = i.getExtras();
         if(bundle!=null){
             switch(bundle.getString("fragmentToLoad")){
-                case "memoryBoardFragment":
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MemoryBoardFragment()).commit();
-                    navigationView.setCheckedItem(R.id.nav_memory_board);
-                    toolbarTextView.setText("Memory board");
-                    i.putExtra("fragmentToLoad", "memoryBoardFragment");
+                case "friendsMemoriesFragment":
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new FriendsMemoriesFragment()).commit();
+                    navigationView.setCheckedItem(R.id.nav_friends);
+                    toolbarTextView.setText("Friends");
+                    i.putExtra("fragmentToLoad", "friendsMemoriesFragment");
                     break;
                 case "datesFragment":
                     getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new DatesFragment()).commit();

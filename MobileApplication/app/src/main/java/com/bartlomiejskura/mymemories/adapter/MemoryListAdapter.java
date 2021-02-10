@@ -25,7 +25,6 @@ import com.bartlomiejskura.mymemories.task.DeleteMemoryTask;
 import com.bartlomiejskura.mymemories.task.EditMemoryTask;
 import com.squareup.picasso.Picasso;
 
-import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

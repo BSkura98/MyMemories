@@ -1,5 +1,7 @@
 package com.bartlomiejskura.mymemories.model;
 
+import java.util.List;
+
 public class User {
     private Long id;
     private String email;
@@ -8,6 +10,9 @@ public class User {
     private String lastName;
     private String birthday;
     private String avatarUrl;
+
+    private List<User> friends;
+    private List<User> friendRequests;
 
     public User(Long id, String email, String firstName, String lastName, String birthday, String avatarUrl) {
         this.id = id;
@@ -88,5 +93,21 @@ public class User {
 
     public void setAvatarUrl(String avatarUrl) {
         this.avatarUrl = avatarUrl;
+    }
+
+    public List<User> getFriends() {
+        return friends;
+    }
+
+    public void setFriends(List<User> friends) {
+        this.friends = friends;
+    }
+
+    public List<User> getFriendRequests() {
+        return friendRequests;
+    }
+
+    public void setFriendRequests(List<User> friendRequests) {
+        this.friendRequests = friendRequests;
     }
 }

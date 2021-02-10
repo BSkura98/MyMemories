@@ -13,9 +13,9 @@
             android:icon="@drawable/ic_date"
             />
         <item
-            android:id="@+id/nav_memory_board"
-            android:title="Memory board"
-            android:icon="@drawable/ic_developer_board"/>
+            android:id="@+id/nav_friends"
+            android:icon="@drawable/ic_people"
+            android:title="Friends" />
         <item
             android:id="@+id/nav_Categories"
             android:title="Categories"
