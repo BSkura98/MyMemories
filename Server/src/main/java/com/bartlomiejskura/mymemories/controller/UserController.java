@@ -43,6 +43,15 @@ public class UserController {
         return userService.getUsersByName(name);
     }
 
+    @GetMapping("/getWithoutFriends")
+    public List<User> getUsersWithoutFriends(@RequestParam(name="name")String name, @RequestParam(name="userId")Long userId){
+        try {
+            return userService.getUsersWithoutFriends(name, userId);
+        } catch (EntityNotFoundException e) {
+            return null;
+        }
+    }
+
     @PutMapping
     public User editUser(@RequestBody User user){
         return userService.editUser(user);

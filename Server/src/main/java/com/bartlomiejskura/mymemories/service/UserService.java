@@ -6,8 +6,10 @@ import com.bartlomiejskura.mymemories.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class UserService {
@@ -35,6 +37,23 @@ public class UserService {
                 .filter(user -> user.getFirstName().toLowerCase().concat("_").concat(user.getLastName().toLowerCase()).contains(name.toLowerCase())
                 ||user.getLastName().toLowerCase().concat("_").concat(user.getFirstName().toLowerCase()).contains(name.toLowerCase()))
                 .collect(Collectors.toList());
+    }
+
+    public List<User> getUsersWithoutFriends(String name, Long userId) throws EntityNotFoundException {
+        User user = getUser(userId);
+        List<User> usersByName = getUsersByName(name);
+        List<User> friends = Stream.concat(user.getFriends().stream(), user.getFriendRequests().stream())
+                .collect(Collectors.toList());
+        List<User> usersWithoutFriends = new ArrayList<>();
+        usersByName.remove(user);
+
+        for(User u:usersByName){
+            if(!friends.contains(u)){
+                usersWithoutFriends.add(u);
+            }
+        }
+
+        return usersWithoutFriends;
     }
 
     public User editUser(User user){
