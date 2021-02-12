@@ -48,12 +48,17 @@ public class UserService {
         usersByName.remove(user);
 
         for(User u:usersByName){
-            if(!friends.contains(u)){
+            if(!friends.contains(u)&&!u.getFriendRequests().contains(user)){
                 usersWithoutFriends.add(u);
             }
         }
 
         return usersWithoutFriends;
+    }
+
+    public List<User> getFriendRequests(Long userId) throws EntityNotFoundException {
+        User user = getUser(userId);
+        return user.getFriendRequests();
     }
 
     public User editUser(User user){

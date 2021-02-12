@@ -52,6 +52,15 @@ public class UserController {
         }
     }
 
+    @GetMapping("/getFriendRequests")
+    public List<User> getFriendRequests(@RequestParam(name="userId")Long userId){
+        try {
+            return userService.getFriendRequests(userId);
+        } catch (EntityNotFoundException e) {
+            return null;
+        }
+    }
+
     @PutMapping
     public User editUser(@RequestBody User user){
         return userService.editUser(user);
@@ -67,6 +76,9 @@ public class UserController {
         try{
             User user1 = userService.getUser(user1Id);
             User user2 = userService.getUser(user2Id);
+            if(user2.getFriendRequests().contains(user1)){
+                return user1;
+            }
             user2.addFriendRequest(user1);
             return userService.editUser(user1);
         }catch (EntityNotFoundException e){
