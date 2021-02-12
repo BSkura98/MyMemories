@@ -10,10 +10,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import com.bartlomiejskura.mymemories.adapter.FriendRequestListAdapter;
-import com.bartlomiejskura.mymemories.adapter.UserListAdapter;
 import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.task.GetFriendRequestsTask;
-import com.bartlomiejskura.mymemories.task.GetUsersWithoutFriendsTask;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,7 +19,7 @@ import java.util.Arrays;
 public class FriendRequestsActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private FriendRequestListAdapter adapter;
-    private RecyclerView requestsRecyclerView;
+    private RecyclerView requestsByOthers, requestsByUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,29 +28,49 @@ public class FriendRequestsActivity extends AppCompatActivity {
 
         sharedPreferences = getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
 
-        requestsRecyclerView = findViewById(R.id.friendRequests);
+        requestsByOthers = findViewById(R.id.friendRequests);
+        requestsByUser = findViewById(R.id.friendRequests2);
 
         new Thread(new Runnable() {
             @Override
             public void run() {
-                getFriendRequests();
+                getFriendRequestsByOthers();
+            }
+        }).start();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                getFriendRequestsByUser();
             }
         }).start();
     }
 
-    private void getFriendRequests(){
-        GetFriendRequestsTask task = new GetFriendRequestsTask(this);
+    private void getFriendRequestsByOthers(){
+        GetFriendRequestsTask task = new GetFriendRequestsTask(this, false);
         try{
             User[] users = task.execute().get();
             if(users!=null){
-                showFriendRequests(users);
+                showFriendRequestsByOthers(users);
             }
         }catch (Exception e){
             e.printStackTrace();
         }
     }
 
-    private void showFriendRequests(final User[] users){
+    private void getFriendRequestsByUser(){
+        GetFriendRequestsTask task = new GetFriendRequestsTask(this, true);
+        try{
+            User[] users = task.execute().get();
+            if(users!=null){
+                showFriendRequestsByUser(users);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private void showFriendRequestsByOthers(final User[] users){
         final Activity activity = this;
         runOnUiThread(new Runnable() {
             @Override
@@ -60,10 +78,28 @@ public class FriendRequestsActivity extends AppCompatActivity {
                 adapter = new FriendRequestListAdapter(
                         getApplicationContext(),
                         new ArrayList<>(Arrays.asList(users)),
-                        activity
+                        activity,
+                        true
                 );
-                requestsRecyclerView.setAdapter(adapter);
-                requestsRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+                requestsByOthers.setAdapter(adapter);
+                requestsByOthers.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+            }
+        });
+    }
+
+    private void showFriendRequestsByUser(final User[] users){
+        final Activity activity = this;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                adapter = new FriendRequestListAdapter(
+                        getApplicationContext(),
+                        new ArrayList<>(Arrays.asList(users)),
+                        activity,
+                        false
+                );
+                requestsByUser.setAdapter(adapter);
+                requestsByUser.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
             }
         });
     }

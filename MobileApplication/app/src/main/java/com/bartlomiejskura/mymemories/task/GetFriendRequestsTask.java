@@ -23,16 +23,25 @@ public class GetFriendRequestsTask extends AsyncTask<Void, Void, User[]> {
     private OkHttpClient httpClient = new OkHttpClient();
     private Gson gson = new Gson();
     private SharedPreferences sharedPreferences;
+    private boolean requestsSentByUser;
 
-    public GetFriendRequestsTask(Activity activity){
+    public GetFriendRequestsTask(Activity activity, boolean requestsSentByUser){
         this.activity = activity;
         sharedPreferences = activity.getApplicationContext().getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
+        this.requestsSentByUser = requestsSentByUser;
     }
 
     @Override
     protected User[] doInBackground(Void... voids) {
+        String url;
+        if(requestsSentByUser){
+            url = "https://mymemories-2.herokuapp.com/user/getFriendRequestsByUser?userId="+sharedPreferences.getLong("userId", 0);
+        }else{
+            url = "https://mymemories-2.herokuapp.com/user/getFriendRequests?userId="+sharedPreferences.getLong("userId", 0);
+        }
+
         Request request = new Request.Builder()
-                .url("https://mymemories-2.herokuapp.com/user/getFriendRequests?userId="+sharedPreferences.getLong("userId", 0))
+                .url(url)
                 .get()
                 .addHeader("Authorization", "Bearer "+sharedPreferences.getString("token", null))
                 .build();

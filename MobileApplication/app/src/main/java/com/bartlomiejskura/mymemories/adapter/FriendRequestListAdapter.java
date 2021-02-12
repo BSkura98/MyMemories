@@ -26,12 +26,14 @@ public class FriendRequestListAdapter extends RecyclerView.Adapter<FriendRequest
     private List<User> users;
     private Activity activity;
     private SharedPreferences sharedPreferences;
+    private boolean friendRequestsByOtherUsers;
 
-    public FriendRequestListAdapter(Context context, List<User> users, Activity activity){
+    public FriendRequestListAdapter(Context context, List<User> users, Activity activity, boolean friendRequestsByOtherUsers){
         this.context = context;
         this.users = users;
         this.activity = activity;
         sharedPreferences = activity.getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
+        this.friendRequestsByOtherUsers = friendRequestsByOtherUsers;
     }
 
     @NonNull
@@ -86,12 +88,16 @@ public class FriendRequestListAdapter extends RecyclerView.Adapter<FriendRequest
             confirmButton = itemView.findViewById(R.id.confirmButton);
             deleteButton = itemView.findViewById(R.id.deleteButton);
 
-            confirmButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    confirmFriendRequest(getAdapterPosition());
-                }
-            });
+            if(friendRequestsByOtherUsers){
+                confirmButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        confirmFriendRequest(getAdapterPosition());
+                    }
+                });
+            }else{
+                confirmButton.setVisibility(View.GONE);
+            }
 
             deleteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -118,9 +124,16 @@ public class FriendRequestListAdapter extends RecyclerView.Adapter<FriendRequest
         }
 
         private void deleteFriendRequest(int position){
-            RemoveFriendRequestTask task = new RemoveFriendRequestTask(activity,
-                    sharedPreferences.getLong("userId", 0),
-                    users.get(position).getId());
+            RemoveFriendRequestTask task;
+            if(friendRequestsByOtherUsers){
+                task = new RemoveFriendRequestTask(activity,
+                        sharedPreferences.getLong("userId", 0),
+                        users.get(position).getId());
+            }else{
+                task = new RemoveFriendRequestTask(activity,
+                        users.get(position).getId(),
+                        sharedPreferences.getLong("userId", 0));
+            }
             try{
                 Boolean result = task.execute().get();
                 if(result){
