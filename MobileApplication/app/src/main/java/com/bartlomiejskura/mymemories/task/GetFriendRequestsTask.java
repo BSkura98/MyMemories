@@ -8,50 +8,51 @@ import android.os.AsyncTask;
 import com.bartlomiejskura.mymemories.model.User;
 import com.google.gson.Gson;
 
-import okhttp3.MediaType;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class RemoveFriendTask extends AsyncTask<Void, Void, Boolean> {
+public class GetFriendRequestsTask extends AsyncTask<Void, Void, User[]> {
     private Activity activity;
-    private Long user1Id, user2Id;
     private OkHttpClient httpClient = new OkHttpClient();
     private Gson gson = new Gson();
     private SharedPreferences sharedPreferences;
 
-    private final MediaType JSON = MediaType.get("application/json; charset=utf-8");
-
-    public RemoveFriendTask(Activity activity, Long user1Id, Long user2Id){
+    public GetFriendRequestsTask(Activity activity){
         this.activity = activity;
-        this.user1Id = user1Id;
-        this.user2Id = user2Id;
         sharedPreferences = activity.getApplicationContext().getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
     }
 
     @Override
-    protected Boolean doInBackground(Void... voids) {
-        RequestBody requestBody = RequestBody.create(JSON, "");
-
+    protected User[] doInBackground(Void... voids) {
         Request request = new Request.Builder()
-                .url("https://mymemories-2.herokuapp.com/user/removeFriend?user1Id="+user1Id+"&user2Id="+user2Id)
-                .put(requestBody)
+                .url("https://mymemories-2.herokuapp.com/user/getFriendRequests?userId="+sharedPreferences.getLong("userId", 0))
+                .get()
                 .addHeader("Authorization", "Bearer "+sharedPreferences.getString("token", null))
                 .build();
         Response response;
+        User[] users;
 
-        try {
+        try{
             response = httpClient.newCall(request).execute();
+            JSONArray array = new JSONArray(response.body().string());
+            users = new User[array.length()];
 
-            User userResponse = gson.fromJson(response.body().string(), User.class);
-            if(userResponse==null){
-                return false;
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject object = array.getJSONObject(i);
+                users[i] = gson.fromJson(object.toString(), User.class);
             }
-        } catch (Exception e) {
-            System.out.println("ERROR:" + e.getMessage());
-            return false;
+            return users;
+        }catch (IOException | JSONException e){
+            System.out.println("ERROR: " + e.getMessage());
         }
-        return true;
+
+        return null;
     }
 }

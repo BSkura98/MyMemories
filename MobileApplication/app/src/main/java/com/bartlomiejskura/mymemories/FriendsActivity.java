@@ -23,5 +23,15 @@ public class FriendsActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
+
+        Button friendRequestsButton = findViewById(R.id.friendRequestsButton);
+        friendRequestsButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getApplicationContext(), FriendRequestsActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(i);
+            }
+        });
     }
 }

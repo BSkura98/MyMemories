@@ -14,7 +14,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class AcceptFriendRequestTask extends AsyncTask<Void, Void, Boolean> {
+public class ConfirmFriendRequestTask extends AsyncTask<Void, Void, Boolean> {
     private Activity activity;
     private Long user1Id, user2Id;
     private OkHttpClient httpClient = new OkHttpClient();
@@ -23,7 +23,7 @@ public class AcceptFriendRequestTask extends AsyncTask<Void, Void, Boolean> {
 
     private final MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
-    public AcceptFriendRequestTask(Activity activity, Long user1Id, Long user2Id){
+    public ConfirmFriendRequestTask(Activity activity, Long user1Id, Long user2Id){
         this.activity = activity;
         this.user1Id = user1Id;
         this.user2Id = user2Id;
@@ -35,7 +35,7 @@ public class AcceptFriendRequestTask extends AsyncTask<Void, Void, Boolean> {
         RequestBody requestBody = RequestBody.create(JSON, "");
 
         Request request = new Request.Builder()
-                .url("https://mymemories-2.herokuapp.com/acceptFriendRequest?user1Id="+user1Id+"&user2Id="+user2Id)
+                .url("https://mymemories-2.herokuapp.com/user/acceptFriendRequest?user1Id="+user1Id+"&user2Id="+user2Id)
                 .put(requestBody)
                 .addHeader("Authorization", "Bearer "+sharedPreferences.getString("token", null))
                 .build();

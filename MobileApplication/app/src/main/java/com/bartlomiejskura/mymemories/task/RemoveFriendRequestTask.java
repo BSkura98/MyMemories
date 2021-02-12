@@ -35,7 +35,7 @@ public class RemoveFriendRequestTask extends AsyncTask<Void, Void, Boolean> {
         RequestBody requestBody = RequestBody.create(JSON, "");
 
         Request request = new Request.Builder()
-                .url("https://mymemories-2.herokuapp.com/removeFriendRequest?user1Id="+user1Id+"&user2Id="+user2Id)
+                .url("https://mymemories-2.herokuapp.com/user/removeFriendRequest?user1Id="+user1Id+"&user2Id="+user2Id)
                 .put(requestBody)
                 .addHeader("Authorization", "Bearer "+sharedPreferences.getString("token", null))
                 .build();
