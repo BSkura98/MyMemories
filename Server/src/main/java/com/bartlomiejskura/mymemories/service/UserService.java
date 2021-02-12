@@ -35,7 +35,7 @@ public class UserService {
     public List<User> getUsersByName(String name){
         return userRepository.findAll().stream()
                 .filter(user -> user.getFirstName().toLowerCase().concat("_").concat(user.getLastName().toLowerCase()).contains(name.toLowerCase())
-                ||user.getLastName().toLowerCase().concat("_").concat(user.getFirstName().toLowerCase()).contains(name.toLowerCase()))
+                        ||user.getLastName().toLowerCase().concat("_").concat(user.getFirstName().toLowerCase()).contains(name.toLowerCase()))
                 .collect(Collectors.toList());
     }
 
@@ -59,6 +59,18 @@ public class UserService {
     public List<User> getFriendRequests(Long userId) throws EntityNotFoundException {
         User user = getUser(userId);
         return user.getFriendRequests();
+    }
+
+    public List<User> getFriendRequestsByUser(Long userId) throws EntityNotFoundException {
+        User user = getUser(userId);
+        List<User> friendRequests = new ArrayList<>();
+
+        for(User u:userRepository.findAll()){
+            if(u.getFriendRequests().contains(user)){
+                friendRequests.add(u);
+            }
+        }
+        return friendRequests;
     }
 
     public User editUser(User user){

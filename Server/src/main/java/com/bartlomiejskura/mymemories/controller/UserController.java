@@ -61,6 +61,15 @@ public class UserController {
         }
     }
 
+    @GetMapping("/getFriendRequestsByUser")
+    public List<User> getFriendRequestsByUser(@RequestParam(name="userId")Long userId){
+        try {
+            return userService.getFriendRequestsByUser(userId);
+        } catch (EntityNotFoundException e) {
+            return null;
+        }
+    }
+
     @PutMapping
     public User editUser(@RequestBody User user){
         return userService.editUser(user);
