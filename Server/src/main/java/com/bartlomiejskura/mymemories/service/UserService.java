@@ -73,6 +73,11 @@ public class UserService {
         return friendRequests;
     }
 
+    public List<User> getFriends(Long userId) throws EntityNotFoundException {
+        User user = getUser(userId);
+        return user.getFriends();
+    }
+
     public User editUser(User user){
         if(user.getPassword()==null){
             user.setPassword(userRepository.findByEmail(user.getEmail()).getPassword());

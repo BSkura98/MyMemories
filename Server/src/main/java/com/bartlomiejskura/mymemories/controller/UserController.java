@@ -70,6 +70,15 @@ public class UserController {
         }
     }
 
+    @GetMapping("/getFriends")
+    public List<User> getFriends(@RequestParam(name="userId")Long userId){
+        try {
+            return userService.getFriends(userId);
+        } catch (EntityNotFoundException e) {
+            return null;
+        }
+    }
+
     @PutMapping
     public User editUser(@RequestBody User user){
         return userService.editUser(user);

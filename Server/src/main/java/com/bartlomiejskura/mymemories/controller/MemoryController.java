@@ -78,6 +78,14 @@ public class MemoryController {
         return null;
     }
 
+    @GetMapping("/getFriendsPublicMemories")
+    public List<Memory> getFriendsPublicMemories(@RequestParam(value = "userId", required = false) Long userId){
+        if (userId != null) {
+            return memoryService.getFriendsPublicMemories(userId);
+        }
+        return null;
+    }
+
     @GetMapping("/search")
     public List<Memory> search(@RequestParam(value = "keyword") String keyword, @RequestParam(value = "userId", required = false) Long userId){
         return memoryService.search(keyword, userId);

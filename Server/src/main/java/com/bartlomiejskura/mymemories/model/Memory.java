@@ -20,6 +20,7 @@ public class Memory {
     private LocalDateTime creationDate;
     private LocalDateTime date;
     private int memoryPriority;
+    private Boolean publicToFriends;
     @ManyToOne
     @JsonIgnoreProperties("sharedMemories")
     @JoinColumn(name = "user_id")
@@ -30,8 +31,8 @@ public class Memory {
     @ManyToMany(fetch = FetchType.LAZY)
     @JsonIgnoreProperties("sharedMemories")
     @JoinTable(name="memory_user",
-    joinColumns = {@JoinColumn(name="memoryId")},
-    inverseJoinColumns = {@JoinColumn(name="userId")})
+            joinColumns = {@JoinColumn(name="memoryId")},
+            inverseJoinColumns = {@JoinColumn(name="userId")})
     private List<User> memoryFriends;
 
     public Memory(){}
@@ -119,5 +120,13 @@ public class Memory {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public Boolean getPublicToFriends() {
+        return publicToFriends;
+    }
+
+    public void setPublicToFriends(Boolean publicToFriends) {
+        this.publicToFriends = publicToFriends;
     }
 }

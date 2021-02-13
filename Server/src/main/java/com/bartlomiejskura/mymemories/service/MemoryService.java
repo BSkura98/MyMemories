@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -113,5 +114,22 @@ public class MemoryService {
                         memory.getMemoryFriends().stream()
                                 .anyMatch(user -> user.getID().equals(userId)))
                 .collect(Collectors.toList());
+    }
+
+    public List<Memory> getFriendsPublicMemories(Long userId){
+        User user = this.userRepository.findById(userId).orElseThrow();
+        List<User> friends = user.getFriends();
+        List<Memory> publicMemories = new ArrayList<>();
+
+
+        for(User u:friends){
+            for(Memory m:memoryRepository.findAllByMemoryOwner(u)){
+                if(m.getPublicToFriends()){
+                    publicMemories.add(m);
+                }
+            }
+        }
+
+        return publicMemories;
     }
 }
