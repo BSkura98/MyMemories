@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bartlomiejskura.mymemories.R;
 import com.bartlomiejskura.mymemories.model.User;
+import com.bartlomiejskura.mymemories.task.RemoveFriendTask;
 import com.bartlomiejskura.mymemories.task.SendFriendRequestTask;
 import com.squareup.picasso.Picasso;
 
@@ -25,12 +26,14 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.MyView
     private List<User> users;
     private Activity activity;
     private SharedPreferences sharedPreferences;
+    private boolean usersAreFriends;
 
-    public UserListAdapter(Context context, List<User> users, Activity activity){
+    public UserListAdapter(Context context, List<User> users, Activity activity, boolean usersAreFriends){
         this.context = context;
         this.users = users;
         this.activity = activity;
         sharedPreferences = activity.getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
+        this.usersAreFriends = usersAreFriends;
     }
 
     @NonNull
@@ -84,16 +87,42 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.MyView
             avatarImageView = itemView.findViewById(R.id.avatarImageView);
             requestButton = itemView.findViewById(R.id.requestButton);
 
-            requestButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    sendFriendRequest(getAdapterPosition());
-                }
-            });
+            if(!usersAreFriends){
+                requestButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        sendFriendRequest(getAdapterPosition());
+                    }
+                });
+            }else{
+                requestButton.setText("Remove");
+                requestButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        removeFriend(getAdapterPosition());
+                    }
+                });
+            }
         }
 
         private void sendFriendRequest(int position){
             SendFriendRequestTask task = new SendFriendRequestTask(activity,
+                    sharedPreferences.getLong("userId", 0),
+                    users.get(position).getId());
+            try{
+                Boolean result = task.execute().get();
+                if(result){
+                    users.remove(position);
+                    notifyItemRemoved(position);
+                    notifyItemRangeChanged(position, users.size());
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+
+        private void removeFriend(int position){
+            RemoveFriendTask task = new RemoveFriendTask(activity,
                     sharedPreferences.getLong("userId", 0),
                     users.get(position).getId());
             try{

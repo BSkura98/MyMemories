@@ -21,6 +21,7 @@ import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -36,6 +37,7 @@ import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.task.CreateOrGetTagTask;
 import com.bartlomiejskura.mymemories.task.EditMemoryTask;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -53,6 +55,7 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
     private LinearLayout peopleList;
     private Button addPersonButton, dateButton, timeButton;
     private TextInputLayout titleInputLayout;
+    private SwitchMaterial makePublicSwitch;
 
     private Memory memory = new Memory();
     private SharedPreferences sharedPreferences;
@@ -62,6 +65,7 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
     String memoryFriendsEmails;
     private Calendar calendar = Calendar.getInstance();
     private String imageUrl;
+    private Boolean makeMemoryPublic = false;
 
     private static final int PICK_IMAGE_REQUEST = 1;
 
@@ -78,6 +82,7 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
         memoryPriority = getIntent().getIntExtra("memoryPriority", 0);
         imageUrl = getIntent().getStringExtra("imageUrl");
         memoryFriendsEmails = getIntent().getStringExtra("memoryFriends");
+        makeMemoryPublic = getIntent().getBooleanExtra("isMemoryPublic", false);
 
         final EditText titleEditText = findViewById(R.id.titleEditText);
         final EditText descriptionEditText = findViewById(R.id.descriptionEditText);
@@ -92,6 +97,8 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
         peopleList = findViewById(R.id.people_list);
         addPersonButton = findViewById(R.id.addPersonButton);
         titleInputLayout = findViewById(R.id.textInputLayout);
+        makePublicSwitch = findViewById(R.id.makePublicSwitch);
+        makePublicSwitch.setChecked(makeMemoryPublic);
 
         titleEditText.setText(title);
         descriptionEditText.setText(description);
@@ -174,6 +181,13 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
                 addView();
             }
         });
+
+        makePublicSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                makeMemoryPublic=!makeMemoryPublic;
+            }
+        });
     }
 
     private void initializeMemoryFriendsList(){
@@ -218,6 +232,7 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
         memory.setMemoryPriority(memoryPriority);
         memory.setTag(tag);
         memory.setMemoryFriends(memoryFriends);
+        memory.setPublicToFriends(makeMemoryPublic);
 
         final EditMemoryActivity activity = this;
 

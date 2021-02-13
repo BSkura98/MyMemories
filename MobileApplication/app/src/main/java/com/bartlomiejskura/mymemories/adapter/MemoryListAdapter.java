@@ -94,20 +94,35 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
 
             }
         }else{
-            holder.memoryFriendLinearLayout.setVisibility(View.VISIBLE);
-            holder.deleteButton.setVisibility(View.GONE);
-            holder.editButton.setText("Untag yourself");
+            if(memories.get(position).getPublicToFriends()){//jeśli wspomnienie jest oznaczone jako publiczne
+                holder.entryRowButtons.setVisibility(View.GONE);
 
-            User memoryOwner= memories.get(position).getMemoryOwner();
-            StringBuilder friendsText= new StringBuilder(memoryOwner.getFirstName()+" "+ memoryOwner.getLastName() + " with you");
-            if(memories.get(position).getMemoryFriends().size()>0){
-                friendsText.append(" and ");
+                User memoryOwner= memories.get(position).getMemoryOwner();
+                StringBuilder friendsText= new StringBuilder(memoryOwner.getFirstName()+" "+ memoryOwner.getLastName());
+                if(memories.get(position).getMemoryFriends().size()>0){//jeśli wspomnienie jest wspólne, lecz znajomy nie oznaczył konkretnego użytkownika w nim
+                    friendsText.append(" with ");
+                    for(User user:memories.get(position).getMemoryFriends()){
+                        friendsText.append(user.getFirstName()).append(" ").append(user.getLastName()).append(", ");
+                    }
+                    friendsText.setLength(friendsText.length()-2);
+                }
+                holder.memoryFriends.setText(friendsText);
+            }else{//jeśli jest to wspólne wspomnienie
+                holder.memoryFriendLinearLayout.setVisibility(View.VISIBLE);
+                holder.deleteButton.setVisibility(View.GONE);
+                holder.editButton.setText("Untag yourself");
+
+                User memoryOwner= memories.get(position).getMemoryOwner();
+                StringBuilder friendsText= new StringBuilder(memoryOwner.getFirstName()+" "+ memoryOwner.getLastName() + " with you");
+                if(memories.get(position).getMemoryFriends().size()>0){
+                    friendsText.append(" and ");
+                }
+                for(User user:memories.get(position).getMemoryFriends()){
+                    friendsText.append(user.getFirstName()).append(" ").append(user.getLastName()).append(", ");
+                }
+                friendsText.setLength(friendsText.length()-2);
+                holder.memoryFriends.setText(friendsText);
             }
-            for(User user:memories.get(position).getMemoryFriends()){
-                friendsText.append(user.getFirstName()).append(" ").append(user.getLastName()).append(", ");
-            }
-            friendsText.setLength(friendsText.length()-2);
-            holder.memoryFriends.setText(friendsText);
         }
     }
 
@@ -163,7 +178,7 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
     public class MyViewHolder extends RecyclerView.ViewHolder {
         TextView memoryTitle, memoryDate, memoryDescription, memoryFriends;
         Button deleteButton, editButton;
-        LinearLayout memoryLinearLayout, memoryFriendLinearLayout;
+        LinearLayout memoryLinearLayout, memoryFriendLinearLayout, entryRowButtons;
         ImageView memoryImage;
 
         public MyViewHolder(@NonNull View itemView) {
@@ -178,6 +193,7 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
             memoryImage = itemView.findViewById(R.id.memoryImage);
             memoryFriendLinearLayout = itemView.findViewById(R.id.memoryFriendsLinearLayout);
             memoryFriends = itemView.findViewById(R.id.memoryFriends);
+            entryRowButtons = itemView.findViewById(R.id.entryRowButtons);
 
             deleteButton.setOnClickListener(new View.OnClickListener(){
                 @Override
@@ -229,6 +245,7 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
             i.putExtra("memoryId", memories.get(position).getId());
             i.putExtra("memoryPriority", memories.get(position).getMemoryPriority());
             i.putExtra("imageUrl", memories.get(position).getImageUrl());
+            i.putExtra("isMemoryPublic", memories.get(position).getPublicToFriends());
 
             StringBuilder memoryFriendsText = new StringBuilder("");
             for(User user:memories.get(position).getMemoryFriends()){

@@ -14,10 +14,11 @@ public class Memory {
     private Tag tag;
     private String imageUrl;
     private List<User> memoryFriends;
+    private Boolean publicToFriends;
 
     public Memory(){}
 
-    public Memory(Long id, String shortDescription, String longDescription, String creationDate, String date, User memoryOwner, int memoryPriority, Tag tag, List<User> memoryFriends) {
+    public Memory(Long id, String shortDescription, String longDescription, String creationDate, String date, User memoryOwner, int memoryPriority, Tag tag, List<User> memoryFriends, Boolean publicToFriends) {
         this.id = id;
         this.shortDescription = shortDescription;
         this.longDescription = longDescription;
@@ -27,9 +28,10 @@ public class Memory {
         this.memoryPriority = memoryPriority;
         this.tag = tag;
         this.memoryFriends = memoryFriends;
+        this.publicToFriends = publicToFriends;
     }
 
-    public Memory(String shortDescription, String longDescription, String creationDate, String date, User memoryOwner, int memoryPriority, Tag tag, List<User> memoryFriends) {
+    public Memory(String shortDescription, String longDescription, String creationDate, String date, User memoryOwner, int memoryPriority, Tag tag, List<User> memoryFriends, Boolean publicToFriends) {
         this.shortDescription = shortDescription;
         this.longDescription = longDescription;
         this.creationDate = creationDate;
@@ -38,6 +40,7 @@ public class Memory {
         this.memoryPriority = memoryPriority;
         this.tag = tag;
         this.memoryFriends = memoryFriends;
+        this.publicToFriends = publicToFriends;
     }
 
     public String getShortDescription() {
@@ -127,5 +130,13 @@ public class Memory {
                 break;
             }
         }
+    }
+
+    public Boolean getPublicToFriends() {
+        return publicToFriends;
+    }
+
+    public void setPublicToFriends(Boolean publicToFriends) {
+        this.publicToFriends = publicToFriends;
     }
 }

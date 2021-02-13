@@ -68,7 +68,8 @@ public class AddFriendsActivity extends AppCompatActivity {
                 adapter = new UserListAdapter(
                         getApplicationContext(),
                         new ArrayList<>(Arrays.asList(users)),
-                        activity
+                        activity,
+                        false
                 );
                 usersRecyclerView.setAdapter(adapter);
                 usersRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));

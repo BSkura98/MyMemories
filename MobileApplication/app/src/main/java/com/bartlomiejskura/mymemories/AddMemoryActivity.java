@@ -20,6 +20,7 @@ import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -35,6 +36,7 @@ import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.task.CreateMemoryTask;
 import com.bartlomiejskura.mymemories.task.CreateOrGetTagTask;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -54,6 +56,7 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
     private LinearLayout peopleList;
     private Button addPersonButton, dateButton, timeButton;
     private TextInputLayout titleInputLayout;
+    private SwitchMaterial makePublicSwitch;
 
     private Memory memory = new Memory();
     private int day, month, year, hour, minute;
@@ -61,6 +64,7 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
     private int memoryPriority=90;
     private StorageReference storageReference;
     private List<User> memoryFriends = new ArrayList<>();
+    private Boolean makeMemoryPublic = false;
 
     private static final int PICK_IMAGE_REQUEST = 1;
 
@@ -85,6 +89,7 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
         peopleList = findViewById(R.id.people_list);
         addPersonButton = findViewById(R.id.addPersonButton);
         titleInputLayout = findViewById(R.id.textInputLayout);
+        makePublicSwitch = findViewById(R.id.makePublicSwitch);
 
         sharedPreferences = getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
         storageReference = FirebaseStorage.getInstance().getReference("uploads");
@@ -153,6 +158,13 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
                 addView();
             }
         });
+
+        makePublicSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                makeMemoryPublic=!makeMemoryPublic;
+            }
+        });
     }
 
 
@@ -192,6 +204,7 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
         memory.setMemoryPriority(memoryPriority);
         memory.setTag(tag);
         memory.setMemoryFriends(memoryFriends);
+        memory.setPublicToFriends(makeMemoryPublic);
 
         final AddMemoryActivity activity = this;
 
