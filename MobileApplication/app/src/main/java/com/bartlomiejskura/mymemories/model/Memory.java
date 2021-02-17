@@ -11,14 +11,14 @@ public class Memory {
     private String date;
     private int memoryPriority;
     private User memoryOwner;
-    private Tag tag;
+    private List<Tag> tags;
     private String imageUrl;
     private List<User> memoryFriends;
     private Boolean publicToFriends;
 
     public Memory(){}
 
-    public Memory(Long id, String shortDescription, String longDescription, String creationDate, String date, User memoryOwner, int memoryPriority, Tag tag, List<User> memoryFriends, Boolean publicToFriends) {
+    public Memory(Long id, String shortDescription, String longDescription, String creationDate, String date, User memoryOwner, int memoryPriority, List<Tag> tags, List<User> memoryFriends, Boolean publicToFriends) {
         this.id = id;
         this.shortDescription = shortDescription;
         this.longDescription = longDescription;
@@ -26,19 +26,19 @@ public class Memory {
         this.date = date;
         this.memoryOwner = memoryOwner;
         this.memoryPriority = memoryPriority;
-        this.tag = tag;
+        this.tags = tags;
         this.memoryFriends = memoryFriends;
         this.publicToFriends = publicToFriends;
     }
 
-    public Memory(String shortDescription, String longDescription, String creationDate, String date, User memoryOwner, int memoryPriority, Tag tag, List<User> memoryFriends, Boolean publicToFriends) {
+    public Memory(String shortDescription, String longDescription, String creationDate, String date, User memoryOwner, int memoryPriority, List<Tag> tags, List<User> memoryFriends, Boolean publicToFriends) {
         this.shortDescription = shortDescription;
         this.longDescription = longDescription;
         this.creationDate = creationDate;
         this.date = date;
         this.memoryOwner = memoryOwner;
         this.memoryPriority = memoryPriority;
-        this.tag = tag;
+        this.tags = tags;
         this.memoryFriends = memoryFriends;
         this.publicToFriends = publicToFriends;
     }
@@ -99,12 +99,12 @@ public class Memory {
         this.memoryPriority = memoryPriority;
     }
 
-    public Tag getTag() {
-        return tag;
+    public List<Tag> getTags() {
+        return tags;
     }
 
-    public void setTag(Tag tag) {
-        this.tag = tag;
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
     }
 
     public String getImageUrl() {

@@ -23,6 +23,7 @@ import com.bartlomiejskura.mymemories.model.Tag;
 import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.task.DeleteMemoryTask;
 import com.bartlomiejskura.mymemories.task.EditMemoryTask;
+import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
@@ -62,7 +63,7 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
         holder.memoryTitle.setText(memories.get(position).getShortDescription());
         holder.memoryDate.setText(getFormattedDate(memories.get(position).getDate()));
 
-        if(memories.get(position).getLongDescription().isEmpty()){
+        if(memories.get(position).getLongDescription()==null||memories.get(position).getLongDescription().isEmpty()){
             holder.memoryDescription.setVisibility(View.GONE);
         }else{
             holder.memoryDescription.setText(memories.get(position).getLongDescription());
@@ -253,10 +254,9 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
             }
             i.putExtra("memoryFriends", memoryFriendsText.toString());
 
-            Tag tag = memories.get(position).getTag();
-            if(tag!=null){
-                i.putExtra("category", memories.get(position).getTag().getName());
-            }
+            Gson gson = new Gson();
+            List<Tag> tags = new ArrayList<>(memories.get(position).getTags());
+            i.putExtra("categories", gson.toJson(tags));
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             activity.getApplicationContext().startActivity(i);
         }
@@ -272,10 +272,9 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
             i.putExtra("imageUrl", memories.get(position).getImageUrl());
             i.putExtra("memoryFriends", memoryFriends.getText());
 
-            Tag tag = memories.get(position).getTag();
-            if(tag!=null){
-                i.putExtra("category", memories.get(position).getTag().getName());
-            }
+            Gson gson = new Gson();
+            List<Tag> tags = new ArrayList<>(memories.get(position).getTags());
+            i.putExtra("categories", gson.toJson(tags));
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             activity.getApplicationContext().startActivity(i);
         }

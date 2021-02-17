@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.format.DateFormat;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
@@ -34,38 +35,49 @@ import android.widget.Toast;
 import com.bartlomiejskura.mymemories.model.Memory;
 import com.bartlomiejskura.mymemories.model.Tag;
 import com.bartlomiejskura.mymemories.model.User;
-import com.bartlomiejskura.mymemories.task.CreateOrGetTagTask;
+import com.bartlomiejskura.mymemories.task.CreateOrGetTagsTask;
 import com.bartlomiejskura.mymemories.task.EditMemoryTask;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.LinkedList;
 import java.util.List;
 
 public class EditMemoryActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private ImageView memoryImage;
     private ImageButton deleteImageButton;
     private LinearLayout peopleList;
-    private Button addPersonButton, dateButton, timeButton;
+    private Button addPersonButton, dateButton, timeButton, addCategoryButton;
     private TextInputLayout titleInputLayout;
     private SwitchMaterial makePublicSwitch;
+    private ChipGroup chipGroup;
 
     private Memory memory = new Memory();
     private SharedPreferences sharedPreferences;
     private int memoryPriority;
     private StorageReference storageReference;
     private List<User> memoryFriends = new ArrayList<>();
-    String memoryFriendsEmails;
+    private String memoryFriendsEmails;
     private Calendar calendar = Calendar.getInstance();
     private String imageUrl;
     private Boolean makeMemoryPublic = false;
+    private List<String> categories = new LinkedList<>();
 
     private static final int PICK_IMAGE_REQUEST = 1;
 
@@ -74,15 +86,6 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_memory);
-
-        final String title = getIntent().getStringExtra("title");
-        final String description = getIntent().getStringExtra("description");
-        final String date = getIntent().getStringExtra("date");
-        final String category = getIntent().getStringExtra("category");
-        memoryPriority = getIntent().getIntExtra("memoryPriority", 0);
-        imageUrl = getIntent().getStringExtra("imageUrl");
-        memoryFriendsEmails = getIntent().getStringExtra("memoryFriends");
-        makeMemoryPublic = getIntent().getBooleanExtra("isMemoryPublic", false);
 
         final EditText titleEditText = findViewById(R.id.titleEditText);
         final EditText descriptionEditText = findViewById(R.id.descriptionEditText);
@@ -99,13 +102,39 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
         titleInputLayout = findViewById(R.id.textInputLayout);
         makePublicSwitch = findViewById(R.id.makePublicSwitch);
         makePublicSwitch.setChecked(makeMemoryPublic);
+        chipGroup = findViewById(R.id.chipGroup);
+        addCategoryButton = findViewById(R.id.addCategoryButton);
+
+
+        final String title = getIntent().getStringExtra("title");
+        final String description = getIntent().getStringExtra("description");
+        final String date = getIntent().getStringExtra("date");
+        //final String category = getIntent().getStringExtra("category");
+        memoryPriority = getIntent().getIntExtra("memoryPriority", 0);
+        imageUrl = getIntent().getStringExtra("imageUrl");
+        memoryFriendsEmails = getIntent().getStringExtra("memoryFriends");
+        makeMemoryPublic = getIntent().getBooleanExtra("isMemoryPublic", false);
+
+        try {
+            JSONArray array = new JSONArray(getIntent().getStringExtra("categories"));
+            Gson gson = new Gson();
+            String category;
+
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject object = array.getJSONObject(i);
+                category = gson.fromJson(object.toString(), Tag.class).getName();
+                initChipCategory(category);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         titleEditText.setText(title);
         descriptionEditText.setText(description);
-        if(category !=null&&!category.isEmpty()){
+        /*if(category !=null&&!category.isEmpty()){
             categoryEditText.setText(category);
-        }
-        calendar.set(Integer.parseInt(date.substring(8, 10)), Integer.parseInt(date.substring(5, 7)), Integer.parseInt(date.substring(0, 4)), Integer.parseInt(date.substring(11, 13)), Integer.parseInt(date.substring(14, 16)));
+        }*/
+        calendar.set(Integer.parseInt(date.substring(0, 4)), Integer.parseInt(date.substring(5, 7))-1, Integer.parseInt(date.substring(8, 10)), Integer.parseInt(date.substring(11, 13)), Integer.parseInt(date.substring(14, 16)));
         dateButton.setText(date.substring(8, 10) + "-" + date.substring(5, 7) + "-" + date.substring(0, 4));
         timeButton.setText(date.substring(11, 16));
         if(imageUrl!=null){
@@ -157,7 +186,7 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        editMemory(titleEditText.getText().toString(), descriptionEditText.getText().toString(), categoryEditText.getText().toString());
+                        editMemory(titleEditText.getText().toString(), descriptionEditText.getText().toString());
                     }
                 }).start();
             }
@@ -188,6 +217,36 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
                 makeMemoryPublic=!makeMemoryPublic;
             }
         });
+
+        addCategoryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LayoutInflater inflater = LayoutInflater.from(EditMemoryActivity.this);
+
+                String category = categoryEditText.getText().toString().toLowerCase();
+                if(!categories.contains(category)||category.isEmpty()){
+                    initChipCategory(category);
+                }
+                categoryEditText.setText("");
+            }
+        });
+    }
+
+    private void initChipCategory(String category){
+        LayoutInflater inflater = LayoutInflater.from(EditMemoryActivity.this);
+
+        Chip chip = (Chip)inflater.inflate(R.layout.chip_category, null, false);
+        chip.setText(category);
+        chip.setOnCloseIconClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                chipGroup.removeView(v);
+                categories.remove(((Chip)v).getText().toString());
+            }
+        });
+
+        chipGroup.addView(chip);
+        categories.add(category);
     }
 
     private void initializeMemoryFriendsList(){
@@ -199,7 +258,7 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
     }
 
 
-    private void editMemory(String title, String description, String category){
+    private void editMemory(String title, String description){
         if (title.isEmpty()) {
             runOnUiThread(new Runnable() {
                 @Override
@@ -215,22 +274,22 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
         }
 
         Long memoryOwnerId = sharedPreferences.getLong("userId", 0);
-        Tag tag = null;
-        if(!category.isEmpty()){
-            tag = getCategory(category);
-            if(tag==null){
+        List<Tag> tags = null;
+        if(!categories.isEmpty()){
+            tags = getCategories();
+            if(tags==null){
                 return;
             }
         }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         memory.setId(getIntent().getLongExtra("memoryId", 0));
         memory.setShortDescription(title);
-        memory.setLongDescription(description);
+        memory.setLongDescription(description==null?"":description);
         memory.setCreationDate(sdf.format(Calendar.getInstance().getTime()).replace(" ", "T"));
         memory.setDate(sdf.format(calendar.getTime()).replace(" ", "T"));
         memory.setMemoryOwner(new User(memoryOwnerId));
         memory.setMemoryPriority(memoryPriority);
-        memory.setTag(tag);
+        memory.setTags(tags);
         memory.setMemoryFriends(memoryFriends);
         memory.setPublicToFriends(makeMemoryPublic);
 
@@ -262,12 +321,13 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
         }
     }
 
-    private Tag getCategory(String category){
+    private List<Tag> getCategories(){
         final EditMemoryActivity activity = this;
 
         try{
-            CreateOrGetTagTask task = new CreateOrGetTagTask(activity, category);
-            return task.execute().get();
+            CreateOrGetTagsTask task = new CreateOrGetTagsTask(activity, categories);
+            Tag[] categoryArray = task.execute().get();
+            return new ArrayList<>(Arrays.asList(categoryArray));
         }catch (Exception e){
             System.out.println("ERROR:" + e.getMessage());
             return null;
