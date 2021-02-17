@@ -1,6 +1,5 @@
 package com.bartlomiejskura.mymemories.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
@@ -22,14 +21,17 @@ public class Memory {
     private int memoryPriority;
     private Boolean publicToFriends;
     @ManyToOne
-    @JsonIgnoreProperties("sharedMemories")
+    @JsonIgnoreProperties(value = "sharedMemories", allowSetters = true)
     @JoinColumn(name = "user_id")
     private User memoryOwner;
-    @ManyToOne
-    @JoinColumn(name = "tag_id")
-    private Tag tag;
     @ManyToMany(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties("sharedMemories")
+    @JsonIgnoreProperties(value = "memories", allowSetters = true)
+    @JoinTable(name="memory_tag",
+            joinColumns = {@JoinColumn(name="memoryId")},
+            inverseJoinColumns = {@JoinColumn(name="tagId")})
+    private List<Tag> tags;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = "sharedMemories", allowSetters = true)
     @JoinTable(name="memory_user",
             joinColumns = {@JoinColumn(name="memoryId")},
             inverseJoinColumns = {@JoinColumn(name="userId")})
@@ -105,15 +107,6 @@ public class Memory {
         memoryFriends.add(friend);
     }
 
-    @JsonBackReference
-    public Tag getTag() {
-        return tag;
-    }
-
-    public void setTag(Tag tag) {
-        this.tag = tag;
-    }
-
     public String getImageUrl() {
         return imageUrl;
     }
@@ -128,5 +121,13 @@ public class Memory {
 
     public void setPublicToFriends(Boolean publicToFriends) {
         this.publicToFriends = publicToFriends;
+    }
+
+    public List<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
     }
 }

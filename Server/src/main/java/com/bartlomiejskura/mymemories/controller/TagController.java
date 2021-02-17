@@ -6,6 +6,7 @@ import com.bartlomiejskura.mymemories.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -25,6 +26,15 @@ public class TagController {
     @PostMapping
     public Tag addTag(@RequestBody Tag tag){
         return tagService.addTag(tag);
+    }
+
+    @PostMapping("/addTags")
+    public List<Tag> addTags(@RequestBody List<Tag> tags){
+        List<Tag> resultTags = new ArrayList<>();
+        for(Tag tag:tags){
+            resultTags.add(tagService.addTag(tag));
+        }
+        return resultTags;
     }
 
     @GetMapping
