@@ -57,6 +57,7 @@ public class GetUserInformationTask extends AsyncTask<Void, Void, Boolean> {
         editor.putString("lastName", user.getLastName());
         editor.putString("birthday", user.getBirthday());
         editor.putString("avatarUrl", user.getAvatarUrl());
+        editor.putString("friends", gson.toJson(user.getFriends()));
         List<Long> friendRequestsIds = new ArrayList<>();
         for(User friendRequest:user.getFriendRequests()){
             friendRequestsIds.add(friendRequest.getId());

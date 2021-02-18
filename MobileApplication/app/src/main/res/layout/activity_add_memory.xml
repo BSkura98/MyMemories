@@ -161,7 +161,7 @@
                 android:layout_marginRight="40dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout"></com.google.android.material.chip.ChipGroup>
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
             <ImageButton
                 android:id="@+id/deleteImageButton"
@@ -187,27 +187,6 @@
                 android:textSize="18sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView5" />
-            
-            <LinearLayout
-                android:id="@+id/people_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView9"></LinearLayout>
-
-            <Button
-                android:id="@+id/addPersonButton"
-                android:text="Add a person"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/people_list"
-                android:layout_marginStart="40dp"
-                android:layout_marginLeft="40dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="20dp"
-                app:layout_constraintBottom_toBottomOf="parent"/>
 
             <TextView
                 android:id="@+id/textView5"
@@ -271,6 +250,30 @@
                     android:layout_weight="1"
                     android:text="Add" />
             </LinearLayout>
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/friendsChipGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:layout_marginLeft="40dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="40dp"
+                android:layout_marginRight="40dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView9" />
+
+            <Button
+                android:id="@+id/addPersonButton"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="40dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:text="Add"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/friendsChipGroup" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 

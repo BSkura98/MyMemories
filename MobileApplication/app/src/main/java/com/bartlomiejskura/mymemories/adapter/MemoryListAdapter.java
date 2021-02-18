@@ -248,13 +248,8 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
             i.putExtra("imageUrl", memories.get(position).getImageUrl());
             i.putExtra("isMemoryPublic", memories.get(position).getPublicToFriends());
 
-            StringBuilder memoryFriendsText = new StringBuilder("");
-            for(User user:memories.get(position).getMemoryFriends()){
-                memoryFriendsText.append(user.getEmail()).append(";");
-            }
-            i.putExtra("memoryFriends", memoryFriendsText.toString());
-
             Gson gson = new Gson();
+            i.putExtra("memoryFriends", gson.toJson(memories.get(position).getMemoryFriends()));
             List<Tag> tags = new ArrayList<>(memories.get(position).getTags());
             i.putExtra("categories", gson.toJson(tags));
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
