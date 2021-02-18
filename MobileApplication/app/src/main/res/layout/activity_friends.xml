@@ -7,8 +7,8 @@
     tools:context=".FriendsActivity">
 
     <include
-        android:id="@+id/toolbar"
-        layout="@layout/toolbar"
+        android:id="@+id/toolbarSearchResults"
+        layout="@layout/toolbar_search_results"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

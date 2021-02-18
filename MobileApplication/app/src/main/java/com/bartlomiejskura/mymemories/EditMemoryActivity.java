@@ -236,6 +236,7 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
                                 friends.add(friend);
                             }
                         });
+                        chip.setCheckable(false);
                         memoryFriends.add(friend);
                         friendsChipGroup.addView(chip);
                         friends.remove(friend);
@@ -278,6 +279,7 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
                 categories.remove(((Chip)v).getText().toString());
             }
         });
+        chip.setCheckable(false);
 
         chipGroup.addView(chip);
         categories.add(category);
@@ -317,6 +319,7 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
                 friends.add(friend);
             }
         });
+        chip.setCheckable(false);
         memoryFriends.add(friend);
         friendsChipGroup.addView(chip);
         for(User user:friends){

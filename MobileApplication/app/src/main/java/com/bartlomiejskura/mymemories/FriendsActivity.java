@@ -1,6 +1,7 @@
 package com.bartlomiejskura.mymemories;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -9,6 +10,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.bartlomiejskura.mymemories.adapter.UserListAdapter;
 import com.bartlomiejskura.mymemories.model.User;
@@ -28,6 +31,25 @@ public class FriendsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_friends);
 
         friendsRecyclerView = findViewById(R.id.friendsRecyclerView);
+
+        Toolbar toolbar = findViewById(R.id.toolbarSearchResults);
+        TextView toolbarTextView = findViewById(R.id.toolbarTextView);
+        ImageButton searchButton = findViewById(R.id.searchButton);
+        ImageButton backButton = findViewById(R.id.backButton);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        toolbarTextView.setText("Friends");
+        searchButton.setVisibility(View.GONE);
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                i.putExtra("fragmentToLoad", "friendsMemoriesFragment");
+                startActivity(i);
+            }
+        });
 
         Button addFriendButton = findViewById(R.id.addFriendButton);
         addFriendButton.setOnClickListener(new View.OnClickListener() {
@@ -82,5 +104,13 @@ public class FriendsActivity extends AppCompatActivity {
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent i = new Intent(getApplicationContext(), MainActivity.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        i.putExtra("fragmentToLoad", "friendsMemoriesFragment");
+        startActivity(i);
     }
 }
