@@ -115,13 +115,22 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
 
                 User memoryOwner= memories.get(position).getMemoryOwner();
                 StringBuilder friendsText= new StringBuilder(memoryOwner.getFirstName()+" "+ memoryOwner.getLastName() + " with you");
-                if(memories.get(position).getMemoryFriends().size()>0){
+
+                List<User> memoryFriends = new ArrayList<>(memories.get(position).getMemoryFriends());
+                for(User user:memoryFriends){
+                    if(user.getId().equals(sharedPreferences.getLong("userId", 0))){
+                        memoryFriends.remove(user);
+                        break;
+                    }
+                }
+
+                if(memoryFriends.size()>0){
                     friendsText.append(" and ");
+                    for(User user:memoryFriends){
+                        friendsText.append(user.getFirstName()).append(" ").append(user.getLastName()).append(", ");
+                    }
+                    friendsText.setLength(friendsText.length()-2);
                 }
-                for(User user:memories.get(position).getMemoryFriends()){
-                    friendsText.append(user.getFirstName()).append(" ").append(user.getLastName()).append(", ");
-                }
-                friendsText.setLength(friendsText.length()-2);
                 holder.memoryFriends.setText(friendsText);
             }
         }
