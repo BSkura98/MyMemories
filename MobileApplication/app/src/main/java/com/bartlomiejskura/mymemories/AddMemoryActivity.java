@@ -75,7 +75,7 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
     private ChipGroup chipGroup, friendsChipGroup;
 
     private Memory memory = new Memory();
-    private int day, month, year, hour, minute;
+    private Integer day, month, year, hour, minute;
     private SharedPreferences sharedPreferences;
     private int memoryPriority=90;
     private StorageReference storageReference;
@@ -256,7 +256,9 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         Calendar calendar = Calendar.getInstance();
-        calendar.set(year, month, day, hour, minute);
+        if(year!=null&&month!=null&&day!=null){
+            calendar.set(year, month, day, hour, minute);
+        }
 
         Long memoryOwnerId = sharedPreferences.getLong("userId", 0);
         List<Category> categories = null;
