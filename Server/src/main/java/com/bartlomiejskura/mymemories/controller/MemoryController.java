@@ -18,15 +18,15 @@ public class MemoryController {
     private MemoryService memoryService;
 
     @GetMapping("/getAll")
-    public List<Memory> getAll(@RequestParam(value = "userId", required = false) Long userId, @RequestParam(value = "tagId", required = false) Long tagId){
+    public List<Memory> getAll(@RequestParam(value = "userId", required = false) Long userId, @RequestParam(value = "categoryId", required = false) Long categoryId){
         if (userId != null) {
-            if(tagId != null){
-                return memoryService.getAllForUserAndTag(userId, tagId);
+            if(categoryId != null){
+                return memoryService.getAllForUserAndCategory(userId, categoryId);
             }
             return memoryService.getAllForUser(userId);
         }
-        if(tagId!=null){
-            return memoryService.getAllForTag(tagId);
+        if(categoryId!=null){
+            return memoryService.getAllForCategory(categoryId);
         }
         return memoryService.getAll();
     }
@@ -71,7 +71,7 @@ public class MemoryController {
     }
 
     @GetMapping("/getShared")
-    public List<Memory> getSharedMemories(@RequestParam(value = "userId", required = false) Long userId, @RequestParam(value = "tagId", required = false) Long tagId){
+    public List<Memory> getSharedMemories(@RequestParam(value = "userId", required = false) Long userId, @RequestParam(value = "categoryId", required = false) Long categoryId){
         if (userId != null) {
             return memoryService.getAllSharedMemoriesForUser(userId);
         }

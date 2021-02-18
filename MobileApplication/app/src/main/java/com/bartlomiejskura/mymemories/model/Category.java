@@ -2,19 +2,19 @@ package com.bartlomiejskura.mymemories.model;
 
 import java.util.List;
 
-public class Tag {
+public class Category {
     private Long id;
     private String name;
     private User user;
     private List<Memory> memories;
 
-    public Tag(Long id, String name, User user) {
+    public Category(Long id, String name, User user) {
         this.id = id;
         this.name = name;
         this.user = user;
     }
 
-    public Tag(String name, User user) {
+    public Category(String name, User user) {
         this.name = name;
         this.user = user;
     }

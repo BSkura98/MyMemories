@@ -26,10 +26,10 @@ public class Memory {
     private User memoryOwner;
     @ManyToMany(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = "memories", allowSetters = true)
-    @JoinTable(name="memory_tag",
+    @JoinTable(name="memory_category",
             joinColumns = {@JoinColumn(name="memoryId")},
-            inverseJoinColumns = {@JoinColumn(name="tagId")})
-    private List<Tag> tags;
+            inverseJoinColumns = {@JoinColumn(name="categoryId")})
+    private List<Category> categories;
     @ManyToMany(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = "sharedMemories", allowSetters = true)
     @JoinTable(name="memory_user",
@@ -123,11 +123,11 @@ public class Memory {
         this.publicToFriends = publicToFriends;
     }
 
-    public List<Tag> getTags() {
-        return tags;
+    public List<Category> getCategories() {
+        return categories;
     }
 
-    public void setTags(List<Tag> tags) {
-        this.tags = tags;
+    public void setCategories(List<Category> categories) {
+        this.categories = categories;
     }
 }

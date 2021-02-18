@@ -4,8 +4,8 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "tags")
-public class Tag {
+@Table(name = "categories")
+public class Category {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long ID;
@@ -17,12 +17,12 @@ public class Tag {
     private User user;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name="memory_tag",
-            joinColumns = {@JoinColumn(name="tagId")},
+    @JoinTable(name="memory_category",
+            joinColumns = {@JoinColumn(name="categoryId")},
             inverseJoinColumns = {@JoinColumn(name="memoryId")})
     private List<Memory> memories;
 
-    public Tag(){}
+    public Category(){}
 
     public Long getID() {
         return ID;

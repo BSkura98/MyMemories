@@ -3,7 +3,6 @@ package com.bartlomiejskura.mymemories.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,25 +13,20 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bartlomiejskura.mymemories.CategoryActivity;
-import com.bartlomiejskura.mymemories.MemoryActivity;
 import com.bartlomiejskura.mymemories.R;
 import com.bartlomiejskura.mymemories.model.Memory;
-import com.bartlomiejskura.mymemories.model.Tag;
+import com.bartlomiejskura.mymemories.model.Category;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 
 public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapter.MyViewHolder> {
     private Context context;
-    private List<Tag> categories;
+    private List<Category> categories;
     private Activity activity;
 
-    public CategoryListAdapter(Context context, List<Tag> categories, Activity activity) {
+    public CategoryListAdapter(Context context, List<Category> categories, Activity activity) {
         this.context = context;
         this.categories = categories;
         this.activity = activity;
@@ -59,10 +53,10 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
         return categories.size();
     }
 
-    public void sort(List<Tag> categories){
-        Collections.sort(categories, new Comparator<Tag>() {
+    public void sort(List<Category> categories){
+        Collections.sort(categories, new Comparator<Category>() {
             @Override
-            public int compare(Tag category1, Tag category2) {
+            public int compare(Category category1, Category category2) {
                 if(category1.getMemories()==null){
                     if(category2.getMemories()==null){
                         return 0;

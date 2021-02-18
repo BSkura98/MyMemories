@@ -13,11 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bartlomiejskura.mymemories.R;
 import com.bartlomiejskura.mymemories.adapter.CategoryListAdapter;
-import com.bartlomiejskura.mymemories.adapter.MemoryListAdapter;
-import com.bartlomiejskura.mymemories.model.Memory;
-import com.bartlomiejskura.mymemories.model.Tag;
+import com.bartlomiejskura.mymemories.model.Category;
 import com.bartlomiejskura.mymemories.task.GetCategoriesTask;
-import com.bartlomiejskura.mymemories.task.GetMemoriesTask;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,11 +44,11 @@ public class CategoriesFragment extends Fragment {
     public void getAllCategories(){
         try{
             GetCategoriesTask task = new GetCategoriesTask(getActivity());
-            Tag[] categoryArray = task.execute().get();
+            Category[] categoryArray = task.execute().get();
             if(categoryArray ==null){
                 return;
             }
-            final List<Tag> categories = new ArrayList<>(Arrays.asList(categoryArray));
+            final List<Category> categories = new ArrayList<>(Arrays.asList(categoryArray));
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

@@ -35,10 +35,10 @@ import android.widget.TimePicker;
 
 import com.bartlomiejskura.mymemories.adapter.FriendsAdapter;
 import com.bartlomiejskura.mymemories.model.Memory;
-import com.bartlomiejskura.mymemories.model.Tag;
+import com.bartlomiejskura.mymemories.model.Category;
 import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.task.CreateMemoryTask;
-import com.bartlomiejskura.mymemories.task.CreateOrGetTagsTask;
+import com.bartlomiejskura.mymemories.task.CreateOrGetCategoriesTask;
 import com.bartlomiejskura.mymemories.utils.CircleTransform;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.chip.Chip;
@@ -259,10 +259,10 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
         calendar.set(year, month, day, hour, minute);
 
         Long memoryOwnerId = sharedPreferences.getLong("userId", 0);
-        List<Tag> tags = null;
-        if(!categories.isEmpty()){
-            tags = getCategories();
-            if(tags==null){
+        List<Category> categories = null;
+        if(!this.categories.isEmpty()){
+            categories = getCategories();
+            if(categories ==null){
                 return;
             }
         }
@@ -273,7 +273,7 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
         memory.setDate(sdf.format(calendar.getTime()).replace(" ", "T"));
         memory.setMemoryOwner(new User(memoryOwnerId));
         memory.setMemoryPriority(memoryPriority);
-        memory.setTags(tags);
+        memory.setCategories(categories);
         memory.setMemoryFriends(memoryFriends);
         memory.setPublicToFriends(makeMemoryPublic);
 
@@ -292,12 +292,12 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
             System.out.println("ERROR:" + e.getMessage());
         }
     }
-    private List<Tag> getCategories(){
+    private List<Category> getCategories(){
         final AddMemoryActivity activity = this;
 
         try{
-            CreateOrGetTagsTask task = new CreateOrGetTagsTask(activity, categories);
-            Tag[] categoryArray = task.execute().get();
+            CreateOrGetCategoriesTask task = new CreateOrGetCategoriesTask(activity, categories);
+            Category[] categoryArray = task.execute().get();
             return new ArrayList<>(Arrays.asList(categoryArray));
         }catch (Exception e){
             System.out.println("ERROR:" + e.getMessage());

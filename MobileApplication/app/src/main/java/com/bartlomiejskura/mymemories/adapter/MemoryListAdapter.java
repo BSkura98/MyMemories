@@ -19,7 +19,7 @@ import com.bartlomiejskura.mymemories.EditMemoryActivity;
 import com.bartlomiejskura.mymemories.MemoryActivity;
 import com.bartlomiejskura.mymemories.R;
 import com.bartlomiejskura.mymemories.model.Memory;
-import com.bartlomiejskura.mymemories.model.Tag;
+import com.bartlomiejskura.mymemories.model.Category;
 import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.task.DeleteMemoryTask;
 import com.bartlomiejskura.mymemories.task.EditMemoryTask;
@@ -250,8 +250,8 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
 
             Gson gson = new Gson();
             i.putExtra("memoryFriends", gson.toJson(memories.get(position).getMemoryFriends()));
-            List<Tag> tags = new ArrayList<>(memories.get(position).getTags());
-            i.putExtra("categories", gson.toJson(tags));
+            List<Category> categories = new ArrayList<>(memories.get(position).getCategories());
+            i.putExtra("categories", gson.toJson(categories));
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             activity.getApplicationContext().startActivity(i);
         }
@@ -268,8 +268,8 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
             i.putExtra("memoryFriends", memoryFriends.getText());
 
             Gson gson = new Gson();
-            List<Tag> tags = new ArrayList<>(memories.get(position).getTags());
-            i.putExtra("categories", gson.toJson(tags));
+            List<Category> categories = new ArrayList<>(memories.get(position).getCategories());
+            i.putExtra("categories", gson.toJson(categories));
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             activity.getApplicationContext().startActivity(i);
         }

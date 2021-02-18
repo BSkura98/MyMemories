@@ -35,9 +35,9 @@ import android.widget.TimePicker;
 
 import com.bartlomiejskura.mymemories.adapter.FriendsAdapter;
 import com.bartlomiejskura.mymemories.model.Memory;
-import com.bartlomiejskura.mymemories.model.Tag;
+import com.bartlomiejskura.mymemories.model.Category;
 import com.bartlomiejskura.mymemories.model.User;
-import com.bartlomiejskura.mymemories.task.CreateOrGetTagsTask;
+import com.bartlomiejskura.mymemories.task.CreateOrGetCategoriesTask;
 import com.bartlomiejskura.mymemories.task.EditMemoryTask;
 import com.bartlomiejskura.mymemories.utils.CircleTransform;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -128,7 +128,7 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
 
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
-                category = gson.fromJson(object.toString(), Tag.class).getName();
+                category = gson.fromJson(object.toString(), Category.class).getName();
                 initChipCategory(category);
             }
         } catch (JSONException e) {
@@ -339,10 +339,10 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
         }
 
         Long memoryOwnerId = sharedPreferences.getLong("userId", 0);
-        List<Tag> tags = null;
-        if(!categories.isEmpty()){
-            tags = getCategories();
-            if(tags==null){
+        List<Category> categories = null;
+        if(!this.categories.isEmpty()){
+            categories = getCategories();
+            if(categories ==null){
                 return;
             }
         }
@@ -354,7 +354,7 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
         memory.setDate(sdf.format(calendar.getTime()).replace(" ", "T"));
         memory.setMemoryOwner(new User(memoryOwnerId));
         memory.setMemoryPriority(memoryPriority);
-        memory.setTags(tags);
+        memory.setCategories(categories);
         memory.setMemoryFriends(memoryFriends);
         memory.setPublicToFriends(makeMemoryPublic);
 
@@ -386,12 +386,12 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
         }
     }
 
-    private List<Tag> getCategories(){
+    private List<Category> getCategories(){
         final EditMemoryActivity activity = this;
 
         try{
-            CreateOrGetTagsTask task = new CreateOrGetTagsTask(activity, categories);
-            Tag[] categoryArray = task.execute().get();
+            CreateOrGetCategoriesTask task = new CreateOrGetCategoriesTask(activity, categories);
+            Category[] categoryArray = task.execute().get();
             return new ArrayList<>(Arrays.asList(categoryArray));
         }catch (Exception e){
             System.out.println("ERROR:" + e.getMessage());

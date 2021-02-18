@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 
-import com.bartlomiejskura.mymemories.model.Tag;
+import com.bartlomiejskura.mymemories.model.Category;
 import com.bartlomiejskura.mymemories.model.User;
 import com.google.gson.Gson;
 
@@ -21,7 +21,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class CreateOrGetTagsTask extends AsyncTask<Void, Void, Tag[]> {
+public class CreateOrGetCategoriesTask extends AsyncTask<Void, Void, Category[]> {
     private final MediaType JSON = MediaType.get("application/json");
     private Activity activity;
     private OkHttpClient httpClient = new OkHttpClient();
@@ -30,7 +30,7 @@ public class CreateOrGetTagsTask extends AsyncTask<Void, Void, Tag[]> {
 
     private List<String> categoriesNames;
 
-    public CreateOrGetTagsTask(Activity activity, List<String> categoriesNames) {
+    public CreateOrGetCategoriesTask(Activity activity, List<String> categoriesNames) {
         this.activity = activity;
         this.categoriesNames = categoriesNames;
 
@@ -38,32 +38,32 @@ public class CreateOrGetTagsTask extends AsyncTask<Void, Void, Tag[]> {
     }
 
     @Override
-    protected Tag[] doInBackground(Void... voids) {
-        List<Tag> categories = new ArrayList<>();
+    protected Category[] doInBackground(Void... voids) {
+        List<Category> categories = new ArrayList<>();
 
         for(int i=0;i<categoriesNames.size();i++){
-            categories.add(new Tag(categoriesNames.get(i), new User(sharedPreferences.getLong("userId", 0))));
+            categories.add(new Category(categoriesNames.get(i), new User(sharedPreferences.getLong("userId", 0))));
         }
         String json = gson.toJson(categories);
 
         RequestBody requestBody = RequestBody.create(JSON, json);
 
         Request request = new Request.Builder()
-                .url("https://mymemories-2.herokuapp.com/tag/addTags")
+                .url("https://mymemories-2.herokuapp.com/category/addCategories")
                 .post(requestBody)
                 .addHeader("Authorization", "Bearer "+sharedPreferences.getString("token", null))
                 .build();
         Response response;
-        Tag[] responseArray;
+        Category[] responseArray;
 
         try {
             response = httpClient.newCall(request).execute();
             JSONArray array = new JSONArray(response.body().string());
-            responseArray = new Tag[array.length()];
+            responseArray = new Category[array.length()];
 
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
-                responseArray[i] = gson.fromJson(object.toString(), Tag.class);
+                responseArray[i] = gson.fromJson(object.toString(), Category.class);
             }
             return responseArray;
         } catch (Exception e) {
