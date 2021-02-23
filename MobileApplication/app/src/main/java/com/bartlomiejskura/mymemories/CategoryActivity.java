@@ -43,6 +43,7 @@ public class CategoryActivity extends AppCompatActivity implements AdapterView.O
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         toolbarTextView.setText(getIntent().getStringExtra("category"));
+        findViewById(R.id.searchButton).setVisibility(View.GONE);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.priorities_filter, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

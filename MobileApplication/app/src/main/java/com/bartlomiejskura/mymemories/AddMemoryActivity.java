@@ -262,7 +262,7 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         Calendar calendar = Calendar.getInstance();
         if(year!=null&&month!=null&&day!=null){
-            calendar.set(year, month, day, hour, minute);
+            calendar.set(year, month, day, hour==null?0:hour, minute==null?0:minute);
         }
 
         Long memoryOwnerId = sharedPreferences.getLong("userId", 0);

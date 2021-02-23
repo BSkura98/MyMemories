@@ -40,6 +40,18 @@ public class SearchMemoryActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar_search);
         recentSearchesList = findViewById(R.id.recentSearchesList);
+        sharedPreferences = getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    getRecentSearches();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -73,18 +85,6 @@ public class SearchMemoryActivity extends AppCompatActivity {
         int id = searchView.getContext().getResources().getIdentifier("android:id/search_src_text", null, null);
         TextView textView = (TextView) searchView.findViewById(id);
         textView.setTextColor(Color.WHITE);
-
-        sharedPreferences = getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    getRecentSearches();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
     }
 
     @Override
@@ -123,16 +123,14 @@ public class SearchMemoryActivity extends AppCompatActivity {
         String json = sharedPreferences.getString("recentSearches", null);
         if(json == null){
             recentSearches = new LinkedList<>();
-            return;
+        }else{
+            JSONArray array = new JSONArray(json);
+            String[] recentSearchesArray = new String[array.length()];
+            for (int i = 0; i < array.length(); i++) {
+                recentSearchesArray[i] = array.getString(i);
+            }
+            recentSearches = new LinkedList<>(Arrays.asList(recentSearchesArray));
         }
-        JSONArray array = new JSONArray(json);
-        String[] recentSearchesArray = new String[array.length()];
-        for (int i = 0; i < array.length(); i++) {
-            recentSearchesArray[i] = array.getString(i);
-            //JSONObject object = array.getJSONObject(i);
-            //recentSearchesArray[i] = gson.fromJson(object.toString(), String.class);
-        }
-        recentSearches = new LinkedList<>(Arrays.asList(recentSearchesArray));
 
         final SearchMemoryActivity activity = this;
         runOnUiThread(new Runnable() {
