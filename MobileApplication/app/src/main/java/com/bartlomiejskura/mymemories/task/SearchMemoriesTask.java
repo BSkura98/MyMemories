@@ -23,7 +23,17 @@ public class SearchMemoriesTask extends AsyncTask<Void, Void, Memory[]> {
     private OkHttpClient httpClient = new OkHttpClient();
     private Gson gson = new Gson();
     private SharedPreferences sharedPreferences;
+
     private String keyword;
+    private Boolean hasImage = null;
+    private Boolean publicToFriends = null;
+    private Boolean isSharedMemory = null;
+    private String creationDateStart = null;
+    private String creationDateEnd = null;
+    private String dateStart = null;
+    private String dateEnd = null;
+    private String memoryPriorities = null;
+    private String categories = null;
 
     public SearchMemoriesTask(Activity activity, String keyword){
         this.activity = activity;
@@ -34,7 +44,7 @@ public class SearchMemoriesTask extends AsyncTask<Void, Void, Memory[]> {
     @Override
     protected Memory[] doInBackground(Void... voids) {
         Request request = new Request.Builder()
-                .url("https://mymemories-2.herokuapp.com/memory/search?userId="+sharedPreferences.getLong("userId", 0)+"&keyword="+ keyword)
+                .url(createUrl())
                 .get()
                 .addHeader("Authorization", "Bearer "+sharedPreferences.getString("token", null))
                 .build();
@@ -56,5 +66,81 @@ public class SearchMemoriesTask extends AsyncTask<Void, Void, Memory[]> {
         }
 
         return null;
+    }
+
+    private String createUrl(){
+        String url = "https://mymemories-2.herokuapp.com/memory/search?userId="+sharedPreferences.getLong("userId", 0);
+        if(keyword!=null){
+            url += "&keyword="+ keyword;
+        }
+        if(creationDateStart!=null){
+            url += "&creationDateStart="+ creationDateStart;
+        }
+        if(creationDateEnd!=null){
+            url += "&creationDateEnd="+ creationDateEnd;
+        }
+        if(dateStart!=null){
+            url += "&dateStart="+ dateStart;
+        }
+        if(dateEnd!=null){
+            url += "&dateEnd="+ dateEnd;
+        }
+        if(hasImage!=null){
+            url += "&hasImage=" + hasImage;
+        }
+        if(memoryPriorities!=null){
+            url += "&memoryPriorities=" + memoryPriorities;
+        }
+        if(publicToFriends!=null){
+            url += "&publicToFriends=" + publicToFriends;
+        }
+        if(isSharedMemory!=null){
+            url += "&isSharedMemory=" + isSharedMemory;
+        }
+        if(categories!=null){
+            url += "&categories=" + categories;
+        }
+
+        return url;
+    }
+
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
+    }
+
+    public void setHasImage(Boolean hasImage) {
+        this.hasImage = hasImage;
+    }
+
+    public void setPublicToFriends(Boolean publicToFriends) {
+        this.publicToFriends = publicToFriends;
+    }
+
+    public void setSharedMemory(Boolean sharedMemory) {
+        isSharedMemory = sharedMemory;
+    }
+
+    public void setCreationDateStart(String creationDateStart) {
+        this.creationDateStart = creationDateStart;
+    }
+
+    public void setCreationDateEnd(String creationDateEnd) {
+        this.creationDateEnd = creationDateEnd;
+    }
+
+    public void setDateStart(String dateStart) {
+        this.dateStart = dateStart;
+    }
+
+    public void setDateEnd(String dateEnd) {
+        this.dateEnd = dateEnd;
+    }
+
+    public void setMemoryPriorities(String memoryPriorities) {
+        this.memoryPriorities = memoryPriorities;
+    }
+
+    public void setCategories(String categories) {
+        this.categories = categories;
     }
 }

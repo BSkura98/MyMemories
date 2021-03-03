@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         finish();
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         Intent i = getIntent();
@@ -122,6 +123,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
+    @SuppressLint("SetTextI18n")
     private void setFragment(){
         Intent i = getIntent();
         Bundle bundle = i.getExtras();

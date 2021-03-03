@@ -55,7 +55,7 @@ public class SearchResultsActivity extends AppCompatActivity {
         });
 
         TextView keywordTextView = findViewById(R.id.keywordTextView);
-        keywordTextView.setText(getIntent().getStringExtra("query"));
+        keywordTextView.setText(getIntent().getStringExtra("keyword"));
 
         new Thread(new Runnable() {
             @Override
@@ -67,7 +67,20 @@ public class SearchResultsActivity extends AppCompatActivity {
 
     public void getAllMemories(){
         try{
-            SearchMemoriesTask task = new SearchMemoriesTask(this, getIntent().getStringExtra("query"));
+            SearchMemoriesTask task = new SearchMemoriesTask(this, getIntent().getStringExtra("keyword"));
+
+            String memoryPriorities = getIntent().getStringExtra("memoryPriorities");
+            String categories = getIntent().getStringExtra("categories");
+
+            task.setCreationDateStart(getIntent().getStringExtra("creationDateStart"));
+            task.setCreationDateEnd(getIntent().getStringExtra("creationDateEnd"));
+            task.setDateStart(getIntent().getStringExtra("dateStart"));
+            task.setDateEnd(getIntent().getStringExtra("dateEnd"));
+            task.setMemoryPriorities(memoryPriorities!=null&&memoryPriorities.isEmpty()?null:memoryPriorities);
+            task.setPublicToFriends(getIntent().getStringExtra("publicToFriends")==null?null:(getIntent().getStringExtra("publicToFriends").equals("true")));
+            task.setSharedMemory(getIntent().getStringExtra("sharedMemories")==null?null:(getIntent().getStringExtra("sharedMemories").equals("true")));
+            task.setHasImage(getIntent().getStringExtra("withImage")==null?null:(getIntent().getStringExtra("withImage").equals("true")));
+            task.setCategories(categories!=null&&categories.isEmpty()?null:categories);
             Memory[] memoryArray = task.execute().get();
             if(memoryArray ==null){
                 return;
