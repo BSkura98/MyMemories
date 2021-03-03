@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -80,6 +82,53 @@ public class MemoryService {
         return user.getSharedMemories().stream()
                 .filter(memory -> memory.getDate().getYear()==time.getYear() &&
                         memory.getDate().getDayOfYear()==time.getDayOfYear())
+                .collect(Collectors.toList());
+    }
+
+    public List<Memory> getMemories(Long userId, String keyword, Boolean hasImage, LocalDateTime creationDateStart,
+                                    LocalDateTime creationDateEnd, LocalDateTime dateStart, LocalDateTime dateEnd,
+                                    String memoryPriorities, Boolean publicToFriends, Boolean isSharedMemory,
+                                    String categories){
+        User user = this.userRepository.findById(userId).orElseThrow();
+        List<Memory> memories;
+        if(isSharedMemory!=null){
+            if(isSharedMemory){
+                memories = new LinkedList<>(user.getSharedMemories());
+            }else{
+                memories = new LinkedList<>(memoryRepository.findAllByMemoryOwner(user));
+            }
+        }else{
+            memories = new LinkedList<>(memoryRepository.findAllByMemoryOwner(user));
+            memories.addAll(user.getSharedMemories());
+        }
+
+        List<Category> categoryList=new ArrayList<>();
+        if (categories != null) {
+            String[] categoryArray = categories.split(" ");
+            for(String categoryName:categoryArray){
+                categoryList.add(categoryRepository.findByNameAndUserId(categoryName, userId));
+            }
+        }
+
+        List<Integer> memoryPriorityList = new ArrayList<>();
+        if(memoryPriorities!=null){
+            String[] memoryPriorityArray = memoryPriorities.split(" ");
+            for(String memoryPriority:memoryPriorityArray){
+                memoryPriorityList.add(Integer.parseInt(memoryPriority));
+            }
+        }
+
+        return memories.stream()
+                .filter(keyword!=null?memory -> memory.getLongDescription().toLowerCase().contains(keyword.toLowerCase())||
+                        memory.getShortDescription().toLowerCase().contains(keyword.toLowerCase()):memory -> true)
+                .filter(hasImage!=null?memory -> (memory.getImageUrl()!=null&&!memory.getImageUrl().isEmpty())==hasImage:memory -> true)
+                .filter(creationDateStart!=null?memory -> memory.getCreationDate().isAfter(creationDateStart):memory -> true)
+                .filter(creationDateEnd!=null?memory -> memory.getCreationDate().isBefore(creationDateEnd):memory -> true)
+                .filter(dateStart!=null?memory -> memory.getDate().isAfter(dateStart):memory -> true)
+                .filter(dateEnd!=null?memory -> memory.getDate().isBefore(dateEnd):memory -> true)
+                .filter(!memoryPriorityList.isEmpty()?memory -> memoryPriorityList.contains(memory.getMemoryPriority()):memory -> true)
+                .filter(publicToFriends!=null?memory -> memory.getPublicToFriends().equals(publicToFriends):memory -> true)
+                .filter(!categoryList.isEmpty()?memory -> !Collections.disjoint(memory.getCategories(), categoryList):memory -> true)
                 .collect(Collectors.toList());
     }
 

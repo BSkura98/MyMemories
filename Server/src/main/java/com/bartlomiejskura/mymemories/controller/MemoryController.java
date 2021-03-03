@@ -87,7 +87,20 @@ public class MemoryController {
     }
 
     @GetMapping("/search")
-    public List<Memory> search(@RequestParam(value = "keyword") String keyword, @RequestParam(value = "userId", required = false) Long userId){
-        return memoryService.search(keyword, userId);
+    public List<Memory> search(@RequestParam(value = "userId") Long userId,
+                               @RequestParam(value = "keyword", required = false) String keyword,
+                               @RequestParam(value = "hasImage", required = false) Boolean hasImage,
+                               @RequestParam(value = "creationDateStart", required = false) String creationDateStart,
+                               @RequestParam(value = "creationDateEnd", required = false) String creationDateEnd,
+                               @RequestParam(value = "dateStart", required = false) String dateStart,
+                               @RequestParam(value = "dateEnd", required = false) String dateEnd,
+                               @RequestParam(value = "memoryPriorities", required = false) String memoryPriorities,
+                               @RequestParam(value = "publicToFriends", required = false) Boolean publicToFriends,
+                               @RequestParam(value = "isSharedMemory", required = false) Boolean isSharedMemory,
+                               @RequestParam(value = "categories", required = false) String categories) {
+        return memoryService.getMemories(userId, keyword, hasImage, creationDateStart==null?null:LocalDateTime.parse(creationDateStart),
+                creationDateEnd==null?null:LocalDateTime.parse(creationDateEnd),
+                dateStart==null?null:LocalDateTime.parse(dateStart), dateEnd==null?null:LocalDateTime.parse(dateEnd),
+                memoryPriorities, publicToFriends, isSharedMemory, categories);
     }
 }
