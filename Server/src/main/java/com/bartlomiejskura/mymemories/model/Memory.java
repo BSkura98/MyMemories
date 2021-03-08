@@ -20,8 +20,10 @@ public class Memory {
     private LocalDateTime date;
     private int memoryPriority;
     private Boolean publicToFriends;
+    private Double longitude;
+    private Double latitude;
     @ManyToOne
-    @JsonIgnoreProperties(value = "sharedMemories", allowSetters = true)
+    @JsonIgnoreProperties(value = {"sharedMemories", "friends"}, allowSetters = true)
     @JoinColumn(name = "user_id")
     private User memoryOwner;
     @ManyToMany(fetch = FetchType.LAZY)
@@ -129,5 +131,21 @@ public class Memory {
 
     public void setCategories(List<Category> categories) {
         this.categories = categories;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
     }
 }
