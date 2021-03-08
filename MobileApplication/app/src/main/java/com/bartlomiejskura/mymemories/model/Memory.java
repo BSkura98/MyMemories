@@ -15,6 +15,8 @@ public class Memory {
     private String imageUrl;
     private List<User> memoryFriends;
     private Boolean publicToFriends;
+    private Double longitude;
+    private Double latitude;
 
     public Memory(){}
 
@@ -138,5 +140,21 @@ public class Memory {
 
     public void setPublicToFriends(Boolean publicToFriends) {
         this.publicToFriends = publicToFriends;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
     }
 }
