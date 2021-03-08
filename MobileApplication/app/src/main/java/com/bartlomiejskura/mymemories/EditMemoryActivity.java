@@ -1,10 +1,14 @@
 package com.bartlomiejskura.mymemories;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.ContentResolver;
@@ -12,9 +16,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -40,7 +48,16 @@ import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.task.CreateOrGetCategoriesTask;
 import com.bartlomiejskura.mymemories.task.EditMemoryTask;
 import com.bartlomiejskura.mymemories.utils.CircleTransform;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -52,38 +69,49 @@ import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
+import com.sucho.placepicker.AddressData;
+import com.sucho.placepicker.Constants;
+import com.sucho.placepicker.MapType;
+import com.sucho.placepicker.PlacePicker;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
-public class EditMemoryActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class EditMemoryActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, OnMapReadyCallback {
     private ImageView memoryImage;
     private ImageButton deleteImageButton;
-    private Button addPersonButton, dateButton, timeButton, addCategoryButton;
+    private Button addPersonButton, dateButton, timeButton, addCategoryButton, locationButton, editMemoryButton, selectImageButton, selectLocationButton, deleteLocationButton;
     private TextInputLayout titleInputLayout;
     private SwitchMaterial makePublicSwitch;
     private ChipGroup chipGroup, friendsChipGroup;
+    private EditText titleEditText, descriptionEditText, categoryEditText;
+    private Spinner prioritySpinner;
+    private SupportMapFragment mapFragment;
 
     private Memory memory = new Memory();
     private SharedPreferences sharedPreferences;
     private int memoryPriority;
     private StorageReference storageReference;
     private List<User> memoryFriends = new ArrayList<>();
-    private String memoryFriendsEmails;
     private Calendar calendar = Calendar.getInstance();
     private String imageUrl;
     private Boolean makeMemoryPublic = false;
     private List<String> categories = new LinkedList<>();
     private Gson gson = new Gson();
     private ArrayList<User> friends;
+    private FusedLocationProviderClient fusedLocationProviderClient;
+    private GoogleMap map;
+    private Double latitude = null, longitude = null;
 
     private static final int PICK_IMAGE_REQUEST = 1;
 
@@ -93,33 +121,17 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_memory);
 
-        final EditText titleEditText = findViewById(R.id.titleEditText);
-        final EditText descriptionEditText = findViewById(R.id.descriptionEditText);
-        final EditText categoryEditText = findViewById(R.id.categoryEditText);
-        final Button editMemoryButton = findViewById(R.id.editMemoryButton);
-        final Button selectImageButton = findViewById(R.id.selectImageButton);
-        deleteImageButton = findViewById(R.id.deleteImageButton);
-        final Spinner prioritySpinner = findViewById(R.id.prioritySpinner);
-        memoryImage = findViewById(R.id.memoryImage);
-        dateButton = findViewById(R.id.dateButton);
-        timeButton = findViewById(R.id.timeButton);
-        addPersonButton = findViewById(R.id.addPersonButton);
-        titleInputLayout = findViewById(R.id.textInputLayout);
-        makePublicSwitch = findViewById(R.id.makePublicSwitch);
+        bindViews();
+
         makePublicSwitch.setChecked(makeMemoryPublic);
-        chipGroup = findViewById(R.id.chipGroup);
-        friendsChipGroup = findViewById(R.id.friendsChipGroup);
-        addCategoryButton = findViewById(R.id.addCategoryButton);
-
-
         final String title = getIntent().getStringExtra("title");
         final String description = getIntent().getStringExtra("description");
         final String date = getIntent().getStringExtra("date");
-        //final String category = getIntent().getStringExtra("category");
         memoryPriority = getIntent().getIntExtra("memoryPriority", 0);
         imageUrl = getIntent().getStringExtra("imageUrl");
-        memoryFriendsEmails = getIntent().getStringExtra("memoryFriends");
         makeMemoryPublic = getIntent().getBooleanExtra("isMemoryPublic", false);
+        latitude = getIntent().getDoubleExtra("latitude", 500)==500?null:getIntent().getDoubleExtra("latitude", 500);
+        longitude = getIntent().getDoubleExtra("longitude", 500)==500?null:getIntent().getDoubleExtra("longitude", 500);
 
         try {
             JSONArray array = new JSONArray(getIntent().getStringExtra("categories"));
@@ -159,111 +171,130 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
         prioritySpinner.setAdapter(adapter);
         prioritySpinner.setOnItemSelectedListener(this);
         prioritySpinner.setSelection(memoryPriority==10?2:(memoryPriority==50?1:0));
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         friends = initFriendsList();
         initFriendsChipGroup();
+        setListeners();
+        mapFragment.getMapAsync(this);
 
-        dateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectDate();
+        if(latitude!=null && longitude!=null){
+            if(map!=null){
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 15f));
+            }
+        }else{
+            mapFragment.getView().setVisibility(View.GONE);
+            deleteLocationButton.setVisibility(View.GONE);
+        }
+    }
+
+    private void bindViews(){
+        titleEditText = findViewById(R.id.titleEditText);
+        descriptionEditText = findViewById(R.id.descriptionEditText);
+        categoryEditText = findViewById(R.id.categoryEditText);
+        editMemoryButton = findViewById(R.id.editMemoryButton);
+        selectImageButton = findViewById(R.id.selectImageButton);
+        deleteImageButton = findViewById(R.id.deleteImageButton);
+        prioritySpinner = findViewById(R.id.prioritySpinner);
+        memoryImage = findViewById(R.id.memoryImage);
+        dateButton = findViewById(R.id.dateButton);
+        timeButton = findViewById(R.id.timeButton);
+        addPersonButton = findViewById(R.id.addPersonButton);
+        titleInputLayout = findViewById(R.id.textInputLayout);
+        makePublicSwitch = findViewById(R.id.makePublicSwitch);
+        chipGroup = findViewById(R.id.chipGroup);
+        friendsChipGroup = findViewById(R.id.friendsChipGroup);
+        addCategoryButton = findViewById(R.id.addCategoryButton);
+        locationButton = findViewById(R.id.locationButton);
+        selectLocationButton = findViewById(R.id.selectLocationButton);
+        mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        deleteLocationButton = findViewById(R.id.deleteLocationButton);
+    }
+
+    private void setListeners(){
+        dateButton.setOnClickListener(v -> selectDate());
+
+        timeButton.setOnClickListener(v -> selectTime());
+
+        selectImageButton.setOnClickListener(v -> openFileChooser());
+
+        editMemoryButton.setOnClickListener(v -> new Thread(() -> editMemory(titleEditText.getText().toString(), descriptionEditText.getText().toString())).start());
+
+        deleteImageButton.setOnClickListener(v -> {
+            if(memory.getImageUrl()!=null){
+                deleteImage(memory.getImageUrl(), false);
+            }else{
+                deleteImageButton.setVisibility(View.GONE);
+                memoryImage.setVisibility(View.GONE);
             }
         });
 
-        timeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectTime();
-            }
-        });
-
-        selectImageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openFileChooser();
-            }
-        });
-
-        editMemoryButton.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.O)
-            @Override
-            public void onClick(View v) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        editMemory(titleEditText.getText().toString(), descriptionEditText.getText().toString());
-                    }
-                }).start();
-            }
-        });
-
-        deleteImageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(memory.getImageUrl()!=null){
-                    deleteImage(memory.getImageUrl(), false);
+        addPersonButton.setOnClickListener(v -> {
+            MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(EditMemoryActivity.this);
+            builder.setTitle("Tag a Friend");
+            FriendsAdapter adapter1 = new FriendsAdapter(getApplicationContext(), friends);
+            builder.setAdapter(adapter1, (dialog, which) -> {
+                final User friend = friends.get(which);
+                LayoutInflater inflater = LayoutInflater.from(EditMemoryActivity.this);
+                Chip chip = (Chip)inflater.inflate(R.layout.chip_category, null, false);
+                chip.setText(friend.getFirstName()+" "+friend.getLastName());
+                Target target=getTargetOfPicasso(chip);
+                if(friend.getAvatarUrl()!=null){
+                    Picasso.get().load(friend.getAvatarUrl()).transform(new CircleTransform()).resize(20,20).into(target);
                 }else{
-                    deleteImageButton.setVisibility(View.GONE);
-                    memoryImage.setVisibility(View.GONE);
+                    Picasso.get().load(R.drawable.default_avatar).transform(new CircleTransform()).resize(20,20).into(target);
                 }
+
+                chip.setOnCloseIconClickListener(v1 -> {
+                    friendsChipGroup.removeView(v1);
+                    memoryFriends.remove(friend);
+                    friends.add(friend);
+                });
+                chip.setCheckable(false);
+                memoryFriends.add(friend);
+                friendsChipGroup.addView(chip);
+                friends.remove(friend);
+            });
+            builder.show();
+        });
+
+        makePublicSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> makeMemoryPublic=!makeMemoryPublic);
+
+        addCategoryButton.setOnClickListener(v -> {
+            String category = categoryEditText.getText().toString().toLowerCase();
+            if(!categories.contains(category)||category.isEmpty()){
+                initChipCategory(category);
+            }
+            categoryEditText.setText("");
+        });
+
+        locationButton.setOnClickListener(v -> {
+            if(ActivityCompat.checkSelfPermission(EditMemoryActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+                getLocation();
+            }else{
+                ActivityCompat.requestPermissions(EditMemoryActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
             }
         });
 
-        addPersonButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(EditMemoryActivity.this);
-                builder.setTitle("Tag a Friend");
-                FriendsAdapter adapter = new FriendsAdapter(getApplicationContext(), friends);
-                builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, final int which) {
-                        final User friend = friends.get(which);
-                        LayoutInflater inflater = LayoutInflater.from(EditMemoryActivity.this);
-                        Chip chip = (Chip)inflater.inflate(R.layout.chip_category, null, false);
-                        chip.setText(friend.getFirstName()+" "+friend.getLastName());
-                        Target target=getTargetOfPicasso(chip);
-                        if(friend.getAvatarUrl()!=null){
-                            Picasso.get().load(friend.getAvatarUrl()).transform(new CircleTransform()).resize(20,20).into(target);
-                        }else{
-                            Picasso.get().load(R.drawable.default_avatar).transform(new CircleTransform()).resize(20,20).into(target);
-                        }
-
-                        chip.setOnCloseIconClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                friendsChipGroup.removeView(v);
-                                memoryFriends.remove(friend);
-                                friends.add(friend);
-                            }
-                        });
-                        chip.setCheckable(false);
-                        memoryFriends.add(friend);
-                        friendsChipGroup.addView(chip);
-                        friends.remove(friend);
+        selectLocationButton.setOnClickListener(v -> {
+            if(latitude!=null&&longitude!=null){
+                showPlacePicker(latitude, longitude);
+            }else if(ActivityCompat.checkSelfPermission(EditMemoryActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+                fusedLocationProviderClient.getLastLocation().addOnCompleteListener(task -> {
+                    Location location = task.getResult();
+                    if(location != null){
+                        showPlacePicker(location.getLatitude(), location.getLongitude());
                     }
                 });
-                builder.show();
+            }else{
+                ActivityCompat.requestPermissions(EditMemoryActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
             }
         });
 
-        makePublicSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                makeMemoryPublic=!makeMemoryPublic;
-            }
-        });
-
-        addCategoryButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                LayoutInflater inflater = LayoutInflater.from(EditMemoryActivity.this);
-
-                String category = categoryEditText.getText().toString().toLowerCase();
-                if(!categories.contains(category)||category.isEmpty()){
-                    initChipCategory(category);
-                }
-                categoryEditText.setText("");
-            }
+        deleteLocationButton.setOnClickListener(v -> {
+            latitude = null;
+            longitude = null;
+            mapFragment.getView().setVisibility(View.GONE);
+            deleteLocationButton.setVisibility(View.GONE);
         });
     }
 
@@ -272,12 +303,9 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
 
         Chip chip = (Chip)inflater.inflate(R.layout.chip_category, null, false);
         chip.setText(category);
-        chip.setOnCloseIconClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                chipGroup.removeView(v);
-                categories.remove(((Chip)v).getText().toString());
-            }
+        chip.setOnCloseIconClickListener(v -> {
+            chipGroup.removeView(v);
+            categories.remove(((Chip)v).getText().toString());
         });
         chip.setCheckable(false);
 
@@ -311,13 +339,10 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
         }else{
             Picasso.get().load(R.drawable.default_avatar).transform(new CircleTransform()).resize(20,20).into(target);
         }
-        chip.setOnCloseIconClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                friendsChipGroup.removeView(v);
-                memoryFriends.remove(friend);
-                friends.add(friend);
-            }
+        chip.setOnCloseIconClickListener(v -> {
+            friendsChipGroup.removeView(v);
+            memoryFriends.remove(friend);
+            friends.add(friend);
         });
         chip.setCheckable(false);
         memoryFriends.add(friend);
@@ -360,6 +385,8 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
         memory.setCategories(categories);
         memory.setMemoryFriends(memoryFriends);
         memory.setPublicToFriends(makeMemoryPublic);
+        memory.setLatitude(latitude);
+        memory.setLongitude(longitude);
 
         final EditMemoryActivity activity = this;
 
@@ -499,6 +526,15 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
             }catch (Exception e){
                 System.out.println("ERROR:" + e.getMessage());
             }
+        }else if (requestCode == Constants.PLACE_PICKER_REQUEST) {
+            if (resultCode == Activity.RESULT_OK && data != null) {
+                AddressData addressData = data.getParcelableExtra(Constants.ADDRESS_INTENT);
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(addressData.getLatitude(), addressData.getLongitude()), 15f));
+                latitude = addressData.getLatitude();
+                longitude = addressData.getLongitude();
+                mapFragment.getView().setVisibility(View.VISIBLE);
+                deleteLocationButton.setVisibility(View.VISIBLE);
+            }
         }
     }
 
@@ -531,7 +567,6 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
         super.onBackPressed();
     }
 
-
     private ArrayList<User> initFriendsList(){
         ArrayList<User> friends = new ArrayList<>();
         try {
@@ -562,5 +597,78 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
                 targetChip.setChipIcon(placeHolderDrawable);
             }
         };
+    }
+
+    private void getLocation(){
+        fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
+            @Override
+            public void onComplete(@NonNull Task<Location> task) {
+                Location location = task.getResult();
+                if(location != null){
+                    try {
+                        mapFragment.getView().setVisibility(View.VISIBLE);
+                        deleteLocationButton.setVisibility(View.VISIBLE);
+                        Geocoder geocoder = new Geocoder(EditMemoryActivity.this, Locale.getDefault());
+                        List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude()), 15f));
+                        latitude = addresses.get(0).getLatitude();
+                        longitude = addresses.get(0).getLongitude();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        map = googleMap;
+
+        if (map == null) {
+            return;
+        }
+
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude!=null?latitude:0, longitude!=null?longitude:0), 15f));
+    }
+
+    public void showPlacePicker(double latitude, double longitude){
+        Intent intent = new PlacePicker.IntentBuilder()
+                .setLatLong(latitude, longitude)
+                .showLatLong(true)
+                .setMapZoom(12.0f)
+                .setAddressRequired(true)
+                .hideMarkerShadow(true)
+                .setMarkerDrawable(R.drawable.ic_map_marker)
+                .setMarkerImageImageColor(R.color.colorPrimary)
+                .setFabColor(R.color.colorPrimary)
+                .setPrimaryTextColor(R.color.colorPrimary)
+                .setSecondaryTextColor(R.color.colorAccent)
+                .setBottomViewColor(R.color.white)
+                .setMapType(MapType.NORMAL)
+                .onlyCoordinates(true)
+                .hideLocationButton(true)
+                .disableMarkerAnimation(true)
+                .build(this);
+
+        startActivityForResult(intent, Constants.PLACE_PICKER_REQUEST);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode){
+            case 44:{
+                if(grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    fusedLocationProviderClient.getLastLocation().addOnCompleteListener(task -> {
+                        Location location = task.getResult();
+                        if(location != null){
+                            showPlacePicker(location.getLatitude(), location.getLongitude());
+                        }
+                    });
+                }else{
+                    showPlacePicker(0, 0);
+                }
+            }
+        }
     }
 }

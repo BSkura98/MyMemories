@@ -2,7 +2,6 @@ package com.bartlomiejskura.mymemories;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -24,7 +23,6 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
@@ -33,7 +31,6 @@ import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -123,7 +120,7 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_memory);
 
-        init();
+        bindViews();
 
         sharedPreferences = getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
         storageReference = FirebaseStorage.getInstance().getReference("uploads");
@@ -145,7 +142,7 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
         mapFragment.getMapAsync(this);
     }
 
-    private void init(){
+    private void bindViews(){
         titleEditText = findViewById(R.id.titleEditText);
         description = findViewById(R.id.descriptionEditText);
         categoryEditText = findViewById(R.id.categoryEditText);

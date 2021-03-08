@@ -256,6 +256,8 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
             i.putExtra("memoryPriority", memories.get(position).getMemoryPriority());
             i.putExtra("imageUrl", memories.get(position).getImageUrl());
             i.putExtra("isMemoryPublic", memories.get(position).getPublicToFriends());
+            i.putExtra("latitude", memories.get(position).getLatitude());
+            i.putExtra("longitude", memories.get(position).getLongitude());
 
             Gson gson = new Gson();
             i.putExtra("memoryFriends", gson.toJson(memories.get(position).getMemoryFriends()));
