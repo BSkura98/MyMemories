@@ -164,18 +164,15 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
     }
 
     private void sort(List<Memory> memories){
-        Collections.sort(memories, new Comparator<Memory>() {
-            @Override
-            public int compare(Memory memory1, Memory memory2) {
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-ddd hh:mm:ss");
-                try {
-                    Date strDate1 = sdf.parse(memory1.getDate().replace("T"," "));
-                    Date strDate2 = sdf.parse(memory2.getDate().replace("T"," "));
-                    return strDate1.before(strDate2)?1:-1;
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                    return 0;
-                }
+        Collections.sort(memories, (memory1, memory2) -> {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-ddd hh:mm:ss");
+            try {
+                Date strDate1 = sdf.parse(memory1.getDate().replace("T"," "));
+                Date strDate2 = sdf.parse(memory2.getDate().replace("T"," "));
+                return strDate1.before(strDate2)?1:-1;
+            } catch (ParseException e) {
+                e.printStackTrace();
+                return 0;
             }
         });
     }
