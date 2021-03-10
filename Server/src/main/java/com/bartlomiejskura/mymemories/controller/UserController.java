@@ -1,6 +1,7 @@
 package com.bartlomiejskura.mymemories.controller;
 
 import com.bartlomiejskura.mymemories.exception.EntityNotFoundException;
+import com.bartlomiejskura.mymemories.exception.WrongPasswordException;
 import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -143,6 +144,15 @@ public class UserController {
             user2.removeFriend(user1);
             return userService.editUser(user1);
         }catch (EntityNotFoundException e){
+            return null;
+        }
+    }
+
+    @PutMapping("/changePassword")
+    public User changePassword(@RequestParam(name="userId") Long userId, @RequestParam(name="oldPassword") String oldPassword, @RequestParam(name="newPassword") String newPassword){
+        try {
+            return userService.changePassword(userId, oldPassword, newPassword);
+        } catch (EntityNotFoundException | WrongPasswordException e) {
             return null;
         }
     }

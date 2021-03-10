@@ -1,6 +1,7 @@
 package com.bartlomiejskura.mymemories.service;
 
 import com.bartlomiejskura.mymemories.exception.EntityNotFoundException;
+import com.bartlomiejskura.mymemories.exception.WrongPasswordException;
 import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,13 +81,23 @@ public class UserService {
 
     public User editUser(User user){
         if(user.getPassword()==null){
-            user.setPassword(userRepository.findByEmail(user.getEmail()).getPassword());
+            user.setPassword(userRepository.findById(user.getID()).get().getPassword());
         }
         return userRepository.save(user);
     }
 
     public void deleteUser(Long userId){
         userRepository.deleteById(userId);
+    }
+
+    public User changePassword(Long userId, String oldPassword, String newPassword) throws EntityNotFoundException, WrongPasswordException {
+        User user = getUser(userId);
+        if(user.getPassword().equals(oldPassword)){
+            user.setPassword(newPassword);
+        }else {
+            throw new WrongPasswordException();
+        }
+        return userRepository.save(user);
     }
 
     public User addFriend(User user, User friend){
