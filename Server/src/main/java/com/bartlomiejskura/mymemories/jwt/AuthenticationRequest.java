@@ -1,4 +1,4 @@
-package com.bartlomiejskura.mymemories.model;
+package com.bartlomiejskura.mymemories.jwt;
 
 public class AuthenticationRequest {
     private String username;

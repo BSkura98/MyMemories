@@ -32,8 +32,8 @@ public class MemoryService {
         return memoryRepository.findAll();
     }
 
-    public List<Memory> getAllForUser(Long userId) {
-        User user = this.userRepository.findById(userId).orElseThrow();
+    public List<Memory> getAllForUser(String email) {
+        User user = this.userRepository.findByEmail(email);
         return this.memoryRepository.findAllByMemoryOwner(user);
     }
 
@@ -56,19 +56,19 @@ public class MemoryService {
         return this.memoryRepository.findAllByCategory(category);
     }
 
-    public List<Memory> getAllForUserAndCategory(Long userId, Long categoryId){
-        User user = this.userRepository.findById(userId).orElseThrow();
+    public List<Memory> getAllForUserAndCategory(String email, Long categoryId){
+        User user = this.userRepository.findByEmail(email);
         Category category = this.categoryRepository.findById(categoryId).orElseThrow();
         return this.memoryRepository.findAllByMemoryOwnerAndCategory(user, category);
     }
 
-    public List<Memory> getAllSharedMemoriesForUser(Long userId){
-        User user = this.userRepository.findById(userId).orElseThrow();
+    public List<Memory> getAllSharedMemoriesForUser(String email){
+        User user = this.userRepository.findByEmail(email);
         return user.getSharedMemories();
     }
 
-    public List<Memory> getAllForUserAndDate(Long userId, LocalDateTime time){
-        User user = this.userRepository.findById(userId).orElseThrow();
+    public List<Memory> getAllForUserAndDate(String email, LocalDateTime time){
+        User user = this.userRepository.findByEmail(email);
 
         return this.memoryRepository.findAllByMemoryOwner(user).stream()
                 .filter(memory -> memory.getDate().getYear()==time.getYear() &&
@@ -76,8 +76,8 @@ public class MemoryService {
                 .collect(Collectors.toList());
     }
 
-    public List<Memory> getAllSharedMemoriesForUserAndDate(Long userId, LocalDateTime time){
-        User user = this.userRepository.findById(userId).orElseThrow();
+    public List<Memory> getAllSharedMemoriesForUserAndDate(String email, LocalDateTime time){
+        User user = this.userRepository.findByEmail(email);
 
         return user.getSharedMemories().stream()
                 .filter(memory -> memory.getDate().getYear()==time.getYear() &&
@@ -85,11 +85,11 @@ public class MemoryService {
                 .collect(Collectors.toList());
     }
 
-    public List<Memory> getMemories(Long userId, String keyword, Boolean hasImage, LocalDateTime creationDateStart,
+    public List<Memory> getMemories(String email, String keyword, Boolean hasImage, LocalDateTime creationDateStart,
                                     LocalDateTime creationDateEnd, LocalDateTime dateStart, LocalDateTime dateEnd,
                                     String memoryPriorities, Boolean publicToFriends, Boolean isSharedMemory,
                                     String categories){
-        User user = this.userRepository.findById(userId).orElseThrow();
+        User user = this.userRepository.findByEmail(email);
         List<Memory> memories;
         if(isSharedMemory!=null){
             if(isSharedMemory){
@@ -106,7 +106,7 @@ public class MemoryService {
         if (categories != null) {
             String[] categoryArray = categories.split(" ");
             for(String categoryName:categoryArray){
-                categoryList.add(categoryRepository.findByNameAndUserId(categoryName, userId));
+                categoryList.add(categoryRepository.findByNameAndEmail(categoryName, email));
             }
         }
 
@@ -165,8 +165,8 @@ public class MemoryService {
                 .collect(Collectors.toList());
     }
 
-    public List<Memory> getFriendsPublicMemories(Long userId){
-        User user = this.userRepository.findById(userId).orElseThrow();
+    public List<Memory> getFriendsPublicMemories(String email){
+        User user = this.userRepository.findByEmail(email);
         List<User> friends = user.getFriends();
         List<Memory> publicMemories = new ArrayList<>();
 

@@ -5,6 +5,7 @@ import com.bartlomiejskura.mymemories.exception.WrongPasswordException;
 import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -17,11 +18,15 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public List<User> getAll(){
         return userRepository.findAll();
     }
 
     public User addUser(User user){
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
@@ -57,13 +62,13 @@ public class UserService {
         return usersWithoutFriends;
     }
 
-    public List<User> getFriendRequests(Long userId) throws EntityNotFoundException {
-        User user = getUser(userId);
+    public List<User> getFriendRequests(String email) throws EntityNotFoundException {
+        User user = getUser(email);
         return user.getFriendRequests();
     }
 
-    public List<User> getFriendRequestsByUser(Long userId) throws EntityNotFoundException {
-        User user = getUser(userId);
+    public List<User> getFriendRequestsByUser(String email) throws EntityNotFoundException {
+        User user = getUser(email);
         List<User> friendRequests = new ArrayList<>();
 
         for(User u:userRepository.findAll()){
@@ -74,8 +79,8 @@ public class UserService {
         return friendRequests;
     }
 
-    public List<User> getFriends(Long userId) throws EntityNotFoundException {
-        User user = getUser(userId);
+    public List<User> getFriends(String email) throws EntityNotFoundException {
+        User user = getUser(email);
         return user.getFriends();
     }
 
@@ -86,14 +91,14 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public void deleteUser(Long userId){
-        userRepository.deleteById(userId);
+    public void deleteUser(String email){
+        userRepository.deleteByEmail(email);
     }
 
-    public User changePassword(Long userId, String oldPassword, String newPassword) throws EntityNotFoundException, WrongPasswordException {
-        User user = getUser(userId);
+    public User changePassword(String email, String oldPassword, String newPassword) throws EntityNotFoundException, WrongPasswordException {
+        User user = getUser(email);
         if(user.getPassword().equals(oldPassword)){
-            user.setPassword(newPassword);
+            user.setPassword(passwordEncoder.encode(newPassword));
         }else {
             throw new WrongPasswordException();
         }

@@ -4,6 +4,8 @@ import com.bartlomiejskura.mymemories.exception.EntityNotFoundException;
 import com.bartlomiejskura.mymemories.model.Category;
 import com.bartlomiejskura.mymemories.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -16,20 +18,24 @@ public class CategoryController {
     private CategoryService categoryService;
 
     @GetMapping("/getAll")
-    public List<Category> getAll(@RequestParam(value = "userId", required = false) Long userId){
-        if (userId != null) {
-            return categoryService.getAllForUser(userId);
+    @PreAuthorize("#email.equals(authentication.name)")
+    public List<Category> getAll(@RequestParam(value = "email", required = false) String email){
+        if (email != null) {
+            return categoryService.getAllForUser(email);
         }
         return categoryService.getAll();
     }
 
     @PostMapping
+    @PreAuthorize("#category.user.email.equals(authentication.name)")
     public Category addCategory(@RequestBody Category category){
         return categoryService.addCategory(category);
     }
 
     @PostMapping("/addCategories")
     public List<Category> addCategories(@RequestBody List<Category> categories){
+        categories.removeIf(c -> !c.getUser().getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName()));
+
         List<Category> resultCategories = new ArrayList<>();
         for(Category category : categories){
             resultCategories.add(categoryService.addCategory(category));
@@ -40,19 +46,30 @@ public class CategoryController {
     @GetMapping
     public Category getCategory(@RequestParam(name="categoryId")Long categoryId){
         try{
-            return categoryService.getCategory(categoryId);
+            Category category = categoryService.getCategory(categoryId);
+            if(category.getUser().getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName())){
+                return category;
+            }
+            return null;
         }catch (EntityNotFoundException e){
             return null;
         }
     }
 
     @PutMapping
+    @PreAuthorize("#category.user.email.equals(authentication.name)")
     public Category editCategory(@RequestBody Category category){
         return categoryService.editCategory(category);
     }
 
     @DeleteMapping
     public void deleteCategory(@RequestParam(name="categoryId")Long categoryId){
-        categoryService.deleteCategory(categoryId);
+        try{
+            if(categoryService.getCategory(categoryId).getUser().getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName())){
+                categoryService.deleteCategory(categoryId);
+            }
+        }catch (EntityNotFoundException ignored){
+
+        }
     }
 }

@@ -5,6 +5,8 @@ import com.bartlomiejskura.mymemories.exception.WrongPasswordException;
 import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,6 +16,9 @@ import java.util.List;
 public class UserController {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @GetMapping("/getAll")
     public List<User> getAll(){
@@ -26,15 +31,7 @@ public class UserController {
     }
 
     @GetMapping
-    public User getUser(@RequestParam(name="userId")Long userId){
-        try{
-            return userService.getUser(userId);
-        }catch (EntityNotFoundException e){
-            return null;
-        }
-    }
-
-    @GetMapping("/getByEmail")
+    @PreAuthorize("#email.equals(authentication.name)")
     public User getUser(@RequestParam(name="email")String email){
         return userService.getUser(email);
     }
@@ -54,46 +51,52 @@ public class UserController {
     }
 
     @GetMapping("/getFriendRequests")
-    public List<User> getFriendRequests(@RequestParam(name="userId")Long userId){
+    @PreAuthorize("#email.equals(authentication.name)")
+    public List<User> getFriendRequests(@RequestParam(name="email")String email){
         try {
-            return userService.getFriendRequests(userId);
+            return userService.getFriendRequests(email);
         } catch (EntityNotFoundException e) {
             return null;
         }
     }
 
     @GetMapping("/getFriendRequestsByUser")
-    public List<User> getFriendRequestsByUser(@RequestParam(name="userId")Long userId){
+    @PreAuthorize("#email.equals(authentication.name)")
+    public List<User> getFriendRequestsByUser(@RequestParam(name="email")String email){
         try {
-            return userService.getFriendRequestsByUser(userId);
+            return userService.getFriendRequestsByUser(email);
         } catch (EntityNotFoundException e) {
             return null;
         }
     }
 
     @GetMapping("/getFriends")
-    public List<User> getFriends(@RequestParam(name="userId")Long userId){
+    @PreAuthorize("#email.equals(authentication.name)")
+    public List<User> getFriends(@RequestParam(name="email")String email){
         try {
-            return userService.getFriends(userId);
+            return userService.getFriends(email);
         } catch (EntityNotFoundException e) {
             return null;
         }
     }
 
     @PutMapping
+    @PreAuthorize("#user.email.equals(authentication.name)")
     public User editUser(@RequestBody User user){
         return userService.editUser(user);
     }
 
     @DeleteMapping
-    public void deleteUser(@RequestParam(name="userId")Long userId){
-        userService.deleteUser(userId);
+    @PreAuthorize("#email.equals(authentication.name)")
+    public void deleteUser(@RequestParam(name="email")String email){
+        userService.deleteUser(email);
     }
 
     @PutMapping("/sendFriendRequest")
-    public User sendFriendRequest(@RequestParam(name="user1Id")Long user1Id, @RequestParam(name="user2Id")Long user2Id){
+    @PreAuthorize("#user1Email.equals(authentication.name)")
+    public User sendFriendRequest(@RequestParam(name="user1Email")String user1Email, @RequestParam(name="user2Id")Long user2Id){
         try{
-            User user1 = userService.getUser(user1Id);
+            User user1 = userService.getUser(user1Email);
             User user2 = userService.getUser(user2Id);
             if(user2.getFriendRequests().contains(user1)){
                 return user1;
@@ -106,9 +109,10 @@ public class UserController {
     }
 
     @PutMapping("/removeFriendRequest")
-    public User removeFriendRequest(@RequestParam(name="user1Id")Long user1Id, @RequestParam(name="user2Id")Long user2Id){
+    @PreAuthorize("#user1Email.equals(authentication.name)")
+    public User removeFriendRequest(@RequestParam(name="user1Email")String user1Email, @RequestParam(name="user2Id")Long user2Id){
         try{
-            User user1 = userService.getUser(user1Id);
+            User user1 = userService.getUser(user1Email);
             User user2 = userService.getUser(user2Id);
             user1.removeFriendRequest(user2);
             return userService.editUser(user1);
@@ -118,9 +122,10 @@ public class UserController {
     }
 
     @PutMapping("/acceptFriendRequest")
-    public User acceptFriendRequest(@RequestParam(name="user1Id")Long user1Id, @RequestParam(name="user2Id")Long user2Id){
+    @PreAuthorize("#user1Email.equals(authentication.name)")
+    public User acceptFriendRequest(@RequestParam(name="user1Email")String user1Email, @RequestParam(name="user2Id")Long user2Id){
         try{
-            User user1 = userService.getUser(user1Id);
+            User user1 = userService.getUser(user1Email);
             User user2 = userService.getUser(user2Id);
             if(user1.getFriendRequests().contains(user2)){
                 user1.removeFriendRequest(user2);
@@ -136,9 +141,10 @@ public class UserController {
     }
 
     @PutMapping("/removeFriend")
-    public User removeFriend(@RequestParam(name="user1Id")Long user1Id, @RequestParam(name="user2Id")Long user2Id){
+    @PreAuthorize("#user1Email.equals(authentication.name)")
+    public User removeFriend(@RequestParam(name="user1Email")String user1Email, @RequestParam(name="user2Id")Long user2Id){
         try{
-            User user1 = userService.getUser(user1Id);
+            User user1 = userService.getUser(user1Email);
             User user2 = userService.getUser(user2Id);
             user1.removeFriend(user2);
             user2.removeFriend(user1);
@@ -149,9 +155,10 @@ public class UserController {
     }
 
     @PutMapping("/changePassword")
-    public User changePassword(@RequestParam(name="userId") Long userId, @RequestParam(name="oldPassword") String oldPassword, @RequestParam(name="newPassword") String newPassword){
+    @PreAuthorize("#email.equals(authentication.name)")
+    public User changePassword(@RequestParam(name="email") String email, @RequestParam(name="oldPassword") String oldPassword, @RequestParam(name="newPassword") String newPassword){
         try {
-            return userService.changePassword(userId, oldPassword, newPassword);
+            return userService.changePassword(email, oldPassword, newPassword);
         } catch (EntityNotFoundException | WrongPasswordException e) {
             return null;
         }

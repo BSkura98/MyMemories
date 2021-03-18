@@ -22,8 +22,8 @@ public class CategoryService {
         return categoryRepository.findAll();
     }
 
-    public List<Category> getAllForUser(Long userId) {
-        User user = this.userRepository.findById(userId).orElseThrow();
+    public List<Category> getAllForUser(String email) {
+        User user = this.userRepository.findByEmail(email);
         return this.categoryRepository.findAllByUser(user);
     }
 

@@ -1,5 +1,7 @@
 package com.bartlomiejskura.mymemories.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -13,6 +15,7 @@ public class Category {
     private String name;
 
     @ManyToOne
+    @JsonIgnoreProperties(value = {"sharedMemories", "friends"}, allowSetters = true)
     @JoinColumn(name = "user_id")
     private User user;
 
