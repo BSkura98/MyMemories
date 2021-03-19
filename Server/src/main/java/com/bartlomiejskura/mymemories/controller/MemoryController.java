@@ -55,10 +55,10 @@ public class MemoryController {
     public Memory getMemory(@RequestParam(name="memoryId")Long memoryId){
         try{
             Memory memory = memoryService.getMemory(memoryId);
-            if(memory.getMemoryOwner().getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName())){
-                return memory;
+            if(!memory.getMemoryOwner().getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName())){
+                throw new SecurityException();
             }
-            return null;
+            return memory;
         }catch (EntityNotFoundException e){
             return null;
         }
@@ -73,9 +73,10 @@ public class MemoryController {
     @DeleteMapping
     public void deleteMemory(@RequestParam(name="memoryId")Long memoryId){
         try{
-            if(memoryService.getMemory(memoryId).getMemoryOwner().getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName())){
-                memoryService.deleteMemory(memoryId);
+            if(!memoryService.getMemory(memoryId).getMemoryOwner().getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName())){
+                throw new SecurityException();
             }
+            memoryService.deleteMemory(memoryId);
         }catch (EntityNotFoundException ignored){
 
         }

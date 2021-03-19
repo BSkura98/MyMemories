@@ -1,6 +1,7 @@
 package com.bartlomiejskura.mymemories.controller;
 
 import com.bartlomiejskura.mymemories.exception.EntityNotFoundException;
+import com.bartlomiejskura.mymemories.exception.ForbiddenException;
 import com.bartlomiejskura.mymemories.model.Category;
 import com.bartlomiejskura.mymemories.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,10 +45,10 @@ public class CategoryController {
     public Category getCategory(@RequestParam(name="categoryId")Long categoryId){
         try{
             Category category = categoryService.getCategory(categoryId);
-            if(category.getUser().getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName())){
-                return category;
+            if(!category.getUser().getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName())){
+                throw new ForbiddenException();
             }
-            return null;
+            return category;
         }catch (EntityNotFoundException e){
             return null;
         }
@@ -62,9 +63,10 @@ public class CategoryController {
     @DeleteMapping
     public void deleteCategory(@RequestParam(name="categoryId")Long categoryId){
         try{
-            if(categoryService.getCategory(categoryId).getUser().getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName())){
-                categoryService.deleteCategory(categoryId);
+            if(!categoryService.getCategory(categoryId).getUser().getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName())){
+                throw new ForbiddenException();
             }
+            categoryService.deleteCategory(categoryId);
         }catch (EntityNotFoundException ignored){
 
         }
