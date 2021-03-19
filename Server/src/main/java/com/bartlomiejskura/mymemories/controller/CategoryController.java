@@ -19,11 +19,8 @@ public class CategoryController {
 
     @GetMapping("/getAll")
     @PreAuthorize("#email.equals(authentication.name)")
-    public List<Category> getAll(@RequestParam(value = "email", required = false) String email){
-        if (email != null) {
-            return categoryService.getAllForUser(email);
-        }
-        return categoryService.getAll();
+    public List<Category> getAll(@RequestParam(value = "email") String email){
+        return categoryService.getAllForUser(email);
     }
 
     @PostMapping

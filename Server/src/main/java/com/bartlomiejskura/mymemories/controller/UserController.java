@@ -17,14 +17,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @GetMapping("/getAll")
-    public List<User> getAll(){
-        return userService.getAll();
-    }
-
     @PostMapping
     public User addUser(@RequestBody User user){
         return userService.addUser(user);
@@ -42,12 +34,9 @@ public class UserController {
     }
 
     @GetMapping("/getWithoutFriends")
-    public List<User> getUsersWithoutFriends(@RequestParam(name="name")String name, @RequestParam(name="userId")Long userId){
-        try {
-            return userService.getUsersWithoutFriends(name, userId);
-        } catch (EntityNotFoundException e) {
-            return null;
-        }
+    @PreAuthorize("#email.equals(authentication.name)")
+    public List<User> getUsersWithoutFriends(@RequestParam(name="email")String email, @RequestParam(name="name")String name){
+        return userService.getUsersWithoutFriends(name, email);
     }
 
     @GetMapping("/getFriendRequests")

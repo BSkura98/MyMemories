@@ -45,8 +45,8 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    public List<User> getUsersWithoutFriends(String name, Long userId) throws EntityNotFoundException {
-        User user = getUser(userId);
+    public List<User> getUsersWithoutFriends(String name, String email) {
+        User user = getUser(email);
         List<User> usersByName = getUsersByName(name);
         List<User> friends = Stream.concat(user.getFriends().stream(), user.getFriendRequests().stream())
                 .collect(Collectors.toList());

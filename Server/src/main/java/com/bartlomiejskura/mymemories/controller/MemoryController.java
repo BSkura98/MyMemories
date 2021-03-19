@@ -21,17 +21,11 @@ public class MemoryController {
 
     @GetMapping("/getAll")
     @PreAuthorize("#email.equals(authentication.name)")
-    public List<Memory> getAll(@RequestParam(value = "email", required = false) String email, @RequestParam(value = "categoryId", required = false) Long categoryId){
-        if (email != null) {
-            if(categoryId != null){
-                return memoryService.getAllForUserAndCategory(email, categoryId);
-            }
-            return memoryService.getAllForUser(email);
+    public List<Memory> getAll(@RequestParam(value = "email") String email, @RequestParam(value = "categoryId", required = false) Long categoryId){
+        if(categoryId != null){
+            return memoryService.getAllForUserAndCategory(email, categoryId);
         }
-        if(categoryId!=null){
-            return memoryService.getAllForCategory(categoryId);
-        }
-        return memoryService.getAll();
+        return memoryService.getAllForUser(email);
     }
 
     @GetMapping("/getAllWithShared")
@@ -102,16 +96,16 @@ public class MemoryController {
     @GetMapping("/search")
     @PreAuthorize("#email.equals(authentication.name)")
     public List<Memory> search(@RequestParam(value = "email") String email,
-                                    @RequestParam(value = "keyword", required = false) String keyword,
-                                    @RequestParam(value = "hasImage", required = false) Boolean hasImage,
-                                    @RequestParam(value = "creationDateStart", required = false) String creationDateStart,
-                                    @RequestParam(value = "creationDateEnd", required = false) String creationDateEnd,
-                                    @RequestParam(value = "dateStart", required = false) String dateStart,
-                                    @RequestParam(value = "dateEnd", required = false) String dateEnd,
-                                    @RequestParam(value = "memoryPriorities", required = false) String memoryPriorities,
-                                    @RequestParam(value = "publicToFriends", required = false) Boolean publicToFriends,
-                                    @RequestParam(value = "isSharedMemory", required = false) Boolean isSharedMemory,
-                                    @RequestParam(value = "categories", required = false) String categories) {
+                               @RequestParam(value = "keyword", required = false) String keyword,
+                               @RequestParam(value = "hasImage", required = false) Boolean hasImage,
+                               @RequestParam(value = "creationDateStart", required = false) String creationDateStart,
+                               @RequestParam(value = "creationDateEnd", required = false) String creationDateEnd,
+                               @RequestParam(value = "dateStart", required = false) String dateStart,
+                               @RequestParam(value = "dateEnd", required = false) String dateEnd,
+                               @RequestParam(value = "memoryPriorities", required = false) String memoryPriorities,
+                               @RequestParam(value = "publicToFriends", required = false) Boolean publicToFriends,
+                               @RequestParam(value = "isSharedMemory", required = false) Boolean isSharedMemory,
+                               @RequestParam(value = "categories", required = false) String categories) {
         return memoryService.getMemories(email, keyword, hasImage, creationDateStart==null?null:LocalDateTime.parse(creationDateStart),
                 creationDateEnd==null?null:LocalDateTime.parse(creationDateEnd),
                 dateStart==null?null:LocalDateTime.parse(dateStart), dateEnd==null?null:LocalDateTime.parse(dateEnd),
