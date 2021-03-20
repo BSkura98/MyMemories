@@ -79,7 +79,7 @@ public class UserService {
         return friendRequests;
     }
 
-    public List<User> getFriends(String email) throws EntityNotFoundException {
+    public List<User> getFriends(String email) {
         User user = getUser(email);
         return user.getFriends();
     }
@@ -95,9 +95,9 @@ public class UserService {
         userRepository.deleteByEmail(email);
     }
 
-    public User changePassword(String email, String oldPassword, String newPassword) throws EntityNotFoundException, WrongPasswordException {
+    public User changePassword(String email, String oldPassword, String newPassword) throws WrongPasswordException {
         User user = getUser(email);
-        if(user.getPassword().equals(oldPassword)){
+        if(passwordEncoder.matches(oldPassword, user.getPassword())){
             user.setPassword(passwordEncoder.encode(newPassword));
         }else {
             throw new WrongPasswordException();

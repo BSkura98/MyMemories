@@ -35,7 +35,7 @@ public class GetMemoriesInCategoryTask extends AsyncTask<Void, Void, Memory[]> {
     @Override
     protected Memory[] doInBackground(Void... voids) {
         Request request = new Request.Builder()
-                .url("https://mymemories-2.herokuapp.com/memory/getAll?userId="+sharedPreferences.getLong("userId", 0)+"&categoryId="+categoryId)
+                .url("https://mymemories-2.herokuapp.com/memory/getAll?email="+sharedPreferences.getString("email", "")+"&categoryId="+categoryId)
                 .get()
                 .addHeader("Authorization", "Bearer "+sharedPreferences.getString("token", null))
                 .build();

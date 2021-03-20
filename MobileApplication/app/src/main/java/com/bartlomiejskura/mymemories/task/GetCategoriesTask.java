@@ -32,7 +32,7 @@ public class GetCategoriesTask extends AsyncTask<Void, Void, Category[]> {
     @Override
     protected Category[] doInBackground(Void... voids) {
         Request request = new Request.Builder()
-                .url("https://mymemories-2.herokuapp.com/category/getAll?userId="+sharedPreferences.getLong("userId", 0))
+                .url("https://mymemories-2.herokuapp.com/category/getAll?email="+sharedPreferences.getString("email", ""))
                 .get()
                 .addHeader("Authorization", "Bearer "+sharedPreferences.getString("token", null))
                 .build();

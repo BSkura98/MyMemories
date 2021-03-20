@@ -366,7 +366,6 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
             return;
         }
 
-        Long memoryOwnerId = sharedPreferences.getLong("userId", 0);
         List<Category> categories = null;
         if(!this.categories.isEmpty()){
             categories = getCategories();
@@ -380,7 +379,7 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
         memory.setLongDescription(description==null?"":description);
         memory.setCreationDate(sdf.format(Calendar.getInstance().getTime()).replace(" ", "T"));
         memory.setDate(sdf.format(calendar.getTime()).replace(" ", "T"));
-        memory.setMemoryOwner(new User(memoryOwnerId));
+        memory.setMemoryOwner(new User(sharedPreferences.getLong("userId", 0), sharedPreferences.getString("email", "")));
         memory.setMemoryPriority(memoryPriority);
         memory.setCategories(categories);
         memory.setMemoryFriends(memoryFriends);

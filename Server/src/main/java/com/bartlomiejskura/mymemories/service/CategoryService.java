@@ -32,9 +32,9 @@ public class CategoryService {
             return null;
         }
         try{
-            Category t = categoryRepository.findByNameAndUserId(category.getName(), category.getUser().getID());
-            if(t != null){
-                return t;
+            Category c = categoryRepository.findByNameAndUserId(category.getName(), category.getUser().getID());
+            if(c != null){
+                return c;
             }
         }catch (NullPointerException ignored){ }
         return categoryRepository.save(category);

@@ -69,7 +69,7 @@ public class SearchMemoriesTask extends AsyncTask<Void, Void, Memory[]> {
     }
 
     private String createUrl(){
-        String url = "https://mymemories-2.herokuapp.com/memory/search?userId="+sharedPreferences.getLong("userId", 0);
+        String url = "https://mymemories-2.herokuapp.com/memory/search?email="+sharedPreferences.getString("email", "");
         if(keyword!=null){
             url += "&keyword="+ keyword;
         }

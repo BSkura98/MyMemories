@@ -32,7 +32,7 @@ public class GetUserInformationTask extends AsyncTask<Void, Void, Boolean> {
     @Override
     protected Boolean doInBackground(Void... voids) {
         Request request = new Request.Builder()
-                .url("https://mymemories-2.herokuapp.com/user/getByEmail?email="+email)
+                .url("https://mymemories-2.herokuapp.com/user?email="+email)
                 .get()
                 .addHeader("Authorization", "Bearer "+sharedPreferences.getString("token", null))
                 .build();

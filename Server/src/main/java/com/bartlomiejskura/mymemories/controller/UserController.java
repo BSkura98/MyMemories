@@ -62,11 +62,7 @@ public class UserController {
     @GetMapping("/getFriends")
     @PreAuthorize("#email.equals(authentication.name)")
     public List<User> getFriends(@RequestParam(name="email")String email){
-        try {
-            return userService.getFriends(email);
-        } catch (EntityNotFoundException e) {
-            return null;
-        }
+        return userService.getFriends(email);
     }
 
     @PutMapping
@@ -98,16 +94,12 @@ public class UserController {
     }
 
     @PutMapping("/removeFriendRequest")
-    @PreAuthorize("#user1Email.equals(authentication.name)")
-    public User removeFriendRequest(@RequestParam(name="user1Email")String user1Email, @RequestParam(name="user2Id")Long user2Id){
-        try{
-            User user1 = userService.getUser(user1Email);
-            User user2 = userService.getUser(user2Id);
-            user1.removeFriendRequest(user2);
-            return userService.editUser(user1);
-        }catch (EntityNotFoundException e){
-            return null;
-        }
+    @PreAuthorize("#user1Email.equals(authentication.name)||#user2Email.equals(authentication.name)")
+    public User removeFriendRequest(@RequestParam(name="user1Email")String user1Email, @RequestParam(name="user2Email")String user2Email){
+        User user1 = userService.getUser(user1Email);
+        User user2 = userService.getUser(user2Email);
+        user1.removeFriendRequest(user2);
+        return userService.editUser(user1);
     }
 
     @PutMapping("/acceptFriendRequest")
@@ -148,7 +140,7 @@ public class UserController {
     public User changePassword(@RequestParam(name="email") String email, @RequestParam(name="oldPassword") String oldPassword, @RequestParam(name="newPassword") String newPassword){
         try {
             return userService.changePassword(email, oldPassword, newPassword);
-        } catch (EntityNotFoundException | WrongPasswordException e) {
+        } catch (WrongPasswordException e) {
             return null;
         }
     }

@@ -16,17 +16,18 @@ import okhttp3.Response;
 
 public class RemoveFriendRequestTask extends AsyncTask<Void, Void, Boolean> {
     private Activity activity;
-    private Long user1Id, user2Id;
+    private String user1Email;
+    private String user2Email;
     private OkHttpClient httpClient = new OkHttpClient();
     private Gson gson = new Gson();
     private SharedPreferences sharedPreferences;
 
     private final MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
-    public RemoveFriendRequestTask(Activity activity, Long user1Id, Long user2Id){
+    public RemoveFriendRequestTask(Activity activity, String user1Email, String user2Email){
         this.activity = activity;
-        this.user1Id = user1Id;
-        this.user2Id = user2Id;
+        this.user1Email = user1Email;
+        this.user2Email = user2Email;
         sharedPreferences = activity.getApplicationContext().getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
     }
 
@@ -35,7 +36,7 @@ public class RemoveFriendRequestTask extends AsyncTask<Void, Void, Boolean> {
         RequestBody requestBody = RequestBody.create(JSON, "");
 
         Request request = new Request.Builder()
-                .url("https://mymemories-2.herokuapp.com/user/removeFriendRequest?user1Id="+user1Id+"&user2Id="+user2Id)
+                .url("https://mymemories-2.herokuapp.com/user/removeFriendRequest?user1Email="+ user1Email +"&user2Email="+ user2Email)
                 .put(requestBody)
                 .addHeader("Authorization", "Bearer "+sharedPreferences.getString("token", null))
                 .build();

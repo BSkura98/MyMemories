@@ -109,7 +109,7 @@ public class FriendRequestListAdapter extends RecyclerView.Adapter<FriendRequest
 
         private void confirmFriendRequest(int position){
             ConfirmFriendRequestTask task = new ConfirmFriendRequestTask(activity,
-                    sharedPreferences.getLong("userId", 0),
+                    sharedPreferences.getString("email", ""),
                     users.get(position).getId());
             try{
                 Boolean result = task.execute().get();
@@ -127,12 +127,12 @@ public class FriendRequestListAdapter extends RecyclerView.Adapter<FriendRequest
             RemoveFriendRequestTask task;
             if(friendRequestsByOtherUsers){
                 task = new RemoveFriendRequestTask(activity,
-                        sharedPreferences.getLong("userId", 0),
-                        users.get(position).getId());
+                        sharedPreferences.getString("email", ""),
+                        users.get(position).getEmail());
             }else{
                 task = new RemoveFriendRequestTask(activity,
-                        users.get(position).getId(),
-                        sharedPreferences.getLong("userId", 0));
+                        users.get(position).getEmail(),
+                        sharedPreferences.getString("email", ""));
             }
             try{
                 Boolean result = task.execute().get();

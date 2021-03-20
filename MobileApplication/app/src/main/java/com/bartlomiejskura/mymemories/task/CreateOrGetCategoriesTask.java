@@ -42,7 +42,7 @@ public class CreateOrGetCategoriesTask extends AsyncTask<Void, Void, Category[]>
         List<Category> categories = new ArrayList<>();
 
         for(int i=0;i<categoriesNames.size();i++){
-            categories.add(new Category(categoriesNames.get(i), new User(sharedPreferences.getLong("userId", 0))));
+            categories.add(new Category(categoriesNames.get(i), new User(sharedPreferences.getLong("userId", 0), sharedPreferences.getString("email", ""))));
         }
         String json = gson.toJson(categories);
 

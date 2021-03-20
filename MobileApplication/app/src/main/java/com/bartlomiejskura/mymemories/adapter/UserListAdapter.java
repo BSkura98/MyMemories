@@ -107,7 +107,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.MyView
 
         private void sendFriendRequest(int position){
             SendFriendRequestTask task = new SendFriendRequestTask(activity,
-                    sharedPreferences.getLong("userId", 0),
+                    sharedPreferences.getString("email", ""),
                     users.get(position).getId());
             try{
                 Boolean result = task.execute().get();
@@ -123,7 +123,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.MyView
 
         private void removeFriend(int position){
             RemoveFriendTask task = new RemoveFriendTask(activity,
-                    sharedPreferences.getLong("userId", 0),
+                    sharedPreferences.getString("email", ""),
                     users.get(position).getId());
             try{
                 Boolean result = task.execute().get();

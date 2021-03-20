@@ -40,26 +40,21 @@ public class AuthenticationTask extends AsyncTask<Void, Void, Boolean> {
         RequestBody requestBody = RequestBody.create(JSON, json);
 
         Request request = new Request.Builder()
-                .url("https://mymemories-2.herokuapp.com/authenticate")
+                .url("https://mymemories-2.herokuapp.com/login")
                 .post(requestBody)
                 .build();
         Response response;
 
         try{
             response = httpClient.newCall(request).execute();
-            AuthenticationResponse authenticationResponse = gson.fromJson(response.body().string(), AuthenticationResponse.class);
-            String jwt = authenticationResponse.getJwt();
+            String jwt = response.header("Authorization");
             if(jwt==null){
-                activity.runOnUiThread(new Runnable() {
-                    public void run() {
-                        Toast.makeText(activity.getBaseContext(), "Error: jwt is null", Toast.LENGTH_LONG).show();
-                    }
-                });
+                activity.runOnUiThread(() -> Toast.makeText(activity.getBaseContext(), "Error: jwt is null", Toast.LENGTH_LONG).show());
                 return false;
             }
 
             SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString("token", authenticationResponse.getJwt());
+            editor.putString("token", jwt.substring(7));
             editor.apply();
             return true;
         }catch (IOException e){

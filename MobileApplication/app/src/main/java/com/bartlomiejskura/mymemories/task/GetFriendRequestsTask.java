@@ -35,9 +35,9 @@ public class GetFriendRequestsTask extends AsyncTask<Void, Void, User[]> {
     protected User[] doInBackground(Void... voids) {
         String url;
         if(requestsSentByUser){
-            url = "https://mymemories-2.herokuapp.com/user/getFriendRequestsByUser?userId="+sharedPreferences.getLong("userId", 0);
+            url = "https://mymemories-2.herokuapp.com/user/getFriendRequestsByUser?email="+sharedPreferences.getString("email", "");
         }else{
-            url = "https://mymemories-2.herokuapp.com/user/getFriendRequests?userId="+sharedPreferences.getLong("userId", 0);
+            url = "https://mymemories-2.herokuapp.com/user/getFriendRequests?email="+sharedPreferences.getString("email", "");
         }
 
         Request request = new Request.Builder()

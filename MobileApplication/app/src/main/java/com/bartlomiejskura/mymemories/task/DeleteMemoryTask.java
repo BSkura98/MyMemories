@@ -38,7 +38,6 @@ public class DeleteMemoryTask extends AsyncTask<Void, Void, Boolean> {
                 .delete()
                 .addHeader("Authorization", "Bearer "+sharedPreferences.getString("token", null))
                 .build();
-        Response response;
 
         try{
             httpClient.newCall(request).execute();

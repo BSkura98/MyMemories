@@ -28,7 +28,7 @@ public class ChangePasswordTask extends AsyncTask<Void, Void, Boolean> {
         RequestBody requestBody = RequestBody.create(null, new byte[0]);
 
         Request request = new Request.Builder()
-                .url("https://mymemories-2.herokuapp.com/user/changePassword?userId="+sharedPreferences.getLong("userId", 0)+"&oldPassword="+oldPassword
+                .url("https://mymemories-2.herokuapp.com/user/changePassword?email="+sharedPreferences.getString("email", "")+"&oldPassword="+oldPassword
                         +"&newPassword="+newPassword)
                 .put(requestBody)
                 .addHeader("Authorization", "Bearer "+sharedPreferences.getString("token", null))

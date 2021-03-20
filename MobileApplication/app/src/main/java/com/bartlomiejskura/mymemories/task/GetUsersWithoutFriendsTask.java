@@ -34,7 +34,7 @@ public class GetUsersWithoutFriendsTask extends AsyncTask<Void, Void, User[]> {
     @Override
     protected User[] doInBackground(Void... voids) {
         Request request = new Request.Builder()
-                .url("https://mymemories-2.herokuapp.com/user/getWithoutFriends?userId="+sharedPreferences.getLong("userId", 0)+"&name="+name.replace(" ","_"))
+                .url("https://mymemories-2.herokuapp.com/user/getWithoutFriends?email="+sharedPreferences.getString("email", "")+"&name="+name.replace(" ","_"))
                 .get()
                 .addHeader("Authorization", "Bearer "+sharedPreferences.getString("token", null))
                 .build();

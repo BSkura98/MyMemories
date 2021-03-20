@@ -16,16 +16,17 @@ import okhttp3.Response;
 
 public class ConfirmFriendRequestTask extends AsyncTask<Void, Void, Boolean> {
     private Activity activity;
-    private Long user1Id, user2Id;
+    private String user1Email;
+    private Long user2Id;
     private OkHttpClient httpClient = new OkHttpClient();
     private Gson gson = new Gson();
     private SharedPreferences sharedPreferences;
 
     private final MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
-    public ConfirmFriendRequestTask(Activity activity, Long user1Id, Long user2Id){
+    public ConfirmFriendRequestTask(Activity activity, String user1Email, Long user2Id){
         this.activity = activity;
-        this.user1Id = user1Id;
+        this.user1Email = user1Email;
         this.user2Id = user2Id;
         sharedPreferences = activity.getApplicationContext().getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
     }
@@ -35,7 +36,7 @@ public class ConfirmFriendRequestTask extends AsyncTask<Void, Void, Boolean> {
         RequestBody requestBody = RequestBody.create(JSON, "");
 
         Request request = new Request.Builder()
-                .url("https://mymemories-2.herokuapp.com/user/acceptFriendRequest?user1Id="+user1Id+"&user2Id="+user2Id)
+                .url("https://mymemories-2.herokuapp.com/user/acceptFriendRequest?user1Email="+user1Email+"&user2Id="+user2Id)
                 .put(requestBody)
                 .addHeader("Authorization", "Bearer "+sharedPreferences.getString("token", null))
                 .build();

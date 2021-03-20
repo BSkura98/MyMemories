@@ -277,12 +277,7 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
 
     private void addMemory(String title, String description){
         if (title.isEmpty()) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    titleInputLayout.setError("Title field cannot be empty!");
-                }
-            });
+            runOnUiThread(() -> titleInputLayout.setError("Title field cannot be empty!"));
             return;
         }
 
@@ -305,7 +300,7 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
         memory.setLongDescription(description==null?"":description);
         memory.setCreationDate(sdf.format(Calendar.getInstance().getTime()).replace(" ", "T"));
         memory.setDate(sdf.format(calendar.getTime()).replace(" ", "T"));
-        memory.setMemoryOwner(new User(memoryOwnerId));
+        memory.setMemoryOwner(new User(sharedPreferences.getLong("userId", 0), sharedPreferences.getString("email", "")));
         memory.setMemoryPriority(memoryPriority);
         memory.setCategories(categories);
         memory.setMemoryFriends(memoryFriends);
