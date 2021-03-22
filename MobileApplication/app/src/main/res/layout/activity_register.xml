@@ -24,6 +24,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputLayout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                android:theme="@style/TextInputLayoutAppearance"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
@@ -33,6 +34,8 @@
                 android:layout_marginRight="40dp"
                 android:hint="First name"
                 app:boxBackgroundColor="#FFFFFF"
+                app:boxStrokeColor="@color/colorAccent"
+                app:hintTextColor="@color/colorAccent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -46,6 +49,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputLayout2"
                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                android:theme="@style/TextInputLayoutAppearance"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
@@ -55,6 +59,8 @@
                 android:layout_marginRight="40dp"
                 android:hint="Second name"
                 app:boxBackgroundColor="#FFFFFF"
+                app:boxStrokeColor="@color/colorAccent"
+                app:hintTextColor="@color/colorAccent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textInputLayout">
@@ -68,6 +74,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputLayout3"
                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                android:theme="@style/TextInputLayoutAppearance"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
@@ -77,6 +84,8 @@
                 android:layout_marginRight="40dp"
                 android:hint="Email"
                 app:boxBackgroundColor="#FFFFFF"
+                app:boxStrokeColor="@color/colorAccent"
+                app:hintTextColor="@color/colorAccent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textInputLayout2">
@@ -91,6 +100,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputLayout4"
                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                android:theme="@style/TextInputLayoutAppearance"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
@@ -100,6 +110,8 @@
                 android:layout_marginRight="40dp"
                 android:hint="Password"
                 app:boxBackgroundColor="#FFFFFF"
+                app:boxStrokeColor="@color/colorAccent"
+                app:hintTextColor="@color/colorAccent"
                 app:endIconMode="password_toggle"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -115,6 +127,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputLayout5"
                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                android:theme="@style/TextInputLayoutAppearance"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
@@ -124,6 +137,8 @@
                 android:layout_marginRight="40dp"
                 android:hint="Repeat password"
                 app:boxBackgroundColor="#FFFFFF"
+                app:boxStrokeColor="@color/colorAccent"
+                app:hintTextColor="@color/colorAccent"
                 app:endIconMode="password_toggle"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -142,26 +157,28 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
                 android:layout_marginLeft="40dp"
-                android:layout_marginTop="20dp"
-                android:text="Date of birth:"
-                android:textSize="18sp"
+                android:layout_marginTop="30dp"
+                android:text="Date of birth"
+                android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textInputLayout5" />
 
-            <TextView
-                android:id="@+id/birthdayTextView"
+            <Button
+                android:id="@+id/birthdayButton"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                android:layout_marginLeft="6dp"
-                android:layout_marginTop="20dp"
-                android:clickable="true"
+                android:layout_marginStart="20dp"
+                android:layout_marginLeft="20dp"
                 android:text="Select"
-                android:textColor="@color/colorPrimary"
-                android:textSize="18sp"
-                android:textStyle="bold"
+                android:textAllCaps="false"
+                android:textColor="@color/colorAccent"
+                android:textSize="14sp"
+                app:icon="@drawable/ic_date_color_accent"
+                app:iconTint="@color/colorAccent"
+                app:layout_constraintBottom_toBottomOf="@+id/textView6"
                 app:layout_constraintStart_toEndOf="@+id/textView6"
-                app:layout_constraintTop_toBottomOf="@+id/textInputLayout5" />
+                app:layout_constraintTop_toTopOf="@+id/textView6" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
@@ -171,7 +188,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="Sign Up"
-        android:textColor="@color/colorPrimary"
+        android:textColor="@color/colorAccent"
         android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -183,7 +200,8 @@
         android:layout_width="150dp"
         android:layout_marginBottom="20dp"
         android:text="Sign Up"
-        android:textStyle="bold"
+        android:textAllCaps="false"
+        app:backgroundTint="@color/colorAccent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"

@@ -19,10 +19,10 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        TextView signUpTextView = findViewById(R.id.signUpTextView);
+        Button signUpButton = findViewById(R.id.signUpButton);
         Button signInButton = findViewById(R.id.signInButton);
 
-        signUpTextView.setOnClickListener(new View.OnClickListener() {
+        signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(getApplicationContext(), RegisterActivity.class));

@@ -16,12 +16,11 @@ import android.widget.Toast;
 
 import com.bartlomiejskura.mymemories.task.AuthenticationTask;
 import com.bartlomiejskura.mymemories.task.CreateUserTask;
-import com.bartlomiejskura.mymemories.task.GetUserInformationTask;
 
 import java.util.Calendar;
 
 public class RegisterActivity extends AppCompatActivity {
-    private TextView birthdayTextView;
+    private Button birthdayButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,10 +32,10 @@ public class RegisterActivity extends AppCompatActivity {
         final EditText emailEditText = findViewById(R.id.emailEditText);
         final EditText passwordEditText = findViewById(R.id.passwordEditText);
         final EditText repeatPasswordEditText = findViewById(R.id.repeatPasswordEditText);
-        birthdayTextView = findViewById(R.id.birthdayTextView);
+        birthdayButton = findViewById(R.id.birthdayButton);
         Button signUpButton = findViewById(R.id.signUpButton);
 
-        birthdayTextView.setOnClickListener(new View.OnClickListener() {
+        birthdayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 selectDate();
@@ -46,7 +45,7 @@ public class RegisterActivity extends AppCompatActivity {
         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String birthday = birthdayTextView.getText().toString();
+                String birthday = birthdayButton.getText().toString();
                 birthday = birthday.split("-")[2].concat("-").concat(birthday.split("-")[1]).concat("-").concat(birthday.split("-")[0]).concat("T00:00:00");
                 registerUser(firstNameEditText.getText().toString(), lastNameEditText.getText().toString(), emailEditText.getText().toString(),
                         passwordEditText.getText().toString(), repeatPasswordEditText.getText().toString(), birthday);
@@ -137,7 +136,7 @@ public class RegisterActivity extends AppCompatActivity {
                 String dateText = DateFormat.format("dd-MM-yyyy", calendar).toString();
 
                 if(Calendar.getInstance().after(calendar)){
-                    birthdayTextView.setText(dateText);
+                    birthdayButton.setText(dateText);
                 }else {
                     Toast.makeText(getApplicationContext(), "Date of birth cannot be in the future!", Toast.LENGTH_SHORT).show();
                 }
