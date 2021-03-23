@@ -317,7 +317,7 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
                 return;
             }
             Intent i = new Intent(getApplicationContext(), MainActivity.class);
-            i.putExtra("fragmentToLoad", "recentEntriesFragment");
+            i.putExtra("fragmentToLoad", "datesFragment");
             startActivity(i);
         }catch (Exception e){
             System.out.println("ERROR:" + e.getMessage());

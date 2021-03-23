@@ -3,13 +3,8 @@
 
     <group android:checkableBehavior="single">
         <item
-        android:id="@+id/nav_recent_entries"
-        android:title="Recent Entries"
-        android:icon="@drawable/ic_access_time"
-        />
-        <item
             android:id="@+id/nav_dates"
-            android:title="Select date"
+            android:title="Memories"
             android:icon="@drawable/ic_date"
             />
         <item

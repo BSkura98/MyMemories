@@ -408,7 +408,7 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
                 deleteImage(imageUrl, true);//usuwanie starego zdjęcia, które wcześniej było przypisane do wspomnienia
             }
             Intent i = new Intent(getApplicationContext(), MainActivity.class);
-            i.putExtra("fragmentToLoad", "recentEntriesFragment");
+            i.putExtra("fragmentToLoad", "datesFragment");
             startActivity(i);
         }catch (Exception e){
             System.out.println("ERROR:" + e.getMessage());

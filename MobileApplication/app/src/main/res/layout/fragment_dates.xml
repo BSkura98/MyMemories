@@ -22,10 +22,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Date"
-        android:textSize="14sp"
-        app:icon="@drawable/ic_date"
+        android:textColor="@color/colorAccent"
+        app:icon="@drawable/ic_date_color_accent"
+        app:iconTint="@color/colorAccent"
         app:layout_constraintBottom_toTopOf="@+id/memoryList"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addMemoryButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="30dp"
+        app:borderWidth="0dp"
+        app:elevation="6dp"
+        app:backgroundTint="@color/colorAccent"
+        android:src="@drawable/ic_add"
+        app:tint="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginRight="30dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

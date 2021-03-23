@@ -30,7 +30,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -54,13 +53,15 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
     @Override
     public MemoryListAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.entry_row, parent,false);
+        View view = inflater.inflate(R.layout.row_memory, parent,false);
         return new MyViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MemoryListAdapter.MyViewHolder holder, int position) {
         holder.memoryTitle.setText(memories.get(position).getShortDescription());
+        holder.memoryTitle.setTextColor(activity.getResources().getColor(memories.get(position).getMemoryPriority()>=90?R.color.colorAccentDark:
+                (memories.get(position).getMemoryPriority()>=50)?R.color.colorAccent:R.color.colorAccentLight));
         holder.memoryDate.setText(getFormattedDate(memories.get(position).getDate()));
 
         if(memories.get(position).getLongDescription()==null||memories.get(position).getLongDescription().isEmpty()){
@@ -179,7 +180,7 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
 
     private String getFormattedDate(String date){
         String[] dateElements = date.replace("T", " ").replace("-", " ").replace(":"," ").split(" ");
-        return dateElements[2]+"-"+dateElements[1]+"-"+dateElements[0]+" "+dateElements[3]+":"+dateElements[4]+":"+dateElements[5];
+        return dateElements[2]+"-"+dateElements[1]+"-"+dateElements[0]+" "+dateElements[3]+":"+dateElements[4];
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {

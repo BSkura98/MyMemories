@@ -47,6 +47,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Title"
+                    android:textColor="@color/colorAccent"
                     android:textAppearance="?attr/textAppearanceHeadline6" />
 
                 <LinearLayout
@@ -89,26 +90,25 @@
                 android:id="@+id/entryRowButtons"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="end"
                 android:layout_margin="8dp"
                 android:orientation="horizontal">
 
-                <com.google.android.material.button.MaterialButton
+                <Button
                     android:id="@+id/editButton"
-                    style="?attr/borderlessButtonStyle"
+                    style="@style/Widget.App.Button.OutlinedButton.IconOnly"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
                     android:layout_marginRight="8dp"
-                    android:text="Edit"
-                    android:textColor="@color/colorPrimary"/>
+                    app:icon="@drawable/ic_edit" />
 
-                <com.google.android.material.button.MaterialButton
+                <Button
                     android:id="@+id/deleteButton"
-                    style="?attr/borderlessButtonStyle"
+                    style="@style/Widget.App.Button.OutlinedButton.IconOnly"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Delete"
-                    android:textColor="@color/colorPrimary"/>
+                    app:icon="@drawable/ic_delete" />
             </LinearLayout>
 
         </LinearLayout>

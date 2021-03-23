@@ -82,17 +82,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         Intent i = getIntent();
         switch (item.getItemId()){
-            case R.id.nav_recent_entries:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new RecentEntriesFragment()).commit();
-                toolbarTextView.setText("Recent entries");
-                i.putExtra("fragmentToLoad", "recentEntriesFragment");
-                searchButton.setVisibility(View.VISIBLE);
-                break;
             case R.id.nav_dates:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new DatesFragment()).commit();
-                toolbarTextView.setText("Select date");
+                toolbarTextView.setText("Memories");
                 i.putExtra("fragmentToLoad", "datesFragment");
-                searchButton.setVisibility(View.GONE);
+                searchButton.setVisibility(View.VISIBLE);
                 break;
             case R.id.nav_friends:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new FriendsMemoriesFragment()).commit();
@@ -136,13 +130,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     i.putExtra("fragmentToLoad", "friendsMemoriesFragment");
                     searchButton.setVisibility(View.GONE);
                     break;
-                case "datesFragment":
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new DatesFragment()).commit();
-                    navigationView.setCheckedItem(R.id.nav_dates);
-                    toolbarTextView.setText("Select date");
-                    i.putExtra("fragmentToLoad", "datesFragment");
-                    searchButton.setVisibility(View.GONE);
-                    break;
                 case "categoriesFragment":
                     getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new CategoriesFragment()).commit();
                     navigationView.setCheckedItem(R.id.nav_Categories);
@@ -157,20 +144,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     i.putExtra("fragmentToLoad", "settingsFragment");
                     searchButton.setVisibility(View.GONE);
                     break;
-                case "recentEntriesFragment":
+                case "datesFragment":
                 default:
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new RecentEntriesFragment()).commit();
-                    navigationView.setCheckedItem(R.id.nav_recent_entries);
-                    toolbarTextView.setText("Recent entries");
-                    i.putExtra("fragmentToLoad", "recentEntriesFragment");
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new DatesFragment()).commit();
+                    navigationView.setCheckedItem(R.id.nav_dates);
+                    toolbarTextView.setText("Memories");
+                    i.putExtra("fragmentToLoad", "datesFragment");
                     searchButton.setVisibility(View.VISIBLE);
                     break;
             }
         }else{
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new RecentEntriesFragment()).commit();
-            navigationView.setCheckedItem(R.id.nav_recent_entries);
-            toolbarTextView.setText("Recent entries");
-            i.putExtra("fragmentToLoad", "recentEntriesFragment");
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new DatesFragment()).commit();
+            navigationView.setCheckedItem(R.id.nav_dates);
+            toolbarTextView.setText("Memories");
+            i.putExtra("fragmentToLoad", "datesFragment");
             searchButton.setVisibility(View.VISIBLE);
         }
     }

@@ -1,6 +1,7 @@
 package com.bartlomiejskura.mymemories.fragment;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
@@ -15,10 +16,12 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bartlomiejskura.mymemories.AddMemoryActivity;
 import com.bartlomiejskura.mymemories.R;
 import com.bartlomiejskura.mymemories.adapter.MemoryListAdapter;
 import com.bartlomiejskura.mymemories.model.Memory;
 import com.bartlomiejskura.mymemories.task.GetMemoriesForDateTask;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -30,6 +33,7 @@ import java.util.List;
 public class DatesFragment extends Fragment {
     private RecyclerView memoryList;
     private Button dateButton;
+    private FloatingActionButton addMemoryButton;
 
     private MemoryListAdapter adapter;
     private Date date = new Date();
@@ -39,8 +43,7 @@ public class DatesFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_dates, container, false);
 
-        memoryList = view.findViewById(R.id.memoryList);
-        dateButton = view.findViewById(R.id.dateButton);
+        bindViews(view);
 
         new Thread(new Runnable() {
             @Override
@@ -52,6 +55,18 @@ public class DatesFragment extends Fragment {
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
         dateButton.setText(sdf.format(date));
 
+        setListeners();
+
+        return view;
+    }
+
+    private void bindViews(View view){
+        memoryList = view.findViewById(R.id.memoryList);
+        dateButton = view.findViewById(R.id.dateButton);
+        addMemoryButton = view.findViewById(R.id.addMemoryButton);
+    }
+
+    private void setListeners(){
         dateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -59,7 +74,12 @@ public class DatesFragment extends Fragment {
             }
         });
 
-        return view;
+        addMemoryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(v.getContext(), AddMemoryActivity.class));
+            }
+        });
     }
 
     public void getAllMemoriesForDate(Date date){
