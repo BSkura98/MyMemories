@@ -3,6 +3,7 @@ package com.bartlomiejskura.mymemories;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
@@ -26,6 +27,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
@@ -35,7 +37,9 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.bartlomiejskura.mymemories.adapter.FriendsAdapter;
@@ -89,13 +93,17 @@ import java.util.Locale;
 public class AddMemoryActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, OnMapReadyCallback {
     private ImageView memoryImage;
     private ImageButton deleteImageButton, deleteTimeButton;
-    private Button addPersonButton, dateButton, timeButton, addCategoryButton, locationButton, addMemoryButton, selectImageButton, selectLocationButton, deleteLocationButton;
+    private ImageButton addCategoryButton;
+    private Button addPersonButton, dateButton, timeButton, locationButton, addMemoryButton, selectImageButton, selectLocationButton, deleteLocationButton, addCategoriesButton;
     private TextInputLayout titleInputLayout;
     private SwitchMaterial makePublicSwitch;
     private ChipGroup chipGroup, friendsChipGroup;
     private EditText titleEditText, description, categoryEditText;
     private Spinner prioritySpinner;
     private SupportMapFragment mapFragment;
+    private TextView toolbarTextView;
+    private ImageButton backButton;
+    private LinearLayout addCategoriesLayout;
 
     private Memory memory = new Memory();
     private Integer day, month, year, hour, minute;
@@ -135,8 +143,12 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         mapFragment.getView().setVisibility(View.GONE);
         deleteLocationButton.setVisibility(View.GONE);
+        addCategoriesLayout.setVisibility(View.GONE);
 
         dateButton.setText(new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
+
+        toolbarTextView.setText("Add a memory");
+        findViewById(R.id.searchButton).setVisibility(View.GONE);
 
         setListeners();
         mapFragment.getMapAsync(this);
@@ -164,22 +176,45 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
         selectLocationButton = findViewById(R.id.selectLocationButton);
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         deleteLocationButton = findViewById(R.id.deleteLocationButton);
+        toolbarTextView = findViewById(R.id.toolbarTextView);
+        backButton = findViewById(R.id.backButton);
+        addCategoriesButton = findViewById(R.id.addCategoriesButton);
+        addCategoriesLayout = findViewById(R.id.linearLayout);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void setListeners(){
-        dateButton.setOnClickListener(v -> selectDate());
+        dateButton.setOnClickListener(v -> {
+            selectDate();
+            addCategoriesLayout.setVisibility(View.GONE);
+            addCategoriesButton.setVisibility(View.VISIBLE);
+        });
 
-        timeButton.setOnClickListener(v -> selectTime());
+        timeButton.setOnClickListener(v -> {
+            selectTime();
+            addCategoriesLayout.setVisibility(View.GONE);
+            addCategoriesButton.setVisibility(View.VISIBLE);
+        });
 
-        selectImageButton.setOnClickListener(v -> openFileChooser());
+        selectImageButton.setOnClickListener(v -> {
+            openFileChooser();
+            addCategoriesLayout.setVisibility(View.GONE);
+            addCategoriesButton.setVisibility(View.VISIBLE);
+        });
 
         addMemoryButton.setOnClickListener(v -> new Thread(() -> addMemory(titleEditText.getText().toString(), description.getText().toString())).start());
 
-        deleteImageButton.setOnClickListener(v -> deleteImage(memory.getImageUrl(), false));
+        deleteImageButton.setOnClickListener(v -> {
+            deleteImage(memory.getImageUrl(), false);
+            addCategoriesLayout.setVisibility(View.GONE);
+            addCategoriesButton.setVisibility(View.VISIBLE);
+        });
 
         deleteTimeButton.setOnClickListener(v -> {
             timeButton.setText("Select");
             deleteTimeButton.setVisibility(View.GONE);
+            addCategoriesLayout.setVisibility(View.GONE);
+            addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
         addPersonButton.setOnClickListener(v -> {
@@ -217,9 +252,15 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
                 }
             });
             builder.show();
+            addCategoriesLayout.setVisibility(View.GONE);
+            addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
-        makePublicSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> makeMemoryPublic=!makeMemoryPublic);
+        makePublicSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            makeMemoryPublic=!makeMemoryPublic;
+            addCategoriesLayout.setVisibility(View.GONE);
+            addCategoriesButton.setVisibility(View.VISIBLE);
+        });
 
         addCategoryButton.setOnClickListener(v -> {
             LayoutInflater inflater = LayoutInflater.from(AddMemoryActivity.this);
@@ -250,6 +291,9 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
             }else{
                 ActivityCompat.requestPermissions(AddMemoryActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
             }
+
+            addCategoriesLayout.setVisibility(View.GONE);
+            addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
         selectLocationButton.setOnClickListener(v -> {
@@ -265,6 +309,8 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
             }else{
                 ActivityCompat.requestPermissions(AddMemoryActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
             }
+            addCategoriesLayout.setVisibility(View.GONE);
+            addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
         deleteLocationButton.setOnClickListener(v -> {
@@ -272,6 +318,25 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
             longitude = null;
             mapFragment.getView().setVisibility(View.GONE);
             deleteLocationButton.setVisibility(View.GONE);
+            addCategoriesLayout.setVisibility(View.GONE);
+            addCategoriesButton.setVisibility(View.VISIBLE);
+        });
+
+        backButton.setOnClickListener(v -> {
+            super.onBackPressed();
+        });
+
+        addCategoriesButton.setOnClickListener(v -> {
+            addCategoriesLayout.setVisibility(View.VISIBLE);
+            addCategoriesButton.setVisibility(View.GONE);
+            categoryEditText.requestFocus();
+        });
+
+        categoryEditText.setOnFocusChangeListener((v, hasFocus) -> {
+            if(!hasFocus){
+                addCategoriesLayout.setVisibility(View.GONE);
+                addCategoriesButton.setVisibility(View.VISIBLE);
+            }
         });
     }
 
@@ -389,6 +454,7 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        ((TextView) parent.getChildAt(0)).setTextColor(getResources().getColor(R.color.colorAccent));
         String selected = parent.getItemAtPosition(position).toString();
         if(selected.equals("High")){
             memoryPriority=90;

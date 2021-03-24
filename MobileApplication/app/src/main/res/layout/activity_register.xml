@@ -201,7 +201,7 @@
         android:layout_marginBottom="20dp"
         android:text="Sign Up"
         android:textAllCaps="false"
-        app:backgroundTint="@color/colorAccent"
+        app:backgroundTint="@color/colorAccentDark"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
