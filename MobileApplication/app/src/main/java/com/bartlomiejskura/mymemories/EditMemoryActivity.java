@@ -38,7 +38,9 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.bartlomiejskura.mymemories.adapter.FriendsAdapter;
@@ -89,14 +91,18 @@ import java.util.Locale;
 
 public class EditMemoryActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, OnMapReadyCallback {
     private ImageView memoryImage;
-    private ImageButton deleteImageButton;
-    private Button addPersonButton, dateButton, timeButton, addCategoryButton, locationButton, editMemoryButton, selectImageButton, selectLocationButton, deleteLocationButton;
+    private ImageButton deleteImageButton, deleteTimeButton, addCategoryButton;
+    private Button addPersonButton, dateButton, timeButton, locationButton, editMemoryButton, selectImageButton, selectLocationButton, deleteLocationButton, addCategoriesButton;
     private TextInputLayout titleInputLayout;
     private SwitchMaterial makePublicSwitch;
     private ChipGroup chipGroup, friendsChipGroup;
     private EditText titleEditText, descriptionEditText, categoryEditText;
     private Spinner prioritySpinner;
     private SupportMapFragment mapFragment;
+    private TextView toolbarTextView;
+    private ImageButton backButton;
+    private LinearLayout addCategoriesLayout;
+
 
     private Memory memory = new Memory();
     private SharedPreferences sharedPreferences;
@@ -162,6 +168,9 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
             deleteImageButton.setVisibility(View.GONE);
             memoryImage.setVisibility(View.GONE);
         }
+        addCategoriesLayout.setVisibility(View.GONE);
+        toolbarTextView.setText("Edit a memory");
+        findViewById(R.id.searchButton).setVisibility(View.GONE);
 
 
         sharedPreferences = getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
@@ -194,6 +203,7 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
         editMemoryButton = findViewById(R.id.editMemoryButton);
         selectImageButton = findViewById(R.id.selectImageButton);
         deleteImageButton = findViewById(R.id.deleteImageButton);
+        deleteTimeButton = findViewById(R.id.deleteTimeButton);
         prioritySpinner = findViewById(R.id.prioritySpinner);
         memoryImage = findViewById(R.id.memoryImage);
         dateButton = findViewById(R.id.dateButton);
@@ -208,14 +218,30 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
         selectLocationButton = findViewById(R.id.selectLocationButton);
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         deleteLocationButton = findViewById(R.id.deleteLocationButton);
+        toolbarTextView = findViewById(R.id.toolbarTextView);
+        backButton = findViewById(R.id.backButton);
+        addCategoriesButton = findViewById(R.id.addCategoriesButton);
+        addCategoriesLayout = findViewById(R.id.linearLayout);
     }
 
     private void setListeners(){
-        dateButton.setOnClickListener(v -> selectDate());
+        dateButton.setOnClickListener(v -> {
+            selectDate();
+            addCategoriesLayout.setVisibility(View.GONE);
+            addCategoriesButton.setVisibility(View.VISIBLE);
+        });
 
-        timeButton.setOnClickListener(v -> selectTime());
+        timeButton.setOnClickListener(v -> {
+            selectTime();
+            addCategoriesLayout.setVisibility(View.GONE);
+            addCategoriesButton.setVisibility(View.VISIBLE);
+        });
 
-        selectImageButton.setOnClickListener(v -> openFileChooser());
+        selectImageButton.setOnClickListener(v -> {
+            openFileChooser();
+            addCategoriesLayout.setVisibility(View.GONE);
+            addCategoriesButton.setVisibility(View.VISIBLE);
+        });
 
         editMemoryButton.setOnClickListener(v -> new Thread(() -> editMemory(titleEditText.getText().toString(), descriptionEditText.getText().toString())).start());
 
@@ -226,6 +252,15 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
                 deleteImageButton.setVisibility(View.GONE);
                 memoryImage.setVisibility(View.GONE);
             }
+            addCategoriesLayout.setVisibility(View.GONE);
+            addCategoriesButton.setVisibility(View.VISIBLE);
+        });
+
+        deleteTimeButton.setOnClickListener(v -> {
+            timeButton.setText("Select");
+            deleteTimeButton.setVisibility(View.GONE);
+            addCategoriesLayout.setVisibility(View.GONE);
+            addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
         addPersonButton.setOnClickListener(v -> {
@@ -255,9 +290,15 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
                 friends.remove(friend);
             });
             builder.show();
+            addCategoriesLayout.setVisibility(View.GONE);
+            addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
-        makePublicSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> makeMemoryPublic=!makeMemoryPublic);
+        makePublicSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            makeMemoryPublic=!makeMemoryPublic;
+            addCategoriesLayout.setVisibility(View.GONE);
+            addCategoriesButton.setVisibility(View.VISIBLE);
+        });
 
         addCategoryButton.setOnClickListener(v -> {
             String category = categoryEditText.getText().toString().toLowerCase();
@@ -273,6 +314,8 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
             }else{
                 ActivityCompat.requestPermissions(EditMemoryActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
             }
+            addCategoriesLayout.setVisibility(View.GONE);
+            addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
         selectLocationButton.setOnClickListener(v -> {
@@ -288,6 +331,8 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
             }else{
                 ActivityCompat.requestPermissions(EditMemoryActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
             }
+            addCategoriesLayout.setVisibility(View.GONE);
+            addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
         deleteLocationButton.setOnClickListener(v -> {
@@ -295,6 +340,25 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
             longitude = null;
             mapFragment.getView().setVisibility(View.GONE);
             deleteLocationButton.setVisibility(View.GONE);
+            addCategoriesLayout.setVisibility(View.GONE);
+            addCategoriesButton.setVisibility(View.VISIBLE);
+        });
+
+        backButton.setOnClickListener(v -> {
+            super.onBackPressed();
+        });
+
+        addCategoriesButton.setOnClickListener(v -> {
+            addCategoriesLayout.setVisibility(View.VISIBLE);
+            addCategoriesButton.setVisibility(View.GONE);
+            categoryEditText.requestFocus();
+        });
+
+        categoryEditText.setOnFocusChangeListener((v, hasFocus) -> {
+            if(!hasFocus){
+                addCategoriesLayout.setVisibility(View.GONE);
+                addCategoriesButton.setVisibility(View.VISIBLE);
+            }
         });
     }
 
@@ -471,6 +535,7 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        ((TextView) parent.getChildAt(0)).setTextColor(getResources().getColor(R.color.colorAccent));
         String selected = parent.getItemAtPosition(position).toString();
         if(selected.equals("High")){
             memoryPriority=90;
