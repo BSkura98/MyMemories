@@ -64,22 +64,27 @@
                         android:textSize="12sp" />
                 </LinearLayout>
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/confirmButton"
+                    style="@style/Widget.App.Button.OutlinedButton.IconOnly"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Confirm"
-                    android:textSize="14sp"
-                    style="@style/ButtonStyle"/>
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginRight="5dp"
+                    app:icon="@drawable/ic_done"
+                    app:iconTint="@color/colorAccent" />
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/deleteButton"
+                    style="@style/Widget.App.Button.OutlinedButton.IconOnly"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
-                    android:text="Delete"
-                    android:textSize="14sp"
-                    style="@style/ButtonStyle"/>
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginLeft="10dp"
+                    app:icon="@drawable/ic_close"
+                    app:iconTint="@color/colorAccent" />
 
             </LinearLayout>
 

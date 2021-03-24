@@ -30,8 +30,7 @@
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/recyclerView">
+        app:layout_constraintStart_toStartOf="parent">
 
         <Button
             android:id="@+id/addFriendButton"
@@ -40,7 +39,9 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_weight="1"
-            android:text="Add a friend" />
+            app:backgroundTint="@color/colorAccentDark"
+            android:textAllCaps="false"
+            android:text="Add a Friend" />
 
         <Button
             android:id="@+id/friendRequestsButton"
@@ -49,7 +50,9 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_weight="1"
-            android:text="Friend requests" />
+            app:backgroundTint="@color/colorAccentDark"
+            android:textAllCaps="false"
+            android:text="Friend Requests" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
