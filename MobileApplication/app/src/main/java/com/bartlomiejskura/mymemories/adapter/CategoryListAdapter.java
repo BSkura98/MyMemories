@@ -1,5 +1,6 @@
 package com.bartlomiejskura.mymemories.adapter;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -37,15 +38,19 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
     @Override
     public CategoryListAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.category_row, parent,false);
+        View view = inflater.inflate(R.layout.row_category, parent,false);
         return new CategoryListAdapter.MyViewHolder(view);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull CategoryListAdapter.MyViewHolder holder, int position) {
         holder.categoryName.setText(categories.get(position).getName());
         List<Memory> memories = categories.get(position).getMemories();
-        holder.memoryNumber.setText(String.valueOf(memories==null?0:memories.size()));
+        holder.memoryNumber.setText(String.valueOf(memories == null ? 0 : memories.size()));
+        if (memories != null && memories.size() == 1) {
+            holder.textView28.setText("memory");
+        }
     }
 
     @Override
@@ -74,7 +79,7 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder{
-        TextView categoryName, memoryNumber;
+        TextView categoryName, memoryNumber, textView28;
         LinearLayout categoryLinearLayout;
 
         public MyViewHolder(@NonNull View itemView) {
@@ -83,6 +88,7 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
             categoryLinearLayout = itemView.findViewById(R.id.categoryLinearLayout);
             categoryName = itemView.findViewById(R.id.categoryName);
             memoryNumber = itemView.findViewById(R.id.memoryNumber);
+            textView28 = itemView.findViewById(R.id.textView28);
 
             categoryLinearLayout.setOnClickListener(new View.OnClickListener() {
                 @Override

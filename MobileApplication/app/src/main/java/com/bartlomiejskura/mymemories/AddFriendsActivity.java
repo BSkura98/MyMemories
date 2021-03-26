@@ -5,6 +5,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -30,7 +31,9 @@ public class AddFriendsActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private UserListAdapter adapter;
     private RecyclerView usersRecyclerView;
+    private Activity activity = this;
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,14 +52,7 @@ public class AddFriendsActivity extends AppCompatActivity {
         toolbarTextView.setText("Add friends");
         searchButton.setVisibility(View.GONE);
 
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getApplicationContext(), FriendsActivity.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(i);
-            }
-        });
+        backButton.setOnClickListener(v -> activity.onBackPressed());
 
         SearchView userSearchView = findViewById(R.id.userSearchView);
         customizeSearchView(userSearchView);

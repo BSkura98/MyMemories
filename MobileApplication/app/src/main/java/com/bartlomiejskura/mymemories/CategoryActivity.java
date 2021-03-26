@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -23,10 +24,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class CategoryActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class CategoryActivity extends AppCompatActivity {
     private RecyclerView memoryList;
+    private TextView toolbarTextView;
+    private Toolbar toolbar;
+    private ImageButton backButton;
+
     private MemoryListAdapter adapter;
-    private Spinner prioritySpinner;
     private Long categoryId;
 
     @Override
@@ -34,27 +38,30 @@ public class CategoryActivity extends AppCompatActivity implements AdapterView.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category);
 
-        memoryList = findViewById(R.id.memoryList);
-        prioritySpinner = findViewById(R.id.prioritySpinner);
+        bindViews();
         categoryId = getIntent().getLongExtra("categoryId",0);
 
-        TextView toolbarTextView = findViewById(R.id.toolbarTextView);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-        toolbarTextView.setText(getIntent().getStringExtra("category"));
-        findViewById(R.id.searchButton).setVisibility(View.GONE);
+        initToolbar();
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.priorities_filter, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        prioritySpinner.setAdapter(adapter);
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                getAllMemories();
-            }
-        }).start();
+        new Thread(this::getAllMemories).start();
+    }
+
+    private void initToolbar(){
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        toolbarTextView.setText(getIntent().getStringExtra("category"));
+
+        backButton.setOnClickListener(v -> super.onBackPressed());
+    }
+
+    private void bindViews(){
+        memoryList = findViewById(R.id.memoryList);
+        toolbarTextView = findViewById(R.id.toolbarTextView);
+        toolbar = findViewById(R.id.toolbar);
+        backButton = findViewById(R.id.backButton);
     }
 
     public void getAllMemories(){
@@ -66,47 +73,17 @@ public class CategoryActivity extends AppCompatActivity implements AdapterView.O
             }
             final List<Memory> memories = new ArrayList<>(Arrays.asList(memoryArray));
             final CategoryActivity activity = this;
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    adapter = new MemoryListAdapter(
-                            getApplicationContext(),
-                            memories,
-                            activity
-                    );
-                    memoryList.setAdapter(adapter);
-                    memoryList.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-
-                    prioritySpinner.setOnItemSelectedListener(activity);
-                }
+            runOnUiThread(() -> {
+                adapter = new MemoryListAdapter(
+                        getApplicationContext(),
+                        memories,
+                        activity
+                );
+                memoryList.setAdapter(adapter);
+                memoryList.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
             });
         }catch (Exception e){
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        String selected = parent.getItemAtPosition(position).toString();
-        if(selected.equals("High")){
-            adapter.setMemoryPriority(90);
-        }else if(selected.equals("Medium")){
-            adapter.setMemoryPriority(50);
-        }else if(selected.equals("Low")){
-            adapter.setMemoryPriority(10);
-        }else if(selected.equals("All")){
-            adapter.setMemoryPriority(0);
-        }
-        memoryList.post(new Runnable() {
-            @Override
-            public void run() {
-                adapter.notifyDataSetChanged();
-            }
-        });
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
     }
 }
