@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -45,7 +46,8 @@ public class SettingsFragment extends Fragment {
     private Calendar calendar = Calendar.getInstance();
 
     private ImageView avatarImageView;
-    private Button changeAvatarButton, deleteAvatarButton, firstNameButton, secondNameButton, emailButton, birthdayButton, changePasswordButton;
+    private ImageButton firstNameButton, secondNameButton, emailButton;
+    private Button changeAvatarButton, deleteAvatarButton, birthdayButton, changePasswordButton;
     private EditText firstNameEditText, secondNameEditText, emailEditText;
     private TextInputLayout textInputLayout, textInputLayout2, textInputLayout3;
 
@@ -307,20 +309,19 @@ public class SettingsFragment extends Fragment {
     }
 
     @SuppressLint({"SetTextI18n", "ResourceAsColor"})
-    private void setEditTextEditable(EditText editText, TextInputLayout textInputLayout, Button button, Boolean editable){
+    private void setEditTextEditable(EditText editText, TextInputLayout textInputLayout, ImageButton button, Boolean editable){
         if (!editable) {
             editText.setEnabled(false);
             textInputLayout.setBoxStrokeWidth(0);
             textInputLayout.setBoxStrokeWidthFocused(0);
-            editText.setTextColor(Color.parseColor("#000000"));
-
-
-            button.setText("Edit");
+            editText.setTextColor(getResources().getColor(R.color.colorAccent));
+            button.setImageResource(R.drawable.ic_edit);
         } else {
             editText.setEnabled(true);
             editText.requestFocus();
-            button.setText("Confirm");
             textInputLayout.setBoxStrokeWidthFocused(8);
+            editText.setTextColor(Color.parseColor("#000000"));
+            button.setImageResource(R.drawable.ic_done);
         }
     }
 
