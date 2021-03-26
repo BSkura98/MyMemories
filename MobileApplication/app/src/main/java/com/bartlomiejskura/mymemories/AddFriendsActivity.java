@@ -9,9 +9,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 
@@ -42,7 +46,7 @@ public class AddFriendsActivity extends AppCompatActivity {
         ImageButton backButton = findViewById(R.id.backButton);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        toolbarTextView.setText("Add a friend");
+        toolbarTextView.setText("Add friends");
         searchButton.setVisibility(View.GONE);
 
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -55,6 +59,7 @@ public class AddFriendsActivity extends AppCompatActivity {
         });
 
         SearchView userSearchView = findViewById(R.id.userSearchView);
+        customizeSearchView(userSearchView);
         userSearchView.setIconifiedByDefault(false);
         userSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -102,8 +107,20 @@ public class AddFriendsActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Intent i = new Intent(getApplicationContext(), FriendsActivity.class);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(i);
+        super.onBackPressed();
+    }
+
+    private void customizeSearchView(SearchView searchView) {
+        int searchTextId = getResources().getIdentifier("android:id/search_src_text", null, null);
+        EditText searchBox = ((EditText) searchView.findViewById(searchTextId));
+        searchBox.setBackgroundColor(Color.WHITE);
+        searchBox.getLayoutParams().height = LinearLayout.LayoutParams.MATCH_PARENT;
+        int search_plateId = getResources().getIdentifier("android:id/search_plate", null, null);
+        View mSearchPlate = ((View) searchView.findViewById(search_plateId));
+        mSearchPlate.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+
+        int searchCloseImageId = getResources().getIdentifier("android:id/search_close_btn", null, null);
+        ImageView searchClose = ((ImageView) searchView.findViewById(searchCloseImageId));// change color
+        searchClose.setBackgroundColor(Color.WHITE);
     }
 }

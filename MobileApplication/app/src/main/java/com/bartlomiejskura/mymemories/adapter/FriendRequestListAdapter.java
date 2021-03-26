@@ -1,5 +1,6 @@
 package com.bartlomiejskura.mymemories.adapter;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -44,10 +45,11 @@ public class FriendRequestListAdapter extends RecyclerView.Adapter<FriendRequest
         return new FriendRequestListAdapter.MyViewHolder(view);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         holder.nameTextView.setText(users.get(position).getFirstName().concat(" ").concat(users.get(position).getLastName()));
-        holder.birthdateTextView.setText(getFormattedDate(users.get(position).getBirthday()));
+        holder.birthdateTextView.setText("date of birth: "+getFormattedDate(users.get(position).getBirthday()));
 
         if(users.get(position).getAvatarUrl()!=null){
             Picasso.get()

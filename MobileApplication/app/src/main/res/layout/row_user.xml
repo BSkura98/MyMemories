@@ -64,16 +64,16 @@
                         android:textSize="12sp" />
                 </LinearLayout>
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/requestButton"
+                    style="@style/Widget.App.Button.OutlinedButton.IconOnly"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:backgroundTint="@color/colorAccentDark"
-                    android:text="Send request"
-                    android:textSize="14sp"
+                    android:layout_gravity="center_vertical"
                     android:paddingLeft="5dp"
                     android:paddingRight="5dp"
-                    style="@style/ButtonStyle"/>
+                    app:icon="@drawable/ic_person_add"
+                    app:iconTint="@color/colorAccentDark"/>
 
             </LinearLayout>
 

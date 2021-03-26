@@ -73,7 +73,8 @@
                     android:layout_marginStart="5dp"
                     android:layout_marginRight="5dp"
                     app:icon="@drawable/ic_done"
-                    app:iconTint="@color/colorAccent" />
+                    app:iconTint="@color/colorAccent"
+                    android:layout_marginLeft="5dp" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/deleteButton"
