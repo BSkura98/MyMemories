@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/friendsMemories"
+        android:enabled="true"
+        android:icon="@drawable/ic_library_books"
+        android:title="Public memories"/>
+    <item
+        android:id="@+id/yourFriends"
+        android:enabled="true"
+        android:icon="@drawable/ic_people"
+        android:title="Your friends"/>
+    <item
+        android:id="@+id/friendRequests"
+        android:enabled="true"
+        android:icon="@drawable/ic_person_add"
+        android:title="Friend requests"/>
+</menu>

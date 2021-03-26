@@ -19,8 +19,7 @@ import android.widget.TextView;
 
 import com.bartlomiejskura.mymemories.fragment.CategoriesFragment;
 import com.bartlomiejskura.mymemories.fragment.DatesFragment;
-import com.bartlomiejskura.mymemories.fragment.FriendsMemoriesFragment;
-import com.bartlomiejskura.mymemories.fragment.RecentEntriesFragment;
+import com.bartlomiejskura.mymemories.fragment.FriendsFragment;
 import com.bartlomiejskura.mymemories.fragment.SettingsFragment;
 import com.google.android.material.navigation.NavigationView;
 
@@ -89,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 searchButton.setVisibility(View.VISIBLE);
                 break;
             case R.id.nav_friends:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new FriendsMemoriesFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new FriendsFragment()).commit();
                 toolbarTextView.setText("Friends");
                 i.putExtra("fragmentToLoad", "friendsMemoriesFragment");
                 searchButton.setVisibility(View.GONE);
@@ -124,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if(bundle!=null){
             switch(bundle.getString("fragmentToLoad")){
                 case "friendsMemoriesFragment":
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new FriendsMemoriesFragment()).commit();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new FriendsFragment()).commit();
                     navigationView.setCheckedItem(R.id.nav_friends);
                     toolbarTextView.setText("Friends");
                     i.putExtra("fragmentToLoad", "friendsMemoriesFragment");
