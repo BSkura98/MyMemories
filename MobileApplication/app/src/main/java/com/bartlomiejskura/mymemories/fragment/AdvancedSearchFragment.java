@@ -12,6 +12,7 @@ import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,12 +28,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class AdvancedSearchFragment extends Fragment {
-    private Button normalSearchButton, addCategoryButton, searchButton;
+    private ImageButton addCategoryButton;
+    private Button normalSearchButton,  searchButton, addCategoriesButton;
     private Button[] dateButtons = new Button[datesNumber];
     private ImageButton[] deleteButtons = new ImageButton[datesNumber];
     private CheckBox highPriorityCheckBox, mediumPriorityCheckBox, lowPriorityCheckBox, yesPublicCheckBox, noPublicCheckBox, yesSharedMemoriesCheckBox, noSharedMemoriesCheckBox, withImageCheckBox, withoutImageCheckBox;
     private EditText categoryEditText;
     private ChipGroup categoriesChipGroup;
+    private LinearLayout addCategoriesLayout;
 
     private Calendar[] dateCalendars = {null, null, null, null};
     private List<Integer> priorityList = new LinkedList<>();
@@ -76,69 +79,61 @@ public class AdvancedSearchFragment extends Fragment {
         withImageCheckBox = view.findViewById(R.id.withImageCheckBox);
         withoutImageCheckBox = view.findViewById(R.id.withoutImageCheckBox);
         searchButton = view.findViewById(R.id.searchButton);
+        addCategoriesButton = view.findViewById(R.id.addCategoriesButton2);
+        addCategoriesLayout = view.findViewById(R.id.linearLayout2);
     }
 
     private void setListeners(){
-        normalSearchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((SearchMemoryActivity)getActivity()).changeFragment(false);
-            }
-        });
+        normalSearchButton.setOnClickListener(v -> ((SearchMemoryActivity)getActivity()).changeFragment(false));
 
         for(int i=0;i<datesNumber;i++){
             final int finalI = i;
-            dateButtons[i].setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    selectDate(finalI);
-                }
+            dateButtons[i].setOnClickListener(v -> {
+                selectDate(finalI);
+                addCategoriesLayout.setVisibility(View.GONE);
+                addCategoriesButton.setVisibility(View.VISIBLE);
             });
         }
 
         for(int i=0;i<datesNumber;i++){
             final int finalI = i;
-            deleteButtons[i].setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dateButtons[finalI].setText("Select");
-                    deleteButtons[finalI].setVisibility(View.GONE);
-                    dateCalendars[finalI] = null;
-                }
+            deleteButtons[i].setOnClickListener(v -> {
+                dateButtons[finalI].setText("Select");
+                deleteButtons[finalI].setVisibility(View.GONE);
+                dateCalendars[finalI] = null;
+                addCategoriesLayout.setVisibility(View.GONE);
+                addCategoriesButton.setVisibility(View.VISIBLE);
             });
         }
 
-        highPriorityCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
-                    priorityList.add(90);
-                }else{
-                    priorityList.remove(Integer.valueOf(90));
-                }
+        highPriorityCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if(isChecked){
+                priorityList.add(90);
+            }else{
+                priorityList.remove(Integer.valueOf(90));
             }
+            addCategoriesLayout.setVisibility(View.GONE);
+            addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
-        mediumPriorityCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
-                    priorityList.add(50);
-                }else{
-                    priorityList.remove(Integer.valueOf(50));
-                }
+        mediumPriorityCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if(isChecked){
+                priorityList.add(50);
+            }else{
+                priorityList.remove(Integer.valueOf(50));
             }
+            addCategoriesLayout.setVisibility(View.GONE);
+            addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
-        lowPriorityCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
-                    priorityList.add(10);
-                }else{
-                    priorityList.remove(Integer.valueOf(10));
-                }
+        lowPriorityCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if(isChecked){
+                priorityList.add(10);
+            }else{
+                priorityList.remove(Integer.valueOf(10));
             }
+            addCategoriesLayout.setVisibility(View.GONE);
+            addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
         yesPublicCheckBox.setOnCheckedChangeListener(new MyOnCheckedChangeListener(yesPublicCheckBox, noPublicCheckBox, 0, true));
@@ -148,27 +143,33 @@ public class AdvancedSearchFragment extends Fragment {
         withImageCheckBox.setOnCheckedChangeListener(new MyOnCheckedChangeListener(withImageCheckBox, withoutImageCheckBox, 2, true));
         withoutImageCheckBox.setOnCheckedChangeListener(new MyOnCheckedChangeListener(withoutImageCheckBox, withImageCheckBox, 2, false));
 
-        addCategoryButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String category = categoryEditText.getText().toString().toLowerCase();
-                if(!categories.contains(category)||category.isEmpty()){
-                    initChip(category);
-                    categories.add(category);
-                }
-                categoryEditText.setText("");
+        addCategoryButton.setOnClickListener(v -> {
+            String category = categoryEditText.getText().toString().toLowerCase();
+            if(!categories.contains(category)||category.isEmpty()){
+                initChip(category);
+                categories.add(category);
             }
+            categoryEditText.setText("");
+            addCategoriesLayout.setVisibility(View.GONE);
+            addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
-        searchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((SearchMemoryActivity)getActivity()).startSearchResultsActivity(((SearchMemoryActivity)getActivity()).getQuery());
-            }
+        searchButton.setOnClickListener(v -> {
+            ((SearchMemoryActivity)getActivity()).startSearchResultsActivity(((SearchMemoryActivity)getActivity()).getQuery());
+            addCategoriesLayout.setVisibility(View.GONE);
+            addCategoriesButton.setVisibility(View.VISIBLE);
+        });
+
+        addCategoriesButton.setOnClickListener(v -> {
+            addCategoriesLayout.setVisibility(View.VISIBLE);
+            addCategoriesButton.setVisibility(View.GONE);
+            categoryEditText.requestFocus();
         });
     }
 
     private void setElements(){
+        addCategoriesLayout.setVisibility(View.GONE);
+
         for(int i=0;i<datesNumber;i++){
             if(dateCalendars[i]==null){
                 deleteButtons[i].setVisibility(View.GONE);
@@ -278,6 +279,9 @@ public class AdvancedSearchFragment extends Fragment {
             }else{
                 booleanValues[booleanValueId] = onCheckedValue;
             }
+
+            addCategoriesLayout.setVisibility(View.GONE);
+            addCategoriesButton.setVisibility(View.VISIBLE);
         }
     }
 }

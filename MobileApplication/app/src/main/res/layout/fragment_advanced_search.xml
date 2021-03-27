@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -26,6 +26,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginLeft="20dp"
                 android:text="Without image"
+                android:textColor="#616161"
                 app:layout_constraintStart_toEndOf="@id/withImageCheckBox"
                 app:layout_constraintTop_toBottomOf="@+id/textView21" />
 
@@ -36,6 +37,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginLeft="20dp"
                 android:text="With image"
+                android:textColor="#616161"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView21" />
 
@@ -46,6 +48,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginLeft="20dp"
                 android:text="No"
+                android:textColor="#616161"
                 app:layout_constraintStart_toEndOf="@+id/yesSharedMemoriesCheckBox"
                 app:layout_constraintTop_toBottomOf="@+id/textView20" />
 
@@ -56,6 +59,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginLeft="20dp"
                 android:text="Yes"
+                android:textColor="#616161"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView20" />
 
@@ -127,10 +131,12 @@
 
             <Button
                 android:id="@+id/normalSearchButton"
-                android:layout_width="wrap_content"
+                android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="Normal search"
+                android:text="Normal Search"
+                android:textAllCaps="false"
+                app:backgroundTint="@color/colorAccent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -139,7 +145,7 @@
                 android:id="@+id/linearLayout4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="15dp"
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -150,21 +156,25 @@
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="5dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="0dp"
                     android:layout_weight="1"
                     android:text="Select"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorAccent"
                     android:textSize="14sp"
-                    app:icon="@drawable/ic_date" />
+                    app:icon="@drawable/ic_date"
+                    app:iconTint="@color/colorAccent" />
 
                 <ImageButton
                     android:id="@+id/deleteButton1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginRight="5dp"
+                    android:layout_marginRight="0dp"
                     android:layout_weight="1"
                     android:background="@null"
+                    android:tint="@color/colorAccent"
                     app:srcCompat="@drawable/ic_close"
                     tools:ignore="VectorDrawableCompat" />
 
@@ -185,8 +195,11 @@
                     android:layout_marginRight="5dp"
                     android:layout_weight="1"
                     android:text="Select"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorAccent"
                     android:textSize="14sp"
-                    app:icon="@drawable/ic_date" />
+                    app:icon="@drawable/ic_date"
+                    app:iconTint="@color/colorAccent" />
 
                 <ImageButton
                     android:id="@+id/deleteButton2"
@@ -196,6 +209,7 @@
                     android:layout_marginRight="5dp"
                     android:layout_weight="1"
                     android:background="@null"
+                    android:tint="@color/colorAccent"
                     app:srcCompat="@drawable/ic_close"
                     tools:ignore="VectorDrawableCompat" />
 
@@ -216,12 +230,15 @@
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="5dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="0dp"
                     android:layout_weight="1"
                     android:text="Select"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorAccent"
                     android:textSize="14sp"
-                    app:icon="@drawable/ic_date" />
+                    app:icon="@drawable/ic_date"
+                    app:iconTint="@color/colorAccent" />
 
                 <ImageButton
                     android:id="@+id/deleteButton3"
@@ -231,6 +248,7 @@
                     android:layout_marginRight="5dp"
                     android:layout_weight="1"
                     android:background="@null"
+                    android:tint="@color/colorAccent"
                     app:srcCompat="@drawable/ic_close"
                     tools:ignore="VectorDrawableCompat" />
 
@@ -251,8 +269,11 @@
                     android:layout_marginRight="5dp"
                     android:layout_weight="1"
                     android:text="Select"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorAccent"
                     android:textSize="14sp"
-                    app:icon="@drawable/ic_date" />
+                    app:icon="@drawable/ic_date"
+                    app:iconTint="@color/colorAccent" />
 
                 <ImageButton
                     android:id="@+id/deleteButton4"
@@ -262,6 +283,7 @@
                     android:layout_marginRight="5dp"
                     android:layout_weight="1"
                     android:background="@null"
+                    android:tint="@color/colorAccent"
                     app:srcCompat="@drawable/ic_close"
                     tools:ignore="VectorDrawableCompat" />
 
@@ -304,12 +326,12 @@
                 android:id="@+id/categoriesChipGroup"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="40dp"
-                android:layout_marginLeft="40dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginLeft="20dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginEnd="40dp"
-                android:layout_marginRight="40dp"
-                android:layout_marginBottom="50dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="30dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -324,13 +346,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginLeft="20dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginRight="20dp"
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/withImageCheckBox">
+                app:layout_constraintTop_toBottomOf="@+id/addCategoriesButton2">
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/textInputLayout3"
@@ -338,8 +360,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:hint="Category"
-                    app:boxBackgroundColor="#FFFFFF">
+                    android:theme="@style/TextInputLayoutAppearance"
+                    app:boxBackgroundColor="#FFFFFF"
+                    app:boxStrokeColor="@color/colorAccent"
+                    app:hintTextColor="@color/colorAccent">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/categoryEditText"
@@ -347,14 +371,17 @@
                         android:layout_height="match_parent" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <Button
+                <ImageButton
                     android:id="@+id/addCategoryButton"
-                    android:layout_width="match_parent"
+                    android:layout_width="100dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_weight="2"
-                    android:text="Add" />
+                    android:layout_marginTop="10dp"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:tint="@color/colorAccent"
+                    app:srcCompat="@drawable/ic_add_color_accent"
+                    tools:ignore="VectorDrawableCompat" />
             </LinearLayout>
 
             <CheckBox
@@ -364,6 +391,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginLeft="20dp"
                 android:text="Yes"
+                android:textColor="#616161"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView18" />
 
@@ -374,18 +402,45 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginLeft="20dp"
                 android:text="No"
+                android:textColor="#616161"
                 app:layout_constraintStart_toEndOf="@+id/yesPublicCheckBox"
                 app:layout_constraintTop_toBottomOf="@+id/textView18" />
+
+            <TextView
+                android:id="@+id/textView30"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:text="Categories"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/withImageCheckBox" />
+
+            <Button
+                android:id="@+id/addCategoriesButton2"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:text="Add"
+                android:textAllCaps="false"
+                app:backgroundTint="@color/colorAccent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView30" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
     <Button
         android:id="@+id/searchButton"
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
         android:text="Search"
+        android:textAllCaps="false"
+        app:backgroundTint="@color/colorAccentDark"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
