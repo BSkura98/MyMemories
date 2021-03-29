@@ -19,6 +19,7 @@ import android.widget.TextView;
 import com.bartlomiejskura.mymemories.model.Category;
 import com.bartlomiejskura.mymemories.model.Memory;
 import com.bartlomiejskura.mymemories.task.DeleteMemoryTask;
+import com.bartlomiejskura.mymemories.task.EditMemoryTask;
 import com.bartlomiejskura.mymemories.utils.DateUtil;
 import com.bartlomiejskura.mymemories.utils.MemoryUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -34,19 +35,21 @@ import com.squareup.picasso.RequestCreator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallback {
     private TextView titleTextView, descriptionTextView, toolbarTextView, dateTextView, creationDateTextView, priorityTextView, memoryFriends, locationTextView;
     private ImageView memoryImage;
     private Toolbar toolbar;
     private ImageButton backButton;
-    private LinearLayout publicLayout;
+    private LinearLayout publicLayout, editDeleteButtonsLayout, untagYourselfButtonLayout;
     private SupportMapFragment mapFragment;
     private ChipGroup categoriesChipGroup;
-    private Button deleteButton, editButton;
+    private Button deleteButton, editButton, untagYourselfButton;
 
     private Memory memory;
     private GoogleMap map;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,9 +58,9 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
 
         bindViews();
         initToolbar();
-        setListeners();
         getMemory();
         setElements();
+        setListeners();
         mapFragment.getMapAsync(this);
     }
 
@@ -78,6 +81,9 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
         categoriesChipGroup = findViewById(R.id.chipGroup2);
         editButton = findViewById(R.id.editButton2);
         deleteButton = findViewById(R.id.deleteButton5);
+        editDeleteButtonsLayout = findViewById(R.id.linearLayout8);
+        untagYourselfButtonLayout = findViewById(R.id.linearLayout9);
+        untagYourselfButton = findViewById(R.id.untagYourselfButton);
     }
 
     private void initToolbar(){
@@ -89,9 +95,14 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
     }
 
     private void setListeners(){
-        deleteButton.setOnClickListener(v -> deleteMemory());
-
-        editButton.setOnClickListener(v -> editMemory());
+        if(!memory.getMemoryOwner().getId().equals(sharedPreferences.getLong("userId",0))){
+            untagYourselfButton.setOnClickListener(v -> untagYourselfFromMemory());
+            editDeleteButtonsLayout.setVisibility(View.GONE);
+        }else{
+            editButton.setOnClickListener(v -> editMemory());
+            deleteButton.setOnClickListener(v -> deleteMemory());
+            untagYourselfButtonLayout.setVisibility(View.GONE);
+        }
     }
 
     private void getMemory(){
@@ -100,7 +111,7 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
     }
 
     private void setElements(){
-        SharedPreferences sharedPreferences = getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
 
         titleTextView.setText(memory.getShortDescription());
         if(memory.getLongDescription().isEmpty()){
@@ -134,8 +145,6 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
 
         if(memory.getCategories()!=null&&memory.getCategories().size()>0){
             initCategoriesChipGroup(memory.getCategories());
-        }else{
-            categoriesChipGroup.setVisibility(View.GONE);
         }
     }
 
@@ -190,6 +199,25 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
         i.putExtra("categories", gson.toJson(categories));
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(i);
+    }
+
+    private void untagYourselfFromMemory(){
+        memory.removeMemoryFriend(sharedPreferences.getLong("userId",0));
+
+        try{
+            EditMemoryTask editMemoryTask = new EditMemoryTask(this, memory);
+            Boolean editMemoryResult = editMemoryTask.execute().get();
+            if(editMemoryResult){
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("hasBackPressed",true);
+                setResult(Activity.RESULT_OK,returnIntent);
+                finish();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

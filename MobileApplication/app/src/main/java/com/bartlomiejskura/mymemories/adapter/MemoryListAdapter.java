@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -15,14 +14,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bartlomiejskura.mymemories.EditMemoryActivity;
 import com.bartlomiejskura.mymemories.MemoryActivity;
 import com.bartlomiejskura.mymemories.R;
 import com.bartlomiejskura.mymemories.model.Memory;
 import com.bartlomiejskura.mymemories.model.Category;
 import com.bartlomiejskura.mymemories.model.User;
-import com.bartlomiejskura.mymemories.task.DeleteMemoryTask;
-import com.bartlomiejskura.mymemories.task.EditMemoryTask;
+import com.google.android.material.card.MaterialCardView;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
@@ -32,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.MyViewHolder> {
     private Context context;
@@ -61,9 +57,11 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
     @Override
     public void onBindViewHolder(@NonNull MemoryListAdapter.MyViewHolder holder, int position) {
         holder.memoryTitle.setText(memories.get(position).getShortDescription());
-        holder.memoryTitle.setTextColor(activity.getResources().getColor(memories.get(position).getMemoryPriority()>=90?R.color.colorAccentDark:
-                (memories.get(position).getMemoryPriority()>=50)?R.color.colorAccent:R.color.colorAccentLight));
         holder.memoryDate.setText(getFormattedDate(memories.get(position).getDate()));
+
+        holder.cardView.setStrokeWidth(4);
+        holder.cardView.setStrokeColor(activity.getResources().getColor(memories.get(position).getMemoryPriority()>=90?R.color.colorAccentLight:
+                (memories.get(position).getMemoryPriority()>=50)?R.color.colorAccentVeryLight:R.color.white));
 
         if(memories.get(position).getLongDescription()==null||memories.get(position).getLongDescription().isEmpty()){
             holder.memoryDescription.setVisibility(View.GONE);
@@ -112,8 +110,6 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
                 holder.memoryFriends.setText(friendsText);
             }else{//jeśli jest to wspólne wspomnienie
                 holder.memoryFriendLinearLayout.setVisibility(View.VISIBLE);
-                holder.deleteButton.setVisibility(View.GONE);
-                holder.editButton.setText("Untag yourself");
 
                 User memoryOwner= memories.get(position).getMemoryOwner();
                 StringBuilder friendsText= new StringBuilder(memoryOwner.getFirstName()+" "+ memoryOwner.getLastName() + " with you");
@@ -186,84 +182,23 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         TextView memoryTitle, memoryDate, memoryDescription, memoryFriends;
-        Button deleteButton, editButton;
         LinearLayout memoryLinearLayout, memoryFriendLinearLayout, entryRowButtons;
         ImageView memoryImage;
+        MaterialCardView cardView;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
 
+            cardView = itemView.findViewById(R.id.card);
             memoryTitle = itemView.findViewById(R.id.memoryTitle);
             memoryDate = itemView.findViewById(R.id.memoryDate);
             memoryDescription = itemView.findViewById(R.id.memoryDescription);
-            deleteButton = itemView.findViewById(R.id.deleteButton);
-            editButton = itemView.findViewById(R.id.editButton);
             memoryLinearLayout = itemView.findViewById(R.id.memoryLinearLayout);
             memoryImage = itemView.findViewById(R.id.memoryImage);
             memoryFriendLinearLayout = itemView.findViewById(R.id.memoryFriendsLinearLayout);
             memoryFriends = itemView.findViewById(R.id.memoryFriends);
-            entryRowButtons = itemView.findViewById(R.id.entryRowButtons);
 
-            deleteButton.setOnClickListener(new View.OnClickListener(){
-                @Override
-                public void onClick(View v) {
-                    deleteMemory(getAdapterPosition());
-                }
-            });
-
-            editButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(memories.get(getAdapterPosition()).getMemoryOwner().getId().equals(sharedPreferences.getLong("userId",0))){
-                        editMemory(getAdapterPosition());
-                    }else{
-                        untagYourselfFromMemory();
-                    }
-                }
-            });
-
-            memoryLinearLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    startMemoryActivity(getAdapterPosition());
-                }
-            });
-        }
-
-        private void deleteMemory(int position){
-            Long memoryId = memories.get(position).getId();
-            DeleteMemoryTask task = new DeleteMemoryTask(activity, memoryId);
-            try{
-                Boolean result = task.execute().get();
-                if(result){
-                    memories.remove(position);
-                    //recycler.removeViewAt(position);
-                    notifyItemRemoved(position);
-                    notifyItemRangeChanged(position, memories.size());
-                }
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-        }
-
-        private void editMemory(int position){
-            Intent i = new Intent(activity.getApplicationContext(), EditMemoryActivity.class);
-            i.putExtra("memoryId", memories.get(position).getId());
-            i.putExtra("title", memories.get(position).getShortDescription());
-            i.putExtra("description", memories.get(position).getLongDescription());
-            i.putExtra("date", memories.get(position).getDate());
-            i.putExtra("memoryId", memories.get(position).getId());
-            i.putExtra("memoryPriority", memories.get(position).getMemoryPriority());
-            i.putExtra("imageUrl", memories.get(position).getImageUrl());
-            i.putExtra("isMemoryPublic", memories.get(position).getPublicToFriends());
-            i.putExtra("latitude", memories.get(position).getLatitude());
-            i.putExtra("longitude", memories.get(position).getLongitude());
-
-            i.putExtra("memoryFriends", gson.toJson(memories.get(position).getMemoryFriends()));
-            List<Category> categories = new ArrayList<>(memories.get(position).getCategories());
-            i.putExtra("categories", gson.toJson(categories));
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            activity.getApplicationContext().startActivity(i);
+            memoryLinearLayout.setOnClickListener(v -> startMemoryActivity(getAdapterPosition()));
         }
 
         private void startMemoryActivity(int position){
@@ -274,25 +209,6 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
             i.putExtra("categories", gson.toJson(categories));
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             activity.getApplicationContext().startActivity(i);
-        }
-
-        private void untagYourselfFromMemory(){
-            memories.get(getAdapterPosition()).removeMemoryFriend(sharedPreferences.getLong("userId",0));
-
-            try{
-                EditMemoryTask editMemoryTask = new EditMemoryTask(activity, memories.get(getAdapterPosition()));
-                Boolean editMemoryResult = editMemoryTask.execute().get();
-                if(editMemoryResult){
-                    memories.remove(getAdapterPosition());
-                    //recycler.removeViewAt(position);
-                    notifyItemRemoved(getAdapterPosition());
-                    notifyItemRangeChanged(getAdapterPosition(), memories.size());
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
         }
     }
 }

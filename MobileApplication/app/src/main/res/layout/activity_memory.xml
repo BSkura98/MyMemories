@@ -18,7 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="55dp"
-        android:layout_marginBottom="55dp"
+        android:layout_marginBottom="150dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -150,6 +150,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
                 android:layout_marginLeft="30dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginEnd="30dp"
                 android:layout_marginRight="30dp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -221,6 +222,7 @@
     </ScrollView>
 
     <LinearLayout
+        android:id="@+id/linearLayout8"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -230,29 +232,49 @@
 
         <Button
             android:id="@+id/editButton2"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
-            android:layout_weight="1"
+            android:layout_weight="0.5"
             android:text="Edit"
             android:textAllCaps="false"
+            app:backgroundTint="@color/colorAccent"
             app:icon="@drawable/ic_edit"
-            app:iconPadding="0dp"
-            app:backgroundTint="@color/colorAccent"/>
+            app:iconPadding="0dp" />
 
         <Button
             android:id="@+id/deleteButton5"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
-            android:layout_weight="1"
+            android:layout_weight="0.5"
             android:text="Delete"
             android:textAllCaps="false"
+            app:backgroundTint="@color/colorAccent"
             app:icon="@drawable/ic_delete"
-            app:iconPadding="0dp"
-            app:backgroundTint="@color/colorAccent"/>
+            app:iconPadding="0dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout9"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout8"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <Button
+            android:id="@+id/untagYourselfButton"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="Untag Yourself"
+            android:textAllCaps="false"
+            app:backgroundTint="@color/colorAccent"
+            app:icon="@drawable/baseline_person_remove_24" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
