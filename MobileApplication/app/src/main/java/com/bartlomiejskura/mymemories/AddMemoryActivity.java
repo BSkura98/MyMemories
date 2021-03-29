@@ -54,6 +54,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -116,6 +118,7 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
     private FusedLocationProviderClient fusedLocationProviderClient;
     private GoogleMap map;
     private Double latitude = null, longitude = null;
+    private Marker marker;
 
     private static final int PICK_IMAGE_REQUEST = 1;
 
@@ -514,6 +517,14 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
                 longitude = addressData.getLongitude();
                 mapFragment.getView().setVisibility(View.VISIBLE);
                 deleteLocationButton.setVisibility(View.VISIBLE);
+
+                if(marker!=null){
+                    marker.remove();
+                }
+
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(new LatLng(addressData.getLatitude(), addressData.getLongitude()));
+                marker = map.addMarker(markerOptions);
             }
         }
     }
@@ -593,6 +604,13 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
                         map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude()), 15f));
                         latitude = addresses.get(0).getLatitude();
                         longitude = addresses.get(0).getLongitude();
+
+                        if(marker!=null){
+                            marker.remove();
+                        }
+                        MarkerOptions markerOptions = new MarkerOptions();
+                        markerOptions.position(new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude()));
+                        marker = map.addMarker(markerOptions);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -619,11 +637,11 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
                 .setMapZoom(12.0f)
                 .setAddressRequired(true)
                 .hideMarkerShadow(true)
-                .setMarkerDrawable(R.drawable.ic_map_marker)
-                .setMarkerImageImageColor(R.color.colorPrimary)
-                .setFabColor(R.color.colorPrimary)
-                .setPrimaryTextColor(R.color.colorPrimary)
-                .setSecondaryTextColor(R.color.colorAccent)
+                .setMarkerDrawable(R.drawable.baseline_room_24)
+                .setMarkerImageImageColor(R.color.colorAccent)
+                .setFabColor(R.color.colorAccent)
+                .setPrimaryTextColor(R.color.colorAccent)
+                .setSecondaryTextColor(R.color.colorAccentLight)
                 .setBottomViewColor(R.color.white)
                 .setMapType(MapType.NORMAL)
                 .onlyCoordinates(true)

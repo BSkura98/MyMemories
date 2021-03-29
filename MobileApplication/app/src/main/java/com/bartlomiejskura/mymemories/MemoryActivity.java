@@ -27,6 +27,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.gson.Gson;
@@ -230,6 +231,9 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
 
         if(memory != null &&memory.getLatitude()!=null&&memory.getLongitude()!=null){
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(memory.getLatitude(), memory.getLongitude()), 15f));
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(new LatLng(memory.getLatitude(), memory.getLongitude()));
+            map.addMarker(markerOptions);
         }else{
             mapFragment.getView().setVisibility(View.GONE);
             locationTextView.setVisibility(View.GONE);
