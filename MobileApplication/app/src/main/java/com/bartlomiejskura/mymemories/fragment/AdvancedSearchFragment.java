@@ -185,7 +185,7 @@ public class AdvancedSearchFragment extends Fragment {
     }
 
     private void initChip(String category){
-        Chip chip = (Chip)LayoutInflater.from(getContext()).inflate(R.layout.chip_category, null, false);
+        Chip chip = (Chip)LayoutInflater.from(getContext()).inflate(R.layout.chip_with_close_icon, null, false);
         chip.setText(category);
         chip.setOnCloseIconClickListener(new View.OnClickListener() {
             @Override

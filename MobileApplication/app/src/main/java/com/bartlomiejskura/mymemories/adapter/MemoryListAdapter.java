@@ -40,6 +40,7 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
     private Activity activity;
     private List<Memory> hidden = new ArrayList<>();
     private SharedPreferences sharedPreferences;
+    private Gson gson = new Gson();
 
     public MemoryListAdapter(Context context, List<Memory> memories, Activity activity) {
         this.context = context;
@@ -247,6 +248,7 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
 
         private void editMemory(int position){
             Intent i = new Intent(activity.getApplicationContext(), EditMemoryActivity.class);
+            i.putExtra("memoryId", memories.get(position).getId());
             i.putExtra("title", memories.get(position).getShortDescription());
             i.putExtra("description", memories.get(position).getLongDescription());
             i.putExtra("date", memories.get(position).getDate());
@@ -257,7 +259,6 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
             i.putExtra("latitude", memories.get(position).getLatitude());
             i.putExtra("longitude", memories.get(position).getLongitude());
 
-            Gson gson = new Gson();
             i.putExtra("memoryFriends", gson.toJson(memories.get(position).getMemoryFriends()));
             List<Category> categories = new ArrayList<>(memories.get(position).getCategories());
             i.putExtra("categories", gson.toJson(categories));
@@ -267,16 +268,8 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
 
         private void startMemoryActivity(int position){
             Intent i = new Intent(activity.getApplicationContext(), MemoryActivity.class);
-            i.putExtra("title", memories.get(position).getShortDescription());
-            i.putExtra("description", memories.get(position).getLongDescription());
-            i.putExtra("date", memories.get(position).getDate());
-            i.putExtra("creationDate", memories.get(position).getCreationDate());
-            i.putExtra("memoryId", memories.get(position).getId());
-            i.putExtra("memoryPriority", memories.get(position).getMemoryPriority());
-            i.putExtra("imageUrl", memories.get(position).getImageUrl());
-            i.putExtra("memoryFriends", memoryFriends.getText());
+            i.putExtra("memory", gson.toJson(memories.get(position)));
 
-            Gson gson = new Gson();
             List<Category> categories = new ArrayList<>(memories.get(position).getCategories());
             i.putExtra("categories", gson.toJson(categories));
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

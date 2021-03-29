@@ -6,4 +6,5 @@
     <color name="colorAccent">#9575cd</color>
     <color name="colorAccentDark">#65499c</color>
     <color name="colorAccentLight">#c7a4ff</color>
+    <color name="colorAccentVeryLight">#85C7A4FF</color>
 </resources>

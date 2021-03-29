@@ -3,7 +3,6 @@ package com.bartlomiejskura.mymemories;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
@@ -27,7 +26,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
@@ -226,7 +224,7 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
                 public void onClick(DialogInterface dialog, final int which) {
                     final User friend = friends.get(which);
                     LayoutInflater inflater = LayoutInflater.from(AddMemoryActivity.this);
-                    Chip chip = (Chip)inflater.inflate(R.layout.chip_category, null, false);
+                    Chip chip = (Chip)inflater.inflate(R.layout.chip_with_close_icon, null, false);
                     chip.setText(friend.getFirstName()+" "+friend.getLastName());
                     Target target=getTargetOfPicasso(chip);
                     if(friend.getAvatarUrl()!=null){
@@ -267,7 +265,7 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
 
             String category = categoryEditText.getText().toString().toLowerCase();
             if(!categories.contains(category)||category.isEmpty()){
-                Chip chip = (Chip)inflater.inflate(R.layout.chip_category, null, false);
+                Chip chip = (Chip)inflater.inflate(R.layout.chip_with_close_icon, null, false);
                 chip.setText(category);
                 chip.setOnCloseIconClickListener(new View.OnClickListener() {
                     @Override

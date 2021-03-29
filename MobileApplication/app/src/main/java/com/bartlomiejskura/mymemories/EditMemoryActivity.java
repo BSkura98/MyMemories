@@ -2,7 +2,6 @@ package com.bartlomiejskura.mymemories;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -13,7 +12,6 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -24,7 +22,6 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
@@ -33,7 +30,6 @@ import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -270,7 +266,7 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
             builder.setAdapter(adapter1, (dialog, which) -> {
                 final User friend = friends.get(which);
                 LayoutInflater inflater = LayoutInflater.from(EditMemoryActivity.this);
-                Chip chip = (Chip)inflater.inflate(R.layout.chip_category, null, false);
+                Chip chip = (Chip)inflater.inflate(R.layout.chip_with_close_icon, null, false);
                 chip.setText(friend.getFirstName()+" "+friend.getLastName());
                 Target target=getTargetOfPicasso(chip);
                 if(friend.getAvatarUrl()!=null){
@@ -365,7 +361,7 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
     private void initChipCategory(String category){
         LayoutInflater inflater = LayoutInflater.from(EditMemoryActivity.this);
 
-        Chip chip = (Chip)inflater.inflate(R.layout.chip_category, null, false);
+        Chip chip = (Chip)inflater.inflate(R.layout.chip_with_close_icon, null, false);
         chip.setText(category);
         chip.setOnCloseIconClickListener(v -> {
             chipGroup.removeView(v);
@@ -395,7 +391,7 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
 
     private void initChipMemoryFriend(final User friend){
         LayoutInflater inflater = LayoutInflater.from(EditMemoryActivity.this);
-        Chip chip = (Chip)inflater.inflate(R.layout.chip_category, null, false);
+        Chip chip = (Chip)inflater.inflate(R.layout.chip_with_close_icon, null, false);
         chip.setText(friend.getFirstName()+" "+friend.getLastName());
         Target target=getTargetOfPicasso(chip);
         if(friend.getAvatarUrl()!=null){
