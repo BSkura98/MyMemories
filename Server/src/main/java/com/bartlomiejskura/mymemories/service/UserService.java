@@ -91,6 +91,15 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User editUserInformation(User user){
+        User u = userRepository.findByEmail(user.getEmail());
+        u.setFirstName(user.getFirstName());
+        u.setLastName(user.getLastName());
+        u.setBirthday(user.getBirthday());
+        u.setAvatarUrl(user.getAvatarUrl());
+        return userRepository.save(u);
+    }
+
     public void deleteUser(String email){
         userRepository.deleteByEmail(email);
     }

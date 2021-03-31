@@ -6,7 +6,6 @@ import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -69,6 +68,12 @@ public class UserController {
     @PreAuthorize("#user.email.equals(authentication.name)")
     public User editUser(@RequestBody User user){
         return userService.editUser(user);
+    }
+
+    @PutMapping("/userInformation")
+    @PreAuthorize("#user.email.equals(authentication.name)")
+    public User editUserInformation(@RequestBody User user){
+        return userService.editUserInformation(user);
     }
 
     @DeleteMapping
