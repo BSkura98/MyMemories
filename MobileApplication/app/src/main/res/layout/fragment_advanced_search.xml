@@ -92,9 +92,9 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="20dp"
-                android:text="Creation date"
+                android:text="Modification date"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/normalSearchButton" />
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout5" />
 
             <TextView
                 android:id="@+id/textView14"
@@ -105,7 +105,7 @@
                 android:layout_marginTop="20dp"
                 android:text="Date"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout4" />
+                app:layout_constraintTop_toBottomOf="@+id/normalSearchButton" />
 
             <TextView
                 android:id="@+id/textView15"
@@ -116,7 +116,7 @@
                 android:layout_marginTop="20dp"
                 android:text="Importance"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout5" />
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout4" />
 
             <CheckBox
                 android:id="@+id/highPriorityCheckBox"

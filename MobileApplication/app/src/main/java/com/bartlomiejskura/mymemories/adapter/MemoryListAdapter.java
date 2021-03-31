@@ -60,7 +60,7 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
         holder.memoryDate.setText(getFormattedDate(memories.get(position).getDate()));
 
         holder.cardView.setStrokeWidth(4);
-        holder.cardView.setStrokeColor(activity.getResources().getColor(memories.get(position).getMemoryPriority()>=90?R.color.colorAccentLight:
+        holder.cardView.setStrokeColor(activity.getResources().getColor(memories.get(position).getMemoryPriority()>=90?R.color.colorAccent:
                 (memories.get(position).getMemoryPriority()>=50)?R.color.colorAccentVeryLight:R.color.white));
 
         if(memories.get(position).getLongDescription()==null||memories.get(position).getLongDescription().isEmpty()){
@@ -96,8 +96,6 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
             }
         }else{
             if(memories.get(position).getPublicToFriends()){//jeśli wspomnienie jest oznaczone jako publiczne
-                holder.entryRowButtons.setVisibility(View.GONE);
-
                 User memoryOwner= memories.get(position).getMemoryOwner();
                 StringBuilder friendsText= new StringBuilder(memoryOwner.getFirstName()+" "+ memoryOwner.getLastName());
                 if(memories.get(position).getMemoryFriends().size()>0){//jeśli wspomnienie jest wspólne, lecz znajomy nie oznaczył konkretnego użytkownika w nim
@@ -182,7 +180,7 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         TextView memoryTitle, memoryDate, memoryDescription, memoryFriends;
-        LinearLayout memoryLinearLayout, memoryFriendLinearLayout, entryRowButtons;
+        LinearLayout memoryLinearLayout, memoryFriendLinearLayout;
         ImageView memoryImage;
         MaterialCardView cardView;
 

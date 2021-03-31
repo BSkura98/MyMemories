@@ -59,6 +59,10 @@ public class SettingsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
 
+        //hide option of email change
+        view.findViewById(R.id.textView24).setVisibility(View.GONE);
+        view.findViewById(R.id.linearLayout3).setVisibility(View.GONE);
+
         bindViews(view);
 
         sharedPreferences = getContext().getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
@@ -102,7 +106,7 @@ public class SettingsFragment extends Fragment {
                         sharedPreferences.getString("lastName", null),
                         sharedPreferences.getString("birthday", null),
                         sharedPreferences.getString("avatarUrl", null));
-                    firstNameEditText.setText(sharedPreferences.getString("firstName", null));
+                    getActivity().runOnUiThread(() -> firstNameEditText.setText(sharedPreferences.getString("firstName", null)));
                 })
                 .start();
             }
@@ -125,7 +129,7 @@ public class SettingsFragment extends Fragment {
                             secondNameEditText.getText().toString(),
                             sharedPreferences.getString("birthday", null),
                             sharedPreferences.getString("avatarUrl", null));
-                    secondNameEditText.setText(sharedPreferences.getString("lastName", null));
+                    getActivity().runOnUiThread(()->secondNameEditText.setText(sharedPreferences.getString("lastName", null)));
                 })
                         .start();
             }
@@ -148,7 +152,7 @@ public class SettingsFragment extends Fragment {
                         sharedPreferences.getString("lastName", null),
                         sharedPreferences.getString("birthday", null),
                         sharedPreferences.getString("avatarUrl", null));
-                    emailEditText.setText(sharedPreferences.getString("email", null));
+                    getActivity().runOnUiThread(()->emailEditText.setText(sharedPreferences.getString("email", null)));
                 }).start();
             }
             setEditTextEditable(firstNameEditText, textInputLayout,firstNameButton,false);

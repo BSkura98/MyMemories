@@ -57,6 +57,11 @@ public class SearchResultsActivity extends AppCompatActivity {
         TextView keywordTextView = findViewById(R.id.keywordTextView);
         keywordTextView.setText(getIntent().getStringExtra("keyword"));
 
+        if(getIntent().getStringExtra("keyword").isEmpty()){
+            findViewById(R.id.textView7).setVisibility(View.GONE);
+            keywordTextView.setVisibility(View.GONE);
+        }
+
         new Thread(new Runnable() {
             @Override
             public void run() {

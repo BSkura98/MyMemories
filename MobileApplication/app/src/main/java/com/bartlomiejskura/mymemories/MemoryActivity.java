@@ -1,7 +1,6 @@
 package com.bartlomiejskura.mymemories;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import android.app.Activity;
 import android.content.Context;
@@ -10,7 +9,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -39,14 +37,12 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallback {
-    private TextView titleTextView, descriptionTextView, toolbarTextView, dateTextView, creationDateTextView, priorityTextView, memoryFriends, locationTextView;
+    private TextView titleTextView, descriptionTextView, dateTextView, creationDateTextView, priorityTextView, memoryFriends;
     private ImageView memoryImage;
-    private Toolbar toolbar;
-    private ImageButton backButton;
-    private LinearLayout publicLayout, editDeleteButtonsLayout, untagYourselfButtonLayout;
+    private LinearLayout publicLayout;
     private SupportMapFragment mapFragment;
     private ChipGroup categoriesChipGroup;
-    private Button deleteButton, editButton, untagYourselfButton;
+    private ImageButton deleteButton, editButton, untagYourselfButton;
 
     private Memory memory;
     private GoogleMap map;
@@ -58,7 +54,6 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
         setContentView(R.layout.activity_memory);
 
         bindViews();
-        initToolbar();
         getMemory();
         setElements();
         setListeners();
@@ -73,36 +68,23 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
         priorityTextView = findViewById(R.id.priorityTextView);
         memoryFriends = findViewById(R.id.memoryFriends);
         memoryImage = findViewById(R.id.memoryImage);
-        toolbarTextView = findViewById(R.id.toolbarTextView);
-        toolbar = findViewById(R.id.toolbarMemory);
-        backButton = findViewById(R.id.backButton);
         publicLayout = findViewById(R.id.publicLayout);
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        locationTextView = findViewById(R.id.textView31);
         categoriesChipGroup = findViewById(R.id.chipGroup2);
-        editButton = findViewById(R.id.editButton2);
-        deleteButton = findViewById(R.id.deleteButton5);
-        editDeleteButtonsLayout = findViewById(R.id.linearLayout8);
-        untagYourselfButtonLayout = findViewById(R.id.linearLayout9);
-        untagYourselfButton = findViewById(R.id.untagYourselfButton);
-    }
-
-    private void initToolbar(){
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-        toolbarTextView.setText("Memory");
-
-        backButton.setOnClickListener(v -> super.onBackPressed());
+        deleteButton = findViewById(R.id.deleteButton6);
+        editButton = findViewById(R.id.editButton3);
+        untagYourselfButton = findViewById(R.id.untagYourselfButton2);
     }
 
     private void setListeners(){
         if(!memory.getMemoryOwner().getId().equals(sharedPreferences.getLong("userId",0))){
             untagYourselfButton.setOnClickListener(v -> untagYourselfFromMemory());
-            editDeleteButtonsLayout.setVisibility(View.GONE);
+            deleteButton.setVisibility(View.GONE);
+            editButton.setVisibility(View.GONE);
         }else{
             editButton.setOnClickListener(v -> editMemory());
             deleteButton.setOnClickListener(v -> deleteMemory());
-            untagYourselfButtonLayout.setVisibility(View.GONE);
+            untagYourselfButton.setVisibility(View.GONE);
         }
     }
 
@@ -236,7 +218,6 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
             map.addMarker(markerOptions);
         }else{
             mapFragment.getView().setVisibility(View.GONE);
-            locationTextView.setVisibility(View.GONE);
         }
     }
 }

@@ -95,9 +95,8 @@ public class SearchMemoryActivity extends AppCompatActivity {
     }
 
     public void startSearchResultsActivity(final String query){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
+        new Thread(() -> {
+            if(!query.isEmpty()){
                 recentSearchesFragment.addRecentSearch(query);
             }
         }).start();

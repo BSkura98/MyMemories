@@ -713,7 +713,7 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
 
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude!=null?latitude:0, longitude!=null?longitude:0), 15f));
         MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(new LatLng(latitude, longitude));
+        markerOptions.position(new LatLng(latitude!=null?latitude:0, longitude!=null?longitude:0));
         marker = map.addMarker(markerOptions);
     }
 

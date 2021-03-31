@@ -31,7 +31,7 @@ public class EditUserInformationTask extends AsyncTask<Void, Void, Boolean> {
         RequestBody requestBody = RequestBody.create(JSON, json);
 
         Request request = new Request.Builder()
-                .url("https://mymemories-2.herokuapp.com/user")
+                .url("https://mymemories-2.herokuapp.com/user/userInformation")
                 .put(requestBody)
                 .addHeader("Authorization", "Bearer "+sharedPreferences.getString("token", null))
                 .build();
