@@ -48,7 +48,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:text="Sign In"
-                android:textColor="@color/colorAccent"
+                android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Headline4"
+                android:textColor="@color/colorAccentDark"
                 android:textSize="30sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -108,14 +109,13 @@
                     android:inputType="textPassword" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/signInButton"
+                style="@style/ContainedButtonStyle"
                 android:layout_width="170dp"
                 android:layout_height="55dp"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="28dp"
                 android:text="Sign In"
-                android:textAllCaps="false"
-                android:textSize="18sp"
                 app:backgroundTint="@color/colorAccentDark"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -127,23 +127,25 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
                 android:text="No account?"
-                android:textSize="18sp"
+                android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Headline6"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/signInButton" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/signUpButton"
-                style="?attr/materialButtonOutlinedStyle"
+                style="@style/OutlinedButtonStyle"
                 android:layout_width="170dp"
-                android:layout_height="55dp"
-                android:layout_marginTop="5dp"
+                android:layout_height="65dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
                 android:text="Sign Up"
                 android:textAllCaps="false"
+                android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Button"
                 android:textColor="@color/colorAccent"
                 android:textSize="18sp"
+                app:cornerRadius="50dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

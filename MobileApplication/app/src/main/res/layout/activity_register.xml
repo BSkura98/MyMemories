@@ -155,25 +155,24 @@
                 android:id="@+id/textView6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="40dp"
-                android:layout_marginLeft="40dp"
+                android:layout_marginStart="57dp"
+                android:layout_marginLeft="57dp"
                 android:layout_marginTop="30dp"
                 android:text="Date of birth"
+                android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body2"
                 android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textInputLayout5" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/birthdayButton"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
-                android:layout_width="wrap_content"
+                style="@style/OutlinedButtonIconStyle"
+                android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginLeft="20dp"
                 android:text="Select"
-                android:textAllCaps="false"
-                android:textColor="@color/colorAccent"
-                android:textSize="14sp"
+                app:cornerRadius="50dp"
                 app:icon="@drawable/ic_date_color_accent"
                 app:iconTint="@color/colorAccent"
                 app:layout_constraintBottom_toBottomOf="@+id/textView6"
@@ -186,25 +185,24 @@
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="30dp"
         android:text="Sign Up"
-        android:textColor="@color/colorAccent"
-        android:textSize="30sp"
+        android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Headline4"
+        android:textColor="@color/colorAccentDark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/signUpButton"
-        style="@style/ButtonStyle"
-        android:layout_width="150dp"
+        style="@style/ContainedButtonStyle"
+        android:layout_width="170dp"
+        android:layout_height="55dp"
         android:layout_marginBottom="20dp"
         android:text="Sign Up"
-        android:textAllCaps="false"
         app:backgroundTint="@color/colorAccentDark"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
