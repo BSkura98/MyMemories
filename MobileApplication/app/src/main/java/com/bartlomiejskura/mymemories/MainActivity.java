@@ -18,7 +18,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.bartlomiejskura.mymemories.fragment.CategoriesFragment;
-import com.bartlomiejskura.mymemories.fragment.DatesFragment;
+import com.bartlomiejskura.mymemories.fragment.MemoriesFragment;
 import com.bartlomiejskura.mymemories.fragment.FriendsFragment;
 import com.bartlomiejskura.mymemories.fragment.SettingsFragment;
 import com.google.android.material.navigation.NavigationView;
@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Intent i = getIntent();
         switch (item.getItemId()){
             case R.id.nav_dates:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new DatesFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MemoriesFragment()).commit();
                 toolbarTextView.setText("Memories");
                 i.putExtra("fragmentToLoad", "datesFragment");
                 searchButton.setVisibility(View.VISIBLE);
@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     break;
                 case "datesFragment":
                 default:
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new DatesFragment()).commit();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MemoriesFragment()).commit();
                     navigationView.setCheckedItem(R.id.nav_dates);
                     toolbarTextView.setText("Memories");
                     i.putExtra("fragmentToLoad", "datesFragment");
@@ -153,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     break;
             }
         }else{
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new DatesFragment()).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MemoriesFragment()).commit();
             navigationView.setCheckedItem(R.id.nav_dates);
             toolbarTextView.setText("Memories");
             i.putExtra("fragmentToLoad", "datesFragment");

@@ -8,7 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.DatePicker;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,10 +30,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class DatesFragment extends Fragment {
+public class MemoriesFragment extends Fragment {
     private RecyclerView memoryList;
     private Button dateButton;
     private FloatingActionButton addMemoryButton;
+    private ImageView previousDayButton, nextDayButton;
 
     private MemoryListAdapter adapter;
     private Date date = new Date();
@@ -41,7 +42,7 @@ public class DatesFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_dates, container, false);
+        View view = inflater.inflate(R.layout.fragment_memories, container, false);
 
         bindViews(view);
 
@@ -64,21 +65,27 @@ public class DatesFragment extends Fragment {
         memoryList = view.findViewById(R.id.memoryList);
         dateButton = view.findViewById(R.id.dateButton);
         addMemoryButton = view.findViewById(R.id.addMemoryButton);
+        previousDayButton = view.findViewById(R.id.previousDayButton);
+        nextDayButton = view.findViewById(R.id.nextDayButton);
     }
 
     private void setListeners(){
-        dateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectDate();
-            }
+        dateButton.setOnClickListener(v -> selectDate());
+
+        addMemoryButton.setOnClickListener(v -> startActivity(new Intent(v.getContext(), AddMemoryActivity.class)));
+
+        previousDayButton.setOnClickListener((view)->{
+            date = new Date(date.getTime() - (24 * 3600000));
+            String dateText = DateFormat.format("dd-MM-yyyy", date).toString();
+            dateButton.setText(dateText);
+            new Thread(() -> getAllMemoriesForDate(date)).start();
         });
 
-        addMemoryButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(v.getContext(), AddMemoryActivity.class));
-            }
+        nextDayButton.setOnClickListener((view)->{
+            date = new Date(date.getTime() + (24 * 3600000));
+            String dateText = DateFormat.format("dd-MM-yyyy", date).toString();
+            dateButton.setText(dateText);
+            new Thread(() -> getAllMemoriesForDate(date)).start();
         });
     }
 
@@ -90,17 +97,14 @@ public class DatesFragment extends Fragment {
                 return;
             }
             final List<Memory> memories = new ArrayList<>(Arrays.asList(memoryArray));
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    adapter = new MemoryListAdapter(
-                            getContext(),
-                            memories,
-                            getActivity()
-                    );
-                    memoryList.setAdapter(adapter);
-                    memoryList.setLayoutManager(new LinearLayoutManager(getContext()));
-                }
+            getActivity().runOnUiThread(() -> {
+                adapter = new MemoryListAdapter(
+                        getContext(),
+                        memories,
+                        getActivity()
+                );
+                memoryList.setAdapter(adapter);
+                memoryList.setLayoutManager(new LinearLayoutManager(getContext()));
             });
         }catch (Exception e){
             e.printStackTrace();
@@ -113,28 +117,16 @@ public class DatesFragment extends Fragment {
         int MONTH = calendar.get(Calendar.MONTH);
         int DATE = calendar.get(Calendar.DATE);
 
-        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker datePicker, int year1, int month1, int date1) {
+        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), (datePicker, year1, month1, date1) -> {
 
-                Calendar calendar1 = Calendar.getInstance();
-                calendar1.set(Calendar.YEAR, year1);
-                calendar1.set(Calendar.MONTH, month1);
-                calendar1.set(Calendar.DATE, date1);
-                String dateText = DateFormat.format("dd-MM-yyyy", calendar1).toString();
+            date.setDate(date1);
+            date.setMonth(month1);
+            date.setYear(year1-1900);
+            String dateText = DateFormat.format("dd-MM-yyyy", date).toString();
 
-                dateButton.setText(dateText);
-                date.setDate(date1);
-                date.setMonth(month1);
-                date.setYear(year1-1900);
+            dateButton.setText(dateText);
 
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        getAllMemoriesForDate(date);
-                    }
-                }).start();
-            }
+            new Thread(() -> getAllMemoriesForDate(date)).start();
         }, YEAR, MONTH, DATE);
 
         datePickerDialog.show();

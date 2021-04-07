@@ -47,8 +47,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Title"
-                    android:textAppearance="?attr/textAppearanceHeadline6"
-                    android:textColor="#DD000000" />
+                    android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Headline6" />
 
                 <LinearLayout
                     android:id="@+id/memoryFriendsLinearLayout"
@@ -60,7 +59,8 @@
                         android:id="@+id/memoryFriends"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="" />
+                        android:text=""
+                        android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body2"/>
 
                 </LinearLayout>
 
@@ -70,7 +70,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:text="Date"
-                    android:textAppearance="?attr/textAppearanceBody2"
+                    android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body1"
                     android:textColor="?android:attr/textColorSecondary"
                     android:textSize="12sp" />
 
@@ -80,8 +80,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:text="Description"
-                    android:textAppearance="?attr/textAppearanceBody2"
-                    android:textColor="#000000" />
+                    android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body2" />
 
             </LinearLayout>
 
