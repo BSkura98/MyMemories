@@ -9,4 +9,7 @@
     <color name="colorAccentDark">#3f1dcb</color>
     <color name="colorAccentLight">#b47cff</color>
     <color name="colorAccentVeryLight">#B3B47CFF</color>
+    <color name="colorAccentLight1">#057c4dff</color>
+    <color name="colorAccentLight2">#117c4dff</color>
+    <color name="colorAccentLight3">#207c4dff</color>
 </resources>

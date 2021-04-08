@@ -123,7 +123,9 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
         }
 
         if(!memory.getPublicToFriends()){
-            publicLayout.setVisibility(View.GONE);
+            findViewById(R.id.imageView8).setVisibility(View.GONE);
+            findViewById(R.id.textView11).setVisibility(View.GONE);
+            //publicLayout.setVisibility(View.GONE);
         }
 
         if(memory.getCategories()!=null&&memory.getCategories().size()>0){
@@ -132,7 +134,7 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
     }
 
     private String getPriorityOption(int priority){
-        return priority<=10?"Low":(priority<=50?"Medium":"High");
+        return priority<=10?"Low priority":(priority<=50?"Medium priority":"High priority");
     }
 
     private void initCategoriesChipGroup(List<Category> categories){

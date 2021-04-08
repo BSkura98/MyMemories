@@ -36,10 +36,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
                 android:layout_marginLeft="30dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="15dp"
                 android:layout_marginEnd="30dp"
                 android:layout_marginRight="30dp"
                 android:text="Description"
+                android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body2"
                 android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -54,7 +55,8 @@
                 android:layout_marginLeft="30dp"
                 android:layout_marginTop="10dp"
                 android:paddingBottom="20dp"
-                android:text="Modified:"
+                android:text="Last modified:"
+                android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Caption"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/map" />
 
@@ -64,28 +66,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_marginLeft="10dp"
+                android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Caption"
                 app:layout_constraintStart_toEndOf="@+id/textView9"
                 app:layout_constraintTop_toTopOf="@+id/textView9" />
-
-            <TextView
-                android:id="@+id/textView10"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="30dp"
-                android:layout_marginLeft="30dp"
-                android:layout_marginTop="5dp"
-                android:text="Importance:"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/chipGroup2" />
-
-            <TextView
-                android:id="@+id/priorityTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginLeft="10dp"
-                app:layout_constraintStart_toEndOf="@+id/textView10"
-                app:layout_constraintTop_toTopOf="@+id/textView10" />
 
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/chipGroup2"
@@ -93,7 +76,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
                 android:layout_marginLeft="30dp"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="100dp"
                 android:layout_marginEnd="30dp"
                 android:layout_marginRight="30dp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -115,7 +98,7 @@
                 android:layout_marginRight="30dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView10"
+                app:layout_constraintTop_toBottomOf="@+id/chipGroup2"
                 map:liteMode="true" />
 
             <LinearLayout
@@ -124,9 +107,10 @@
                 android:layout_height="wrap_content"
                 android:background="@color/colorPrimary"
                 android:orientation="vertical"
-                android:paddingTop="20dp"
-                android:paddingBottom="20dp"
+                android:paddingTop="15dp"
+                android:paddingBottom="15dp"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/memoryImage">
 
@@ -145,7 +129,7 @@
                         android:layout_width="14dp"
                         android:layout_height="14dp"
                         android:layout_gravity="center_vertical"
-                        android:tint="#F0F0F0"
+                        android:tint="@color/white"
                         map:srcCompat="@drawable/ic_public"
                         tools:ignore="VectorDrawableCompat" />
 
@@ -156,8 +140,8 @@
                         android:layout_marginStart="6dp"
                         android:layout_marginLeft="6dp"
                         android:text="Public"
-                        android:textColor="#F0F0F0"
-                        android:textSize="14sp" />
+                        android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Caption"
+                        android:textColor="@color/white" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -170,7 +154,7 @@
                             android:id="@+id/editButton3"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginRight="10dp"
+                            android:layout_marginRight="12dp"
                             android:background="@null"
                             android:tint="@color/white"
                             map:srcCompat="@drawable/ic_edit" />
@@ -200,8 +184,8 @@
                     android:layout_marginLeft="30dp"
                     android:layout_marginRight="30dp"
                     android:text="Title"
-                    android:textColor="@color/white"
-                    android:textSize="24sp" />
+                    android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Headline5"
+                    android:textColor="@color/white" />
 
                 <TextView
                     android:id="@+id/memoryFriends"
@@ -210,21 +194,8 @@
                     android:layout_marginLeft="30dp"
                     android:layout_marginRight="30dp"
                     android:text=""
-                    android:textColor="#F0F0F0"
-                    android:textSize="16sp" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/linearLayout10"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/colorPrimary1"
-                android:orientation="vertical"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout7">
+                    android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Subtitle1"
+                    android:textColor="@color/white" />
 
             </LinearLayout>
 
@@ -232,21 +203,31 @@
                 android:id="@+id/linearLayout11"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/colorPrimary1"
-                android:orientation="vertical"
+                android:background="@color/colorAccentLight2"
+                android:orientation="horizontal"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout10">
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout7">
 
                 <TextView
                     android:id="@+id/dateTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="30dp"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginBottom="2dp"
-                    android:textColor="@color/white"
+                    android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body1"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/priorityTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="30dp"
+                    android:gravity="right"
+                    android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body1"
+                    android:textColor="@color/colorAccent"
                     android:textSize="12sp" />
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
