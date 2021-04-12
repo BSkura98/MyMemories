@@ -61,6 +61,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.storage.FirebaseStorage;
@@ -90,7 +91,8 @@ import java.util.Locale;
 public class EditMemoryActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, OnMapReadyCallback {
     private ImageView memoryImage;
     private ImageButton deleteImageButton, deleteTimeButton, addCategoryButton;
-    private Button addPersonButton, dateButton, timeButton, locationButton, editMemoryButton, selectImageButton, selectLocationButton, deleteLocationButton, addCategoriesButton;
+    private FloatingActionButton saveMemoryButton;
+    private Button addPersonButton, dateButton, timeButton, locationButton, selectImageButton, selectLocationButton, deleteLocationButton, addCategoriesButton;
     private TextInputLayout titleInputLayout;
     private SwitchMaterial makePublicSwitch;
     private ChipGroup chipGroup, friendsChipGroup;
@@ -202,7 +204,7 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
         titleEditText = findViewById(R.id.titleEditText);
         descriptionEditText = findViewById(R.id.descriptionEditText);
         categoryEditText = findViewById(R.id.categoryEditText);
-        editMemoryButton = findViewById(R.id.editMemoryButton);
+        saveMemoryButton = findViewById(R.id.saveMemoryButton);
         selectImageButton = findViewById(R.id.selectImageButton);
         deleteImageButton = findViewById(R.id.deleteImageButton);
         deleteTimeButton = findViewById(R.id.deleteTimeButton);
@@ -245,7 +247,7 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
             addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
-        editMemoryButton.setOnClickListener(v -> new Thread(() -> editMemory(titleEditText.getText().toString(), descriptionEditText.getText().toString())).start());
+        saveMemoryButton.setOnClickListener(v -> new Thread(() -> editMemory(titleEditText.getText().toString(), descriptionEditText.getText().toString())).start());
 
         deleteImageButton.setOnClickListener(v -> {
             if(memory.getImageUrl()!=null){
