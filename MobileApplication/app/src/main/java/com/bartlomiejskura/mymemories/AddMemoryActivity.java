@@ -62,6 +62,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.storage.FirebaseStorage;
@@ -94,7 +95,8 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
     private ImageView memoryImage;
     private ImageButton deleteImageButton, deleteTimeButton;
     private ImageButton addCategoryButton;
-    private Button addPersonButton, dateButton, timeButton, locationButton, addMemoryButton, selectImageButton, selectLocationButton, deleteLocationButton, addCategoriesButton;
+    private FloatingActionButton saveMemoryButton;
+    private Button addPersonButton, dateButton, timeButton, locationButton, selectImageButton, selectLocationButton, deleteLocationButton, addCategoriesButton;
     private TextInputLayout titleInputLayout;
     private SwitchMaterial makePublicSwitch;
     private ChipGroup chipGroup, friendsChipGroup;
@@ -159,7 +161,7 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
         titleEditText = findViewById(R.id.titleEditText);
         description = findViewById(R.id.descriptionEditText);
         categoryEditText = findViewById(R.id.categoryEditText);
-        addMemoryButton = findViewById(R.id.addMemoryButton);
+        saveMemoryButton = findViewById(R.id.saveMemoryButton);
         selectImageButton = findViewById(R.id.selectImageButton);
         deleteImageButton = findViewById(R.id.deleteImageButton);
         deleteTimeButton = findViewById(R.id.deleteTimeButton);
@@ -203,7 +205,7 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
             addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
-        addMemoryButton.setOnClickListener(v -> new Thread(() -> addMemory(titleEditText.getText().toString(), description.getText().toString())).start());
+        saveMemoryButton.setOnClickListener(v -> new Thread(() -> addMemory(titleEditText.getText().toString(), description.getText().toString())).start());
 
         deleteImageButton.setOnClickListener(v -> {
             deleteImage(memory.getImageUrl(), false);
@@ -222,35 +224,29 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
             MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(AddMemoryActivity.this);
             builder.setTitle("Tag a Friend");
             FriendsAdapter adapter = new FriendsAdapter(getApplicationContext(), friends);
-            builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, final int which) {
-                    final User friend = friends.get(which);
-                    LayoutInflater inflater = LayoutInflater.from(AddMemoryActivity.this);
-                    Chip chip = (Chip)inflater.inflate(R.layout.chip_with_close_icon, null, false);
-                    chip.setText(friend.getFirstName()+" "+friend.getLastName());
-                    Target target=getTargetOfPicasso(chip);
-                    if(friend.getAvatarUrl()!=null){
-                        Picasso.get().load(friend.getAvatarUrl()).transform(new CircleTransform()).resize(20,20).into(target);
-                    }else{
-                        Picasso.get().load(R.drawable.default_avatar).transform(new CircleTransform()).resize(20,20).into(target);
-                    }
-
-                    chip.setOnCloseIconClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            friendsChipGroup.removeView(v);
-                            memoryFriends.remove(friend);
-                            friends.add(friend);
-                        }
-                    });
-
-                    chip.setCheckable(false);
-
-                    memoryFriends.add(friend);
-                    friendsChipGroup.addView(chip);
-                    friends.remove(friend);
+            builder.setAdapter(adapter, (dialog, which) -> {
+                final User friend = friends.get(which);
+                LayoutInflater inflater = LayoutInflater.from(AddMemoryActivity.this);
+                Chip chip = (Chip)inflater.inflate(R.layout.chip_with_close_icon, null, false);
+                chip.setText(friend.getFirstName()+" "+friend.getLastName());
+                Target target=getTargetOfPicasso(chip);
+                if(friend.getAvatarUrl()!=null){
+                    Picasso.get().load(friend.getAvatarUrl()).transform(new CircleTransform()).resize(20,20).into(target);
+                }else{
+                    Picasso.get().load(R.drawable.default_avatar).transform(new CircleTransform()).resize(20,20).into(target);
                 }
+
+                chip.setOnCloseIconClickListener(v1 -> {
+                    friendsChipGroup.removeView(v1);
+                    memoryFriends.remove(friend);
+                    friends.add(friend);
+                });
+
+                chip.setCheckable(false);
+
+                memoryFriends.add(friend);
+                friendsChipGroup.addView(chip);
+                friends.remove(friend);
             });
             builder.show();
             addCategoriesLayout.setVisibility(View.GONE);

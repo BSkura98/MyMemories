@@ -18,26 +18,32 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="55dp"
-        android:layout_marginBottom="80dp"
+        android:clipToPadding="false"
+        android:paddingBottom="100dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/selectImageButton"
-                android:layout_width="120dp"
+                style="@style/OutlinedButtonStyle"
+                android:layout_width="130dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="40dp"
+                android:layout_marginRight="40dp"
                 android:text="Select"
-                android:textAllCaps="false"
-                app:backgroundTint="@color/colorAccent"
+                android:textSize="14sp"
+                app:cornerRadius="50dp"
                 app:layout_constraintBottom_toBottomOf="@+id/textView5"
-                app:layout_constraintStart_toStartOf="@+id/prioritySpinner"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/textView5" />
 
             <ImageView
@@ -62,7 +68,7 @@
                 android:layout_marginRight="40dp"
                 android:hint="Description"
                 android:theme="@style/TextInputLayoutAppearance"
-                app:boxBackgroundColor="#FFFFFF"
+                app:boxBackgroundColor="@color/colorAccentLight2"
                 app:boxStrokeColor="@color/colorAccent"
                 app:hintTextColor="@color/colorAccent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -75,20 +81,19 @@
                     android:layout_height="match_parent"
                     android:gravity="top|left"
                     android:inputType="textMultiLine"
-                    android:lines="3" />
+                    android:minLines="5" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/makePublicSwitch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginLeft="20dp"
                 android:checked="false"
                 android:textColor="#616161"
                 android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="@+id/textView25"
-                app:layout_constraintStart_toEndOf="@+id/textView25"
+                app:layout_constraintEnd_toEndOf="@+id/prioritySpinner"
+                app:layout_constraintStart_toStartOf="@+id/prioritySpinner"
                 app:layout_constraintTop_toTopOf="@+id/textView25" />
 
             <TextView
@@ -98,17 +103,19 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
                 android:text="Importance"
-                android:textSize="18sp"
+                android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body1"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView2"
                 app:layout_constraintStart_toEndOf="@+id/imageView2"
                 app:layout_constraintTop_toTopOf="@+id/imageView2" />
 
             <Spinner
                 android:id="@+id/prioritySpinner"
-                android:layout_width="140dp"
+                android:layout_width="130dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="40dp"
+                android:layout_marginRight="40dp"
                 app:layout_constraintBottom_toBottomOf="@+id/textView8"
-                app:layout_constraintStart_toStartOf="@+id/makePublicSwitch"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/textView8" />
 
             <com.google.android.material.chip.ChipGroup
@@ -145,7 +152,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
                 android:text="People"
-                android:textSize="18sp"
+                android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body1"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView4"
                 app:layout_constraintStart_toEndOf="@+id/imageView4"
                 app:layout_constraintTop_toTopOf="@+id/imageView4" />
@@ -157,7 +164,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
                 android:text="Image"
-                android:textSize="18sp"
+                android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body1"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView3"
                 app:layout_constraintStart_toEndOf="@+id/imageView3"
                 app:layout_constraintTop_toTopOf="@+id/imageView3" />
@@ -184,7 +191,7 @@
                     android:layout_weight="1"
                     android:hint="Category"
                     android:theme="@style/TextInputLayoutAppearance"
-                    app:boxBackgroundColor="#FFFFFF"
+                    app:boxBackgroundColor="@color/colorAccentLight2"
                     app:boxStrokeColor="@color/colorAccent"
                     app:hintTextColor="@color/colorAccent">
 
@@ -199,7 +206,6 @@
                     android:layout_width="100dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="10dp"
-                    android:layout_marginTop="10dp"
                     android:layout_weight="1"
                     android:background="@null"
                     android:tint="@color/colorAccent"
@@ -221,15 +227,18 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/addPersonButton"
-                android:layout_width="120dp"
-                android:layout_height="match_parent"
+                style="@style/OutlinedButtonStyle"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="40dp"
+                android:layout_marginRight="40dp"
                 android:text="Add"
-                android:textAllCaps="false"
-                app:backgroundTint="@color/colorAccent"
+                android:textSize="14sp"
+                app:cornerRadius="50dp"
                 app:layout_constraintBottom_toBottomOf="@+id/textView9"
-                app:layout_constraintStart_toStartOf="@+id/selectImageButton"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/textView9" />
 
             <TextView
@@ -239,7 +248,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
                 android:text="Location"
-                android:textSize="18sp"
+                android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body1"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView5"
                 app:layout_constraintStart_toEndOf="@+id/imageView5"
                 app:layout_constraintTop_toTopOf="@+id/imageView5" />
@@ -258,43 +267,49 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView10">
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/locationButton"
+                    style="@style/OutlinedButtonIconStyle"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginEnd="5dp"
                     android:layout_marginRight="5dp"
                     android:layout_weight="1"
                     android:text="Current location"
-                    android:textAllCaps="false"
-                    app:backgroundTint="@color/colorAccent" />
+                    app:cornerRadius="50dp"
+                    app:icon="@drawable/ic_location"
+                    app:iconTint="@color/colorAccent" />
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/selectLocationButton"
+                    style="@style/OutlinedButtonIconStyle"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginStart="5dp"
                     android:layout_marginLeft="5dp"
                     android:layout_weight="1"
                     android:text="Select location"
-                    android:textAllCaps="false"
-                    app:backgroundTint="@color/colorAccent" />
+                    app:cornerRadius="50dp"
+                    app:icon="@drawable/ic_map"
+                    app:iconTint="@color/colorAccent" />
 
             </LinearLayout>
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/deleteLocationButton"
+                style="@style/OutlinedButtonIconStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="20dp"
                 android:text="Delete location"
-                android:textAllCaps="false"
-                app:backgroundTint="@color/colorAccent"
+                app:cornerRadius="50dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/map" />
+                app:layout_constraintTop_toBottomOf="@+id/map"
+                app:icon="@drawable/ic_close"
+                app:iconTint="@color/colorAccent"/>
 
             <fragment
                 android:id="@+id/map"
@@ -328,29 +343,25 @@
 
                 <Button
                     android:id="@+id/dateButton"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                    style="@style/OutlinedButtonIconStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="5dp"
                     android:layout_weight="1"
                     android:text="Date"
-                    android:textColor="@color/colorAccent"
-                    android:textSize="14sp"
-                    android:theme="@style/TextInputLayoutAppearance"
+                    app:cornerRadius="50dp"
                     app:icon="@drawable/ic_date_color_accent"
                     app:iconTint="@color/colorAccent" />
 
                 <Button
                     android:id="@+id/timeButton"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                    style="@style/OutlinedButtonIconStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
                     android:layout_weight="1"
                     android:text="Select"
-                    android:textAllCaps="false"
-                    android:textColor="@color/colorAccent"
-                    android:textSize="14sp"
+                    app:cornerRadius="50dp"
                     app:icon="@drawable/ic_access_time_primary_color"
                     app:iconTint="@color/colorAccent" />
 
@@ -375,18 +386,19 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
                 android:text="Share with friends"
-                android:textSize="18sp"
+                android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body1"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView"
                 app:layout_constraintStart_toEndOf="@+id/imageView"
                 app:layout_constraintTop_toTopOf="@+id/imageView" />
 
             <ImageView
                 android:id="@+id/imageView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="16sp"
+                android:layout_height="16sp"
                 android:layout_marginStart="40dp"
                 android:layout_marginLeft="40dp"
                 android:layout_marginTop="30dp"
+                android:tint="#212121"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView8"
                 map:srcCompat="@drawable/ic_public"
@@ -394,11 +406,12 @@
 
             <ImageView
                 android:id="@+id/imageView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="16sp"
+                android:layout_height="16sp"
                 android:layout_marginStart="40dp"
                 android:layout_marginLeft="40dp"
                 android:layout_marginTop="15dp"
+                android:tint="#212121"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/friendsChipGroup"
                 map:srcCompat="@drawable/ic_priority_high"
@@ -406,11 +419,12 @@
 
             <ImageView
                 android:id="@+id/imageView3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="16sp"
+                android:layout_height="16sp"
                 android:layout_marginStart="40dp"
                 android:layout_marginLeft="40dp"
                 android:layout_marginTop="20dp"
+                android:tint="#212121"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/chipGroup"
                 map:srcCompat="@drawable/ic_image"
@@ -418,11 +432,12 @@
 
             <ImageView
                 android:id="@+id/imageView4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="16sp"
+                android:layout_height="16sp"
                 android:layout_marginStart="40dp"
                 android:layout_marginLeft="40dp"
                 android:layout_marginTop="30dp"
+                android:tint="#212121"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/memoryImage"
                 app:srcCompat="@drawable/ic_people_20dp"
@@ -430,11 +445,12 @@
 
             <ImageView
                 android:id="@+id/imageView5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="16sp"
+                android:layout_height="16sp"
                 android:layout_marginStart="40dp"
                 android:layout_marginLeft="40dp"
                 android:layout_marginTop="30dp"
+                android:tint="#212121"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView25"
                 map:srcCompat="@drawable/ic_location"
@@ -447,13 +463,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
                 android:layout_marginLeft="40dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginEnd="40dp"
                 android:layout_marginRight="40dp"
                 android:layout_weight="1"
                 android:hint="Title"
                 android:theme="@style/TextInputLayoutAppearance"
-                app:boxBackgroundColor="#FFFFFF"
+                app:boxBackgroundColor="@color/colorAccentLight2"
                 app:boxStrokeColor="@color/colorAccent"
                 app:hintTextColor="@color/colorAccent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -463,7 +479,8 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/titleEditText"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent"
+                    android:inputType="textMultiLine" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
@@ -473,48 +490,67 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
                 android:text="Categories"
-                android:textSize="18sp"
+                android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body1"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView7"
                 app:layout_constraintStart_toEndOf="@+id/imageView7"
                 app:layout_constraintTop_toTopOf="@+id/imageView7" />
 
             <ImageView
                 android:id="@+id/imageView7"
-                android:layout_width="wrap_content"
+                android:layout_width="16sp"
+                android:layout_height="16sp"
+                android:layout_marginStart="40dp"
+                android:layout_marginLeft="40dp"
+                android:layout_marginTop="30dp"
+                android:tint="#212121"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/divider"
+                app:srcCompat="@drawable/ic_label_20dp"
+                tools:ignore="VectorDrawableCompat" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/addCategoriesButton"
+                style="@style/OutlinedButtonStyle"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="40dp"
+                android:layout_marginRight="40dp"
+                android:text="Add"
+                android:textSize="14sp"
+                app:cornerRadius="50dp"
+                app:layout_constraintBottom_toBottomOf="@+id/textView29"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/textView29" />
+
+            <View
+                android:id="@+id/divider"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
                 android:layout_marginLeft="40dp"
                 android:layout_marginTop="30dp"
+                android:layout_marginEnd="40dp"
+                android:layout_marginRight="40dp"
+                android:background="?android:attr/listDivider"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout6"
-                app:srcCompat="@drawable/ic_label_20dp"
-                tools:ignore="VectorDrawableCompat" />
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout6" />
 
-            <Button
-                android:id="@+id/addCategoriesButton"
-                android:layout_width="120dp"
-                android:layout_height="wrap_content"
-                android:text="Add"
-                android:textAllCaps="false"
-                app:backgroundTint="@color/colorAccent"
-                app:layout_constraintBottom_toBottomOf="@+id/textView29"
-                app:layout_constraintStart_toStartOf="@+id/makePublicSwitch"
-                app:layout_constraintTop_toTopOf="@+id/textView29" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
-    <Button
-        android:id="@+id/addMemoryButton"
-        style="@style/ButtonStyle"
-        android:layout_width="150dp"
-        android:layout_marginBottom="20dp"
-        android:text="Add"
-        android:textAllCaps="false"
-        android:textStyle="bold"
-        app:backgroundTint="@color/colorAccentDark"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/saveMemoryButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginBottom="30dp"
+        android:clickable="true"
+        android:src="@drawable/ic_save"
+        app:backgroundTint="@color/colorAccent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:tint="@android:color/white"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
