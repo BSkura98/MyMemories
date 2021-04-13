@@ -52,7 +52,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
                         android:text="Name"
-                        android:textStyle="bold" />
+                        android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Subtitle1" />
 
                     <TextView
                         android:id="@+id/birthdateTextView"
@@ -61,7 +61,7 @@
                         android:layout_marginLeft="10dp"
                         android:layout_weight="1"
                         android:text="Date of birth: "
-                        android:textSize="12sp" />
+                        android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Caption" />
                 </LinearLayout>
 
                 <com.google.android.material.button.MaterialButton

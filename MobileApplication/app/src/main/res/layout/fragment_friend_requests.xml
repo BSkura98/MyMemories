@@ -29,8 +29,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Requests sent by you"
-                android:textColor="@color/colorAccent"
-                android:textSize="18sp" />
+                android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body1" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/friendRequests2"
@@ -44,8 +43,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Requests from other users"
-                android:textColor="@color/colorAccent"
-                android:textSize="18sp" />
+                android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body1" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/friendRequests"

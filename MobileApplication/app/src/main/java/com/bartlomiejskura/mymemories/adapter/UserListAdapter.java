@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bartlomiejskura.mymemories.R;
@@ -48,6 +50,9 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.MyView
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+        Typeface typeface = ResourcesCompat.getFont(context,R.font.quando);
+        holder.nameTextView.setTypeface(typeface);
+
         holder.nameTextView.setText(users.get(position).getFirstName().concat(" ").concat(users.get(position).getLastName()));
         holder.birthdateTextView.setText("date of birth: "+getFormattedDate(users.get(position).getBirthday()));
 
