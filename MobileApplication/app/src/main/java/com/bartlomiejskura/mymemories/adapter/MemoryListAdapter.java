@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bartlomiejskura.mymemories.MemoryActivity;
@@ -56,6 +58,9 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
 
     @Override
     public void onBindViewHolder(@NonNull MemoryListAdapter.MyViewHolder holder, int position) {
+        Typeface typeface = ResourcesCompat.getFont(context,R.font.quando);
+        holder.memoryTitle.setTypeface(typeface);
+
         holder.memoryTitle.setText(memories.get(position).getShortDescription());
         holder.memoryDate.setText(getFormattedDate(memories.get(position).getDate()));
 

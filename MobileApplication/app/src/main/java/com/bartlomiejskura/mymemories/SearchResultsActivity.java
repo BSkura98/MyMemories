@@ -5,16 +5,15 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.bartlomiejskura.mymemories.adapter.MemoryListAdapter;
 import com.bartlomiejskura.mymemories.model.Memory;
-import com.bartlomiejskura.mymemories.task.GetMemoriesInCategoryTask;
 import com.bartlomiejskura.mymemories.task.SearchMemoriesTask;
 
 import java.util.ArrayList;
@@ -25,6 +24,7 @@ public class SearchResultsActivity extends AppCompatActivity {
     private RecyclerView memoryList;
     private MemoryListAdapter adapter;
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,37 +37,23 @@ public class SearchResultsActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         ImageButton searchButton = findViewById(R.id.searchButton);
-        searchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        searchButton.setOnClickListener(v -> finish());
 
         ImageButton backButton = findViewById(R.id.backButton);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(i);
-            }
+        backButton.setOnClickListener(v -> {
+            Intent i = new Intent(getApplicationContext(), MainActivity.class);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(i);
         });
 
         TextView keywordTextView = findViewById(R.id.keywordTextView);
-        keywordTextView.setText(getIntent().getStringExtra("keyword"));
+        keywordTextView.setText("Result for: "+getIntent().getStringExtra("keyword"));
 
         if(getIntent().getStringExtra("keyword").isEmpty()){
-            findViewById(R.id.textView7).setVisibility(View.GONE);
             keywordTextView.setVisibility(View.GONE);
         }
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                getAllMemories();
-            }
-        }).start();
+        new Thread(this::getAllMemories).start();
     }
 
     public void getAllMemories(){
@@ -92,17 +78,14 @@ public class SearchResultsActivity extends AppCompatActivity {
             }
             final List<Memory> memories = new ArrayList<>(Arrays.asList(memoryArray));
             final SearchResultsActivity activity = this;
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    adapter = new MemoryListAdapter(
-                            getApplicationContext(),
-                            memories,
-                            activity
-                    );
-                    memoryList.setAdapter(adapter);
-                    memoryList.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-                }
+            runOnUiThread(() -> {
+                adapter = new MemoryListAdapter(
+                        getApplicationContext(),
+                        memories,
+                        activity
+                );
+                memoryList.setAdapter(adapter);
+                memoryList.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
             });
         }catch (Exception e){
             e.printStackTrace();

@@ -22,6 +22,7 @@ import com.bartlomiejskura.mymemories.R;
 import com.bartlomiejskura.mymemories.SearchMemoryActivity;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Calendar;
 import java.util.LinkedList;
@@ -29,7 +30,8 @@ import java.util.List;
 
 public class AdvancedSearchFragment extends Fragment {
     private ImageButton addCategoryButton;
-    private Button normalSearchButton,  searchButton, addCategoriesButton;
+    private FloatingActionButton searchButton;
+    private Button normalSearchButton, addCategoriesButton;
     private Button[] dateButtons = new Button[datesNumber];
     private ImageButton[] deleteButtons = new ImageButton[datesNumber];
     private CheckBox highPriorityCheckBox, mediumPriorityCheckBox, lowPriorityCheckBox, yesPublicCheckBox, noPublicCheckBox, yesSharedMemoriesCheckBox, noSharedMemoriesCheckBox, withImageCheckBox, withoutImageCheckBox;
@@ -99,7 +101,7 @@ public class AdvancedSearchFragment extends Fragment {
             final int finalI = i;
             deleteButtons[i].setOnClickListener(v -> {
                 dateButtons[finalI].setText("Select");
-                deleteButtons[finalI].setVisibility(View.GONE);
+                deleteButtons[finalI].setVisibility(View.INVISIBLE);
                 dateCalendars[finalI] = null;
                 addCategoriesLayout.setVisibility(View.GONE);
                 addCategoriesButton.setVisibility(View.VISIBLE);
@@ -150,8 +152,8 @@ public class AdvancedSearchFragment extends Fragment {
                 categories.add(category);
             }
             categoryEditText.setText("");
-            addCategoriesLayout.setVisibility(View.GONE);
-            addCategoriesButton.setVisibility(View.VISIBLE);
+            //addCategoriesLayout.setVisibility(View.GONE);
+            //addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
         searchButton.setOnClickListener(v -> {
@@ -172,7 +174,7 @@ public class AdvancedSearchFragment extends Fragment {
 
         for(int i=0;i<datesNumber;i++){
             if(dateCalendars[i]==null){
-                deleteButtons[i].setVisibility(View.GONE);
+                deleteButtons[i].setVisibility(View.INVISIBLE);
             }else{
                 String dateText = DateFormat.format("dd-MM-yyyy", dateCalendars[i]).toString();
                 dateButtons[i].setText(dateText);
@@ -187,12 +189,9 @@ public class AdvancedSearchFragment extends Fragment {
     private void initChip(String category){
         Chip chip = (Chip)LayoutInflater.from(getContext()).inflate(R.layout.chip_with_close_icon, null, false);
         chip.setText(category);
-        chip.setOnCloseIconClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                categoriesChipGroup.removeView(v);
-                categories.remove(((Chip)v).getText().toString());
-            }
+        chip.setOnCloseIconClickListener(v -> {
+            categoriesChipGroup.removeView(v);
+            categories.remove(((Chip)v).getText().toString());
         });
         chip.setCheckable(false);
         categoriesChipGroup.addView(chip);
