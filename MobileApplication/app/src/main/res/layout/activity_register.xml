@@ -200,6 +200,7 @@
         android:layout_height="55dp"
         android:layout_marginBottom="20dp"
         android:text="Sign Up"
+        android:textSize="18sp"
         app:backgroundTint="@color/colorAccentDark"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

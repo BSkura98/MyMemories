@@ -252,7 +252,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/birthdayButton"
                 style="@style/OutlinedButtonIconStyle"
                 android:layout_width="170dp"
@@ -282,7 +282,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView26" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/changePasswordButton"
                 style="@style/OutlinedButtonStyle"
                 android:layout_width="170dp"

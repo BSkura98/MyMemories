@@ -116,6 +116,7 @@
                 android:layout_height="55dp"
                 android:layout_marginTop="28dp"
                 android:text="Sign In"
+                android:textSize="18sp"
                 app:backgroundTint="@color/colorAccentDark"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
