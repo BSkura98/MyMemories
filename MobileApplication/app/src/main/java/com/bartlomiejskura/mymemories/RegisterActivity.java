@@ -64,14 +64,14 @@ public class RegisterActivity extends AppCompatActivity {
             public void run() {
                 try{
                     CreateUserTask createUserTask = new CreateUserTask(activity, email, password, firstName, lastName, birthday);
-                    AuthenticationTask authenticationTask = new AuthenticationTask(activity, email, password);
+                    AuthenticationTask authenticationTask = new AuthenticationTask(activity);
 
                     Boolean createUserResult = createUserTask.execute().get();
                     if(!createUserResult){
                         return;
                     }
 
-                    Boolean authenticationResult = authenticationTask.execute().get();
+                    Boolean authenticationResult = authenticationTask.execute(email, password).get();
                     if(!authenticationResult){
                         return;
                     }

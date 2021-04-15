@@ -42,6 +42,16 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/topView" />
 
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:id="@+id/loginProgressIndicator"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                app:indicatorColor="@color/colorAccent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/topView" />
+
             <TextView
                 android:id="@+id/textView2"
                 android:layout_width="wrap_content"

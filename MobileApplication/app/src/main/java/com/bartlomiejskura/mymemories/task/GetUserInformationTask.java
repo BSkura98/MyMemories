@@ -1,14 +1,16 @@
 package com.bartlomiejskura.mymemories.task;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.view.View;
 
+import com.bartlomiejskura.mymemories.LoginActivity;
 import com.bartlomiejskura.mymemories.model.User;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,21 +18,21 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class GetUserInformationTask extends AsyncTask<Void, Void, Boolean> {
-    private Activity activity;
-    private String email;
+public class GetUserInformationTask extends AsyncTask<String, Void, Boolean> {
+    private WeakReference<LoginActivity> activity;
     private OkHttpClient httpClient = new OkHttpClient();
     private Gson gson = new Gson();
     private SharedPreferences sharedPreferences;
 
-    public GetUserInformationTask(Activity activity, String email){
-        this.activity = activity;
-        this.email = email;
+    public GetUserInformationTask(LoginActivity activity){
+        this.activity = new WeakReference<>(activity);
         sharedPreferences = activity.getApplicationContext().getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
     }
 
     @Override
-    protected Boolean doInBackground(Void... voids) {
+    protected Boolean doInBackground(String... strings) {
+        String email = strings[0];
+
         Request request = new Request.Builder()
                 .url("https://mymemories-2.herokuapp.com/user?email="+email)
                 .get()
@@ -65,5 +67,14 @@ public class GetUserInformationTask extends AsyncTask<Void, Void, Boolean> {
         editor.putString("friendRequestsIds", gson.toJson(friendRequestsIds));
         editor.apply();
         return  true;
+    }
+
+    @Override
+    protected void onPostExecute(Boolean aBoolean) {
+        super.onPostExecute(aBoolean);
+
+        if(!aBoolean){
+            activity.get().setLoginProgressIndicatorVisibility(View.GONE);
+        }
     }
 }
