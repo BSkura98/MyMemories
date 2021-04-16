@@ -1,6 +1,7 @@
 package com.bartlomiejskura.mymemories;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -12,13 +13,17 @@ import android.widget.EditText;
 import com.bartlomiejskura.mymemories.task.AuthenticationTask;
 import com.bartlomiejskura.mymemories.task.GetUserInformationTask;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.concurrent.ExecutionException;
 
 public class LoginActivity extends AppCompatActivity {
     private Button signUpButton, signInButton;
     private EditText emailEditText, passwordEditText;
+    private TextInputLayout emailLayout, passwordLayout;
     private LinearProgressIndicator loginProgressIndicator;
+    private ConstraintLayout loginConstraintLayout;
 
     private AuthenticationTask authenticationTask;
     private GetUserInformationTask getUserInformationTask;
@@ -33,6 +38,7 @@ public class LoginActivity extends AppCompatActivity {
         prepareViews();
         setListeners();
     }
+    
 
     private void findViews(){
         signUpButton = findViewById(R.id.signUpButton);
@@ -40,6 +46,9 @@ public class LoginActivity extends AppCompatActivity {
         emailEditText = findViewById(R.id.emailEditText);
         passwordEditText = findViewById(R.id.passwordEditText);
         loginProgressIndicator = findViewById(R.id.loginProgressIndicator);
+        loginConstraintLayout = findViewById(R.id.loginConstraintlayout);
+        emailLayout = findViewById(R.id.textInputLayout);
+        passwordLayout = findViewById(R.id.textInputLayout2);
     }
 
     private void initValues(){
@@ -64,6 +73,10 @@ public class LoginActivity extends AppCompatActivity {
                 if(authenticationTask.getStatus()==AsyncTask.Status.RUNNING||authenticationTask.getStatus()==AsyncTask.Status.RUNNING){
                     return;
                 }
+
+                if(!verifyData()){
+                    return;
+                }
                 Boolean authenticationResult = authenticateUser();
                 if(authenticationResult){
                     Boolean getUserInformationResult = getUserInformation();
@@ -72,7 +85,8 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 }
             }catch (Exception e){
-                System.out.println("ERROR:" + e.getMessage());
+                System.out.println("ERROR in LoginActivity:" + e.getMessage());
+                showSnackbar("A problem has occurred while signing in. Please try again.");
             }
         }).start());
     }
@@ -93,6 +107,35 @@ public class LoginActivity extends AppCompatActivity {
 
     public void setLoginProgressIndicatorVisibility(int visibility){
         runOnUiThread(() -> loginProgressIndicator.setVisibility(visibility));
+    }
+
+    public void showSnackbar(String message){
+        Snackbar.make(loginConstraintLayout, message, Snackbar.LENGTH_LONG).show();
+    }
+
+
+    private boolean verifyData(){
+        boolean result = true;
+
+        runOnUiThread(() -> {
+            emailLayout.setError("");
+            passwordLayout.setError("");
+        });
+
+        if(emailEditText.getText().toString().isEmpty()){
+            runOnUiThread(() -> {
+                emailLayout.setError("Email field cannot be empty");
+            });
+            result = false;
+        }
+        if(passwordEditText.getText().toString().isEmpty()){
+            runOnUiThread(() -> {
+                passwordLayout.setError("Password field cannot be empty");
+            });
+            result = false;
+        }
+
+        return result;
     }
 
     private Boolean authenticateUser() throws ExecutionException, InterruptedException {

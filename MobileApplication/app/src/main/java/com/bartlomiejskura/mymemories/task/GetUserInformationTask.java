@@ -19,14 +19,14 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class GetUserInformationTask extends AsyncTask<String, Void, Boolean> {
-    private WeakReference<LoginActivity> activity;
+    private WeakReference<LoginActivity> activityReference;
     private OkHttpClient httpClient = new OkHttpClient();
     private Gson gson = new Gson();
     private SharedPreferences sharedPreferences;
 
-    public GetUserInformationTask(LoginActivity activity){
-        this.activity = new WeakReference<>(activity);
-        sharedPreferences = activity.getApplicationContext().getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
+    public GetUserInformationTask(LoginActivity activityReference){
+        this.activityReference = new WeakReference<>(activityReference);
+        sharedPreferences = activityReference.getApplicationContext().getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
     }
 
     @Override
@@ -45,10 +45,13 @@ public class GetUserInformationTask extends AsyncTask<String, Void, Boolean> {
             response = httpClient.newCall(request).execute();
             user = gson.fromJson(response.body().string(), User.class);
         }catch (IOException e){
-            System.out.println("ERROR: " + e.getMessage());
+            System.out.println("ERROR in GetUserInformationTask: " + e.getMessage());
+            activityReference.get().showSnackbar("A problem occurred while getting user information. Please try again.");
             return false;
         }
         if(user==null||user.getEmail()==null){
+            System.out.println("ERROR in GetUserInformationTask: user or user email is null");
+            activityReference.get().showSnackbar("A problem occurred while getting user information. Please try again.");
             return false;
         }
 
@@ -74,7 +77,7 @@ public class GetUserInformationTask extends AsyncTask<String, Void, Boolean> {
         super.onPostExecute(aBoolean);
 
         if(!aBoolean){
-            activity.get().setLoginProgressIndicatorVisibility(View.GONE);
+            activityReference.get().setLoginProgressIndicatorVisibility(View.GONE);
         }
     }
 }

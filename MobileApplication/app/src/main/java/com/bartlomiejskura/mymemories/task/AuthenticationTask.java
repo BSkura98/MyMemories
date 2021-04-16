@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.view.View;
-import android.widget.Toast;
 
 import com.bartlomiejskura.mymemories.LoginActivity;
 import com.bartlomiejskura.mymemories.model.AuthenticationRequest;
@@ -22,22 +21,22 @@ import okhttp3.Response;
 
 public class AuthenticationTask extends AsyncTask<String, Void, Boolean> {
     private final MediaType JSON = MediaType.get("application/json; charset=utf-8");
-    private WeakReference<Activity> activity;
+    private WeakReference<Activity> activityReference;
     private OkHttpClient httpClient = new OkHttpClient();
     private Gson gson = new Gson();
     private SharedPreferences sharedPreferences;
 
-    public AuthenticationTask(Activity activity){
-        this.activity = new WeakReference<>(activity);
-        sharedPreferences = activity.getApplicationContext().getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
+    public AuthenticationTask(Activity activityReference){
+        this.activityReference = new WeakReference<>(activityReference);
+        sharedPreferences = activityReference.getApplicationContext().getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
     }
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
 
-        if(activity.get() instanceof LoginActivity){
-            ((LoginActivity)(activity.get())).setLoginProgressIndicatorVisibility(View.VISIBLE);
+        if(activityReference.get() instanceof LoginActivity){
+            ((LoginActivity)(activityReference.get())).setLoginProgressIndicatorVisibility(View.VISIBLE);
         }
     }
 
@@ -60,7 +59,10 @@ public class AuthenticationTask extends AsyncTask<String, Void, Boolean> {
             response = httpClient.newCall(request).execute();
             String jwt = response.header("Authorization");
             if(jwt==null){
-                activity.get().runOnUiThread(() -> Toast.makeText(activity.get().getBaseContext(), "Error: jwt is null", Toast.LENGTH_LONG).show());
+                System.out.println("ERROR in AuthenticationTask: jwt is null");
+                if(activityReference.get() instanceof LoginActivity){
+                    ((LoginActivity)(activityReference.get())).showSnackbar("Invalid email or password. Try again.");
+                }
                 return false;
             }
 
@@ -69,7 +71,23 @@ public class AuthenticationTask extends AsyncTask<String, Void, Boolean> {
             editor.apply();
             return true;
         }catch (IOException e){
-            System.out.println("ERROR: " + e.getMessage());
+            System.out.println("ERROR in AuthenticationTask: " + e.getMessage());
+            if (e.getMessage() != null) {
+                if(e.getMessage().equals("timeout")){
+                    if(activityReference.get() instanceof LoginActivity){
+                        ((LoginActivity)(activityReference.get())).showSnackbar("Connection timed out");
+                    }
+                }else if(e.getMessage().contains("Unable to resolve host")){
+                    if(activityReference.get() instanceof LoginActivity){
+                        ((LoginActivity)(activityReference.get())).showSnackbar("Problem with the Internet connection");
+                    }
+                }else{
+                    if(activityReference.get() instanceof LoginActivity){
+                        ((LoginActivity)(activityReference.get())).showSnackbar("A problem has occurred while signing in. Please try again.");
+                    }
+                }
+            }
+
             return false;
         }
     }
@@ -78,8 +96,8 @@ public class AuthenticationTask extends AsyncTask<String, Void, Boolean> {
     protected void onPostExecute(Boolean aBoolean) {
         super.onPostExecute(aBoolean);
 
-        if(activity.get() instanceof LoginActivity){
-            ((LoginActivity)(activity.get())).setLoginProgressIndicatorVisibility(View.GONE);
+        if(activityReference.get() instanceof LoginActivity){
+            ((LoginActivity)(activityReference.get())).setLoginProgressIndicatorVisibility(View.GONE);
         }
     }
 }
