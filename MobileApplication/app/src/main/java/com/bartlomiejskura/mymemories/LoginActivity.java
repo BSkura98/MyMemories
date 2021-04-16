@@ -62,7 +62,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void setListeners(){
         signUpButton.setOnClickListener(v -> {
-            if(authenticationTask.getStatus()==AsyncTask.Status.RUNNING||authenticationTask.getStatus()==AsyncTask.Status.RUNNING){
+            if(authenticationTask.getStatus()==AsyncTask.Status.RUNNING||getUserInformationTask.getStatus()==AsyncTask.Status.RUNNING){
                 return;
             }
             startActivity(new Intent(this, RegisterActivity.class));
@@ -70,7 +70,7 @@ public class LoginActivity extends AppCompatActivity {
 
         signInButton.setOnClickListener(v -> new Thread(() -> {
             try{
-                if(authenticationTask.getStatus()==AsyncTask.Status.RUNNING||authenticationTask.getStatus()==AsyncTask.Status.RUNNING){
+                if(authenticationTask.getStatus()==AsyncTask.Status.RUNNING||getUserInformationTask.getStatus()==AsyncTask.Status.RUNNING){
                     return;
                 }
 

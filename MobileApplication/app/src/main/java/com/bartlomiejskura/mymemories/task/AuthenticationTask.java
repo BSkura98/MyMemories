@@ -26,9 +26,9 @@ public class AuthenticationTask extends AsyncTask<String, Void, Boolean> {
     private Gson gson = new Gson();
     private SharedPreferences sharedPreferences;
 
-    public AuthenticationTask(Activity activityReference){
-        this.activityReference = new WeakReference<>(activityReference);
-        sharedPreferences = activityReference.getApplicationContext().getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
+    public AuthenticationTask(Activity activity){
+        this.activityReference = new WeakReference<>(activity);
+        sharedPreferences = activity.getApplicationContext().getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
     }
 
     @Override
