@@ -3,7 +3,6 @@ package com.bartlomiejskura.mymemories;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -11,7 +10,6 @@ import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.bartlomiejskura.mymemories.task.AuthenticationTask;
 import com.bartlomiejskura.mymemories.task.CreateUserTask;
@@ -79,22 +77,34 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
         new Thread(() -> {
+            String email = emailEditText.getText().toString();
+            String password = passwordEditText.getText().toString();
+            String firstName = firstNameEditText.getText().toString();
+            String lastName = lastNameEditText.getText().toString();
+            String birthday = birthdayButton.getText().toString();
+            birthday = birthday.split("-")[2].concat("-").concat(birthday.split("-")[1]).concat("-").concat(birthday.split("-")[0]).concat("T00:00:00");
+
+            createUserTask = new CreateUserTask(this);
+            authenticationTask = new AuthenticationTask(this);
             try{
-                String email = emailEditText.getText().toString();
-                String password = passwordEditText.getText().toString();
-                String firstName = firstNameEditText.getText().toString();
-                String lastName = lastNameEditText.getText().toString();
-                String birthday = birthdayButton.getText().toString();
-                birthday = birthday.split("-")[2].concat("-").concat(birthday.split("-")[1]).concat("-").concat(birthday.split("-")[0]).concat("T00:00:00");
-
-                createUserTask = new CreateUserTask(this);
-                authenticationTask = new AuthenticationTask(this);
-
-                Boolean createUserResult = createUserTask.execute(email, password, firstName, lastName, birthday).get();
-                if(!createUserResult){
-                    return;
+                Integer createUserResult = createUserTask.execute(email, password, firstName, lastName, birthday).get();
+                switch (createUserResult){
+                    case 200:
+                        break;
+                    case 409:
+                        runOnUiThread(() -> emailLayout.setError("An account with this email already exists"));
+                        return;
+                    case -1:
+                    default:
+                        runOnUiThread(() -> Snackbar.make(registerConstraintLayout, "A problem has occurred while signing up. Please try again.", Snackbar.LENGTH_LONG).show());
+                        return;
                 }
+            }catch (Exception e){
+                System.out.println("ERROR in RegisterActivity:" + e.getMessage());
+                runOnUiThread(() -> Snackbar.make(registerConstraintLayout, "A problem has occurred while signing up. Please try again.", Snackbar.LENGTH_LONG).show());
+            }
 
+            try{
                 Boolean authenticationResult = authenticationTask.execute(email, password).get();
                 if(!authenticationResult){
                     return;
@@ -103,6 +113,8 @@ public class RegisterActivity extends AppCompatActivity {
                 startActivity(new Intent(getApplicationContext(), MainActivity.class));
             }catch (Exception e){
                 System.out.println("ERROR in RegisterActivity:" + e.getMessage());
+                runOnUiThread(() -> Snackbar.make(registerConstraintLayout, "Account created but there was a problem with authentication. Please try to log in.", Snackbar.LENGTH_INDEFINITE)
+                        .setAction("Log in", v -> onBackPressed()).show());
             }
         }).start();
     }
@@ -126,20 +138,42 @@ public class RegisterActivity extends AppCompatActivity {
             emailLayout.setError("Email field cannot be empty");
             return false;
         }
+        String[] checkArray = emailEditText.getText().toString().split("@");
+        if(checkArray.length!=2||checkArray[0].length()==0){
+            emailLayout.setError("Please enter a valid email");
+            return false;
+        }else{
+            String[] checkArray2  = checkArray[1].split("\\.", -1);
+            if(checkArray2.length<2){
+                emailLayout.setError("Please enter a valid email");
+                return false;
+            }else{
+                for(String string:checkArray2){
+                    if(string.length()==0){
+                        emailLayout.setError("Please enter a valid email");
+                        return false;
+                    }
+                }
+            }
+        }
         if(passwordEditText.getText().toString().isEmpty()){
             passwordLayout.setError("Password field cannot be empty");
+            return false;
+        }
+        if(passwordEditText.getText().toString().length()<6){
+            passwordLayout.setError("The password should be at least 6 characters long");
             return false;
         }
         if(repeatPasswordEditText.getText().toString().isEmpty()){
             repeatPasswordLayout.setError("Repeat password field cannot be empty");
             return false;
         }
-        if(birthdayButton.getText().equals("Select")){
-            Snackbar.make(registerConstraintLayout, "Date of birth is required", Snackbar.LENGTH_LONG).show();
-            return false;
-        }
         if(!passwordEditText.getText().toString().equals(repeatPasswordEditText.getText().toString())){
             repeatPasswordLayout.setError("Passwords given in fields \"Password\" and \"Repeat Password\" are not the same");
+            return false;
+        }
+        if(birthdayButton.getText().equals("Select")){
+            Snackbar.make(registerConstraintLayout, "Date of birth is required", Snackbar.LENGTH_LONG).show();
             return false;
         }
         return true;

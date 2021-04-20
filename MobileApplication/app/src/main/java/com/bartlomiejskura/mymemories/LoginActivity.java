@@ -123,15 +123,33 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         if(emailEditText.getText().toString().isEmpty()){
-            runOnUiThread(() -> {
-                emailLayout.setError("Email field cannot be empty");
-            });
+            runOnUiThread(() -> emailLayout.setError("Email field cannot be empty"));
             result = false;
+        }else{
+            String[] checkArray = emailEditText.getText().toString().split("@");
+            if(checkArray.length!=2||checkArray[0].length()==0){
+                runOnUiThread(() -> emailLayout.setError("Please enter a valid email"));
+                result = false;
+            }else{
+                String[] checkArray2  = checkArray[1].split("\\.", -1);
+                if(checkArray2.length<2){
+                    runOnUiThread(() -> emailLayout.setError("Please enter a valid email"));
+                    result = false;
+                }else{
+                    for(String string:checkArray2){
+                        if(string.length()==0){
+                            runOnUiThread(() -> emailLayout.setError("Please enter a valid email"));
+                            result = false;
+                            break;
+                        }
+                    }
+                }
+            }
         }
+
+
         if(passwordEditText.getText().toString().isEmpty()){
-            runOnUiThread(() -> {
-                passwordLayout.setError("Password field cannot be empty");
-            });
+            runOnUiThread(() -> passwordLayout.setError("Password field cannot be empty"));
             result = false;
         }
 

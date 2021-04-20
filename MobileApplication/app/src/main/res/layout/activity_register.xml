@@ -8,6 +8,7 @@
     tools:context=".RegisterActivity">
 
     <ScrollView
+        android:id="@+id/registerScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="80dp"
