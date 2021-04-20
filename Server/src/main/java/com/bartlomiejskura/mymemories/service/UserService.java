@@ -1,10 +1,12 @@
 package com.bartlomiejskura.mymemories.service;
 
+import com.bartlomiejskura.mymemories.exception.DuplicateEntryException;
 import com.bartlomiejskura.mymemories.exception.EntityNotFoundException;
 import com.bartlomiejskura.mymemories.exception.WrongPasswordException;
 import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +29,11 @@ public class UserService {
 
     public User addUser(User user){
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+        try{
+            return userRepository.save(user);
+        }catch (DataIntegrityViolationException e){
+            throw new DuplicateEntryException();
+        }
     }
 
     public User getUser(Long userId) throws EntityNotFoundException {
