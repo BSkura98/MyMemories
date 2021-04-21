@@ -3,16 +3,15 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_dates"
-            android:title="Memories"
-            android:icon="@drawable/ic_date"
-            />
+            android:id="@+id/nav_memories"
+            android:icon="@drawable/ic_library_books"
+            android:title="Memories" />
         <item
             android:id="@+id/nav_friends"
             android:icon="@drawable/ic_people"
             android:title="Friends" />
         <item
-            android:id="@+id/nav_Categories"
+            android:id="@+id/nav_categories"
             android:title="Categories"
             android:icon="@drawable/ic_label"/>
         <item
