@@ -211,9 +211,23 @@
         android:layout_marginBottom="20dp"
         android:text="Sign Up"
         android:textSize="18sp"
+        android:elevation="1dp"
         app:backgroundTint="@color/colorAccentDark"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/signUpProgressIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:elevation="8dp"
+        app:indicatorSize="30dp"
+        app:indicatorColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="@+id/signUpButton"
+        app:layout_constraintEnd_toEndOf="@+id/signUpButton"
+        app:layout_constraintStart_toStartOf="@+id/signUpButton"
+        app:layout_constraintTop_toTopOf="@+id/signUpButton" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

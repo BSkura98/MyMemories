@@ -3,16 +3,19 @@ package com.bartlomiejskura.mymemories;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.format.DateFormat;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
 import com.bartlomiejskura.mymemories.task.AuthenticationTask;
 import com.bartlomiejskura.mymemories.task.CreateUserTask;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -25,6 +28,7 @@ public class RegisterActivity extends AppCompatActivity {
     private ConstraintLayout registerConstraintLayout;
     private CreateUserTask createUserTask;
     private AuthenticationTask authenticationTask;
+    private CircularProgressIndicator signUpProgressIndicator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +37,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         findViews();
         initValues();
+        prepareViews();
         setListeners();
     }
 
@@ -50,11 +55,16 @@ public class RegisterActivity extends AppCompatActivity {
         emailLayout = findViewById(R.id.textInputLayout3);
         passwordLayout = findViewById(R.id.textInputLayout4);
         repeatPasswordLayout = findViewById(R.id.textInputLayout5);
+        signUpProgressIndicator =findViewById(R.id.signUpProgressIndicator);
     }
 
     private void initValues() {
         createUserTask = new CreateUserTask(this);
         authenticationTask = new AuthenticationTask(this);
+    }
+
+    private void prepareViews(){
+        signUpProgressIndicator.setVisibility(View.GONE);
     }
 
     private void setListeners() {
@@ -76,6 +86,8 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
+        setSignUpInProgress(true);
+
         new Thread(() -> {
             String email = emailEditText.getText().toString();
             String password = passwordEditText.getText().toString();
@@ -93,28 +105,36 @@ public class RegisterActivity extends AppCompatActivity {
                         break;
                     case 409:
                         runOnUiThread(() -> emailLayout.setError("An account with this email already exists"));
+                        setSignUpInProgress(false);
                         return;
                     case -1:
                     default:
                         runOnUiThread(() -> Snackbar.make(registerConstraintLayout, "A problem has occurred while signing up. Please try again.", Snackbar.LENGTH_LONG).show());
+                        setSignUpInProgress(false);
                         return;
                 }
             }catch (Exception e){
                 System.out.println("ERROR in RegisterActivity:" + e.getMessage());
                 runOnUiThread(() -> Snackbar.make(registerConstraintLayout, "A problem has occurred while signing up. Please try again.", Snackbar.LENGTH_LONG).show());
+                setSignUpInProgress(false);
             }
 
             try{
                 Boolean authenticationResult = authenticationTask.execute(email, password).get();
                 if(!authenticationResult){
+                    runOnUiThread(() -> Snackbar.make(registerConstraintLayout, "Account created but there was a problem with authentication. Please try to log in.", Snackbar.LENGTH_INDEFINITE)
+                            .setAction("Log in", v -> onBackPressed()).show());
+                    setSignUpInProgress(false);
                     return;
                 }
+                setSignUpInProgress(true);
 
                 startActivity(new Intent(getApplicationContext(), MainActivity.class));
             }catch (Exception e){
                 System.out.println("ERROR in RegisterActivity:" + e.getMessage());
                 runOnUiThread(() -> Snackbar.make(registerConstraintLayout, "Account created but there was a problem with authentication. Please try to log in.", Snackbar.LENGTH_INDEFINITE)
                         .setAction("Log in", v -> onBackPressed()).show());
+                setSignUpInProgress(false);
             }
         }).start();
     }
@@ -204,5 +224,18 @@ public class RegisterActivity extends AppCompatActivity {
         }, YEAR, MONTH, DATE);
 
         datePickerDialog.show();
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void setSignUpInProgress(boolean inProgress){
+        runOnUiThread(()->{
+            if(inProgress){
+                signUpProgressIndicator.setVisibility(View.VISIBLE);
+                signUpButton.setText("");
+            }else{
+                signUpProgressIndicator.setVisibility(View.GONE);
+                signUpButton.setText("Sign Up");
+            }
+        });
     }
 }
