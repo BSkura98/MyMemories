@@ -61,6 +61,13 @@ public class CreateUserTask extends AsyncTask<String, Void, Integer> {
             editor.apply();
         } catch (Exception e) {
             System.out.println("ERROR in CreateUserTask: " + e.getMessage());
+            if (e.getMessage() != null) {
+                if(e.getMessage().equals("timeout")){
+                    return -3;
+                }else if(e.getMessage().contains("Unable to resolve host")){
+                    return -2;
+                }
+            }
             return -1;
         }
         return response.code();

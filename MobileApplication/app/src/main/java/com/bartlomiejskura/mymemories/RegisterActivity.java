@@ -1,5 +1,6 @@
 package com.bartlomiejskura.mymemories;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
@@ -39,6 +40,10 @@ public class RegisterActivity extends AppCompatActivity {
         initValues();
         prepareViews();
         setListeners();
+
+        if(savedInstanceState != null){
+            restoreDataAfterRotation(savedInstanceState);
+        }
     }
 
     private void findViews() {
@@ -75,6 +80,17 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
+    private void restoreDataAfterRotation(Bundle savedInstanceState){
+        birthdayButton.setText(savedInstanceState.getString("birthday"));
+    }
+
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putString("birthday", birthdayButton.getText().toString());
+    }
 
 
     private void registerUser(){
@@ -105,6 +121,14 @@ public class RegisterActivity extends AppCompatActivity {
                         break;
                     case 409:
                         runOnUiThread(() -> emailLayout.setError("An account with this email already exists"));
+                        setSignUpInProgress(false);
+                        return;
+                    case -3:
+                        runOnUiThread(() -> Snackbar.make(registerConstraintLayout, "Connection timed out", Snackbar.LENGTH_LONG).show());
+                        setSignUpInProgress(false);
+                        return;
+                    case -2:
+                        runOnUiThread(() -> Snackbar.make(registerConstraintLayout, "Problem with the Internet connection", Snackbar.LENGTH_LONG).show());
                         setSignUpInProgress(false);
                         return;
                     case -1:
