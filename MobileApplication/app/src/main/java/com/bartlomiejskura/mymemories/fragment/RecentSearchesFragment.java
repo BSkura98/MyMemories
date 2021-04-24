@@ -39,38 +39,58 @@ public class RecentSearchesFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_recent_searches, container, false);
 
-        initElements(view);
-
-        new Thread(() -> {
-            try {
-                getRecentSearches();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }).start();
-
-        advancedSearchButton.setOnClickListener(v -> ((SearchMemoryActivity)getActivity()).changeFragment(true));
+        findViews(view);
+        initValues();
+        prepareViews();
+        setListeners();
 
         return view;
     }
 
-    private void initElements(View view){
+    private void findViews(View view){
         recentSearchesList = view.findViewById(R.id.recentSearchesList);
         advancedSearchButton = view.findViewById(R.id.advancedSearchButton);
+    }
+
+    private void initValues(){
         sharedPreferences = getActivity().getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
     }
 
-    private void getRecentSearches() throws JSONException {
+    private void prepareViews(){
+        new Thread(this::getRecentSearches).start();
+    }
+
+    private void setListeners(){
+        advancedSearchButton.setOnClickListener(v -> ((SearchMemoryActivity)getActivity()).changeFragment(true));
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(adapter!=null){
+            getActivity().runOnUiThread(() -> adapter.refresh());
+        }
+    }
+
+
+    private void getRecentSearches() {
         String json = sharedPreferences.getString("recentSearches", null);
         if(json == null){
             recentSearches = new LinkedList<>();
         }else{
-            JSONArray array = new JSONArray(json);
-            String[] recentSearchesArray = new String[array.length()];
-            for (int i = 0; i < array.length(); i++) {
-                recentSearchesArray[i] = array.getString(i);
+            JSONArray array = null;
+            try {
+                array = new JSONArray(json);
+                String[] recentSearchesArray = new String[array.length()];
+                for (int i = 0; i < array.length(); i++) {
+                    recentSearchesArray[i] = array.getString(i);
+                }
+                recentSearches = new LinkedList<>(Arrays.asList(recentSearchesArray));
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return;
             }
-            recentSearches = new LinkedList<>(Arrays.asList(recentSearchesArray));
         }
 
         final SearchMemoryActivity activity = (SearchMemoryActivity)getActivity();
@@ -89,14 +109,6 @@ public class RecentSearchesFragment extends Fragment {
     public void filter(String query){
         if(adapter!=null){
             adapter.getFilter().filter(query);
-        }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if(adapter!=null){
-            getActivity().runOnUiThread(() -> adapter.refresh());
         }
     }
 

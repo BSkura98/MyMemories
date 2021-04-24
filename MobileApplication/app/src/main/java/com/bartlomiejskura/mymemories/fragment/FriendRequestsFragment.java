@@ -30,23 +30,29 @@ public class FriendRequestsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_friend_requests, container, false);
 
-        bindViews(view);
-
-        requestsByUserTextView.setVisibility(View.GONE);
-        requestsByOthersTextView.setVisibility(View.GONE);
-
-        new Thread(this::getFriendRequestsByOthers).start();
-        new Thread(this::getFriendRequestsByUser).start();
+        findViews(view);
+        prepareViews();
 
         return view;
     }
 
-    private void bindViews(View view) {
+    private void findViews(View view) {
         requestsByUser = view.findViewById(R.id.friendRequests2);
         requestsByOthers = view.findViewById(R.id.friendRequests);
         requestsByUserTextView = view.findViewById(R.id.textView17);
         requestsByOthersTextView = view.findViewById(R.id.textView16);
     }
+
+    private void prepareViews(){
+        //friend requests headers (unnecessary until friend requests are loaded)
+        requestsByUserTextView.setVisibility(View.GONE);
+        requestsByOthersTextView.setVisibility(View.GONE);
+
+        //recycler views with friend requests
+        new Thread(this::getFriendRequestsByOthers).start();
+        new Thread(this::getFriendRequestsByUser).start();
+    }
+
 
     private void getFriendRequestsByOthers(){
         GetFriendRequestsTask task = new GetFriendRequestsTask(getActivity(), false);

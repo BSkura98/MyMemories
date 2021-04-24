@@ -26,23 +26,23 @@ import java.util.List;
 
 public class YourFriendsFragment extends Fragment {
     private RecyclerView friendsRecyclerView;
-    private UserListAdapter adapter;
     private Button addFriendButton;
+
+    private UserListAdapter adapter;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_your_friends, container, false);
 
-        bindViews(view);
+        findViews(view);
         setListeners();
-
-        new Thread(this::getFriends).start();
+        prepareViews();
 
         return view;
     }
 
-    private void bindViews(View view){
+    private void findViews(View view){
         friendsRecyclerView = view.findViewById(R.id.friendsRecyclerView);
         addFriendButton = view.findViewById(R.id.addFriendButton);
     }
@@ -54,6 +54,12 @@ public class YourFriendsFragment extends Fragment {
             startActivity(i);
         });
     }
+
+    private void prepareViews(){
+        //recycler view with friends
+        new Thread(this::getFriends).start();
+    }
+
 
     private void getFriends(){
         try{

@@ -22,6 +22,7 @@ import java.util.List;
 
 public class CategoriesFragment extends Fragment {
     private RecyclerView categoryList;
+
     private CategoryListAdapter adapter;
 
     @Nullable
@@ -29,14 +30,22 @@ public class CategoriesFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_categories, container, false);
 
-        categoryList = view.findViewById(R.id.categoryList);
-
-        new Thread(this::getAllCategories).start();
+        findViews(view);
+        prepareViews();
 
         return view;
     }
 
-    public void getAllCategories(){
+    private void findViews(View view){
+        categoryList = view.findViewById(R.id.categoryList);
+    }
+
+    private void prepareViews(){
+        //recycler view with category list
+        new Thread(this::getCategories).start();
+    }
+
+    private void getCategories(){
         try{
             GetCategoriesTask task = new GetCategoriesTask(getActivity());
             Category[] categoryArray = task.execute().get();

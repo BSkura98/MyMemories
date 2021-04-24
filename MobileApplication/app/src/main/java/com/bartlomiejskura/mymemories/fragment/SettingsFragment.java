@@ -19,6 +19,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,11 +30,9 @@ import com.bartlomiejskura.mymemories.ChangePasswordActivity;
 import com.bartlomiejskura.mymemories.R;
 import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.task.EditUserInformationTask;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
@@ -50,6 +50,8 @@ public class SettingsFragment extends Fragment {
     private Button changeAvatarButton, deleteAvatarButton, birthdayButton, changePasswordButton;
     private EditText firstNameEditText, secondNameEditText, emailEditText;
     private TextInputLayout textInputLayout, textInputLayout2, textInputLayout3;
+    private LinearLayout emailLinearLayout;
+    private TextView emailTextView;
 
     private static final int PICK_IMAGE_REQUEST = 1;
 
@@ -59,22 +61,15 @@ public class SettingsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
 
-        //hide option of email change
-        view.findViewById(R.id.textView24).setVisibility(View.GONE);
-        view.findViewById(R.id.linearLayout3).setVisibility(View.GONE);
-
-        bindViews(view);
-
-        sharedPreferences = getContext().getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
-        storageReference = FirebaseStorage.getInstance().getReference("avatars");
-
+        findViews(view);
+        initValues();
         setListeners();
-        initViews();
+        prepareViews();
 
         return view;
     }
 
-    private void bindViews(View view){
+    private void findViews(View view){
         avatarImageView = view.findViewById(R.id.avatarImageView);
         changeAvatarButton = view.findViewById(R.id.changeAvatarButton);
         deleteAvatarButton = view.findViewById(R.id.deleteAvatarButton);
@@ -90,6 +85,13 @@ public class SettingsFragment extends Fragment {
         textInputLayout2 = view.findViewById(R.id.textInputLayout2);
         textInputLayout3 = view.findViewById(R.id.textInputLayout3);
         changePasswordButton = view.findViewById(R.id.changePasswordButton);
+        emailLinearLayout = view.findViewById(R.id.linearLayout3);
+        emailTextView = view.findViewById(R.id.textView24);
+    }
+
+    private void initValues(){
+        sharedPreferences = getContext().getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
+        storageReference = FirebaseStorage.getInstance().getReference("avatars");
     }
 
     @SuppressLint("SetTextI18n")
@@ -169,7 +171,12 @@ public class SettingsFragment extends Fragment {
     }
 
     @SuppressLint("SetTextI18n")
-    private void initViews(){
+    private void prepareViews(){
+        //email settings layout (hidden)
+        emailTextView.setVisibility(View.GONE);
+        emailLinearLayout.setVisibility(View.GONE);
+
+        //avatar settings
         String avatarUrl = sharedPreferences.getString("avatarUrl", null);
         if(avatarUrl!=null&&!avatarUrl.isEmpty()){
             Picasso.get()
@@ -182,62 +189,25 @@ public class SettingsFragment extends Fragment {
             changeAvatarButton.setText("Select");
         }
 
+        //first name views
         firstNameEditText.setText(sharedPreferences.getString("firstName", ""));
-        secondNameEditText.setText(sharedPreferences.getString("lastName", ""));
-        emailEditText.setText(sharedPreferences.getString("email", ""));
         firstNameEditText.setEnabled(false);
-        secondNameEditText.setEnabled(false);
-        emailEditText.setEnabled(false);
-
         setEditTextEditable(firstNameEditText, textInputLayout, firstNameButton,false);
+        //second name views
+        secondNameEditText.setText(sharedPreferences.getString("lastName", ""));
+        secondNameEditText.setEnabled(false);
         setEditTextEditable(secondNameEditText, textInputLayout2, secondNameButton, false);
+        //email views
+        emailEditText.setText(sharedPreferences.getString("email", ""));
+        emailEditText.setEnabled(false);
         setEditTextEditable(emailEditText, textInputLayout3, emailButton,false);
 
+        //birthday button
         String date = sharedPreferences.getString("birthday", "");
         calendar.set(Integer.parseInt(date.substring(0, 4)), Integer.parseInt(date.substring(5, 7))-1, Integer.parseInt(date.substring(8, 10)), Integer.parseInt(date.substring(11, 13)), Integer.parseInt(date.substring(14, 16)));
         birthdayButton.setText(date.substring(8, 10) + "-" + date.substring(5, 7) + "-" + date.substring(0, 4));
     }
 
-    private void openFileChooser(){
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(intent, PICK_IMAGE_REQUEST);
-    }
-
-    private void deleteProfilePicture(){
-        StorageReference photoRef = FirebaseStorage.getInstance().getReference().getStorage().getReferenceFromUrl(sharedPreferences.getString("avatarUrl", null));
-        photoRef.delete().addOnSuccessListener(aVoid -> {
-            Picasso.get()
-                    .load(R.drawable.default_avatar)
-                    .fit()
-                    .centerCrop()
-                    .into(avatarImageView);
-            deleteAvatarButton.setVisibility(View.GONE);
-            changeAvatarButton.setText("Select");
-
-            try{
-                User user = new User(
-                        sharedPreferences.getLong("userId", 0),
-                        sharedPreferences.getString("email", null),
-                        sharedPreferences.getString("firstName", null),
-                        sharedPreferences.getString("lastName", null),
-                        sharedPreferences.getString("birthday", null),
-                        null);
-
-                EditUserInformationTask editUserInformationTask =
-                        new EditUserInformationTask(
-                                user,
-                                sharedPreferences);
-                Boolean result = editUserInformationTask.execute().get();
-                if(!result){
-                    return;
-                }
-            }catch (Exception e){
-                System.out.println("ERROR:" + e.getMessage());
-            }
-        });
-    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -291,6 +261,48 @@ public class SettingsFragment extends Fragment {
                 System.out.println("ERROR:" + e.getMessage());
             }
         }
+    }
+
+
+    private void openFileChooser(){
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+    }
+
+    private void deleteProfilePicture(){
+        StorageReference photoRef = FirebaseStorage.getInstance().getReference().getStorage().getReferenceFromUrl(sharedPreferences.getString("avatarUrl", null));
+        photoRef.delete().addOnSuccessListener(aVoid -> {
+            Picasso.get()
+                    .load(R.drawable.default_avatar)
+                    .fit()
+                    .centerCrop()
+                    .into(avatarImageView);
+            deleteAvatarButton.setVisibility(View.GONE);
+            changeAvatarButton.setText("Select");
+
+            try{
+                User user = new User(
+                        sharedPreferences.getLong("userId", 0),
+                        sharedPreferences.getString("email", null),
+                        sharedPreferences.getString("firstName", null),
+                        sharedPreferences.getString("lastName", null),
+                        sharedPreferences.getString("birthday", null),
+                        null);
+
+                EditUserInformationTask editUserInformationTask =
+                        new EditUserInformationTask(
+                                user,
+                                sharedPreferences);
+                Boolean result = editUserInformationTask.execute().get();
+                if(!result){
+                    return;
+                }
+            }catch (Exception e){
+                System.out.println("ERROR:" + e.getMessage());
+            }
+        });
     }
 
     private String getFileExtension(Uri uri) {

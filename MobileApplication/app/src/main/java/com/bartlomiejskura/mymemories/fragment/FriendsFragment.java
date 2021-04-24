@@ -24,13 +24,13 @@ public class FriendsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_friends, container, false);
 
-        bindViews(view);
+        findViews(view);
         initNavigationView();
 
         return view;
     }
 
-    private void bindViews(View view){
+    private void findViews(View view){
         navigationView = view.findViewById(R.id.bottomNavigation);
     }
 

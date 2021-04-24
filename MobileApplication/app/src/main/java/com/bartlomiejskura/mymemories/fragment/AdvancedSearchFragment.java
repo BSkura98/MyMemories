@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -37,7 +36,7 @@ public class AdvancedSearchFragment extends Fragment {
     private CheckBox highPriorityCheckBox, mediumPriorityCheckBox, lowPriorityCheckBox, yesPublicCheckBox, noPublicCheckBox, yesSharedMemoriesCheckBox, noSharedMemoriesCheckBox, withImageCheckBox, withoutImageCheckBox;
     private EditText categoryEditText;
     private ChipGroup categoriesChipGroup;
-    private LinearLayout addCategoriesLayout;
+    private LinearLayout addCategoryLayout;
 
     private Calendar[] dateCalendars = {null, null, null, null};
     private List<Integer> priorityList = new LinkedList<>();
@@ -53,7 +52,7 @@ public class AdvancedSearchFragment extends Fragment {
 
         initElements(view);
         setListeners();
-        setElements();
+        prepareViews();
 
         return view;
     }
@@ -82,7 +81,7 @@ public class AdvancedSearchFragment extends Fragment {
         withoutImageCheckBox = view.findViewById(R.id.withoutImageCheckBox);
         searchButton = view.findViewById(R.id.searchButton);
         addCategoriesButton = view.findViewById(R.id.addCategoriesButton2);
-        addCategoriesLayout = view.findViewById(R.id.linearLayout2);
+        addCategoryLayout = view.findViewById(R.id.linearLayout2);
     }
 
     private void setListeners(){
@@ -92,7 +91,7 @@ public class AdvancedSearchFragment extends Fragment {
             final int finalI = i;
             dateButtons[i].setOnClickListener(v -> {
                 selectDate(finalI);
-                addCategoriesLayout.setVisibility(View.GONE);
+                addCategoryLayout.setVisibility(View.GONE);
                 addCategoriesButton.setVisibility(View.VISIBLE);
             });
         }
@@ -103,7 +102,7 @@ public class AdvancedSearchFragment extends Fragment {
                 dateButtons[finalI].setText("Select");
                 deleteButtons[finalI].setVisibility(View.INVISIBLE);
                 dateCalendars[finalI] = null;
-                addCategoriesLayout.setVisibility(View.GONE);
+                addCategoryLayout.setVisibility(View.GONE);
                 addCategoriesButton.setVisibility(View.VISIBLE);
             });
         }
@@ -114,7 +113,7 @@ public class AdvancedSearchFragment extends Fragment {
             }else{
                 priorityList.remove(Integer.valueOf(90));
             }
-            addCategoriesLayout.setVisibility(View.GONE);
+            addCategoryLayout.setVisibility(View.GONE);
             addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
@@ -124,7 +123,7 @@ public class AdvancedSearchFragment extends Fragment {
             }else{
                 priorityList.remove(Integer.valueOf(50));
             }
-            addCategoriesLayout.setVisibility(View.GONE);
+            addCategoryLayout.setVisibility(View.GONE);
             addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
@@ -134,7 +133,7 @@ public class AdvancedSearchFragment extends Fragment {
             }else{
                 priorityList.remove(Integer.valueOf(10));
             }
-            addCategoriesLayout.setVisibility(View.GONE);
+            addCategoryLayout.setVisibility(View.GONE);
             addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
@@ -158,20 +157,22 @@ public class AdvancedSearchFragment extends Fragment {
 
         searchButton.setOnClickListener(v -> {
             ((SearchMemoryActivity)getActivity()).startSearchResultsActivity(((SearchMemoryActivity)getActivity()).getQuery());
-            addCategoriesLayout.setVisibility(View.GONE);
+            addCategoryLayout.setVisibility(View.GONE);
             addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
         addCategoriesButton.setOnClickListener(v -> {
-            addCategoriesLayout.setVisibility(View.VISIBLE);
+            addCategoryLayout.setVisibility(View.VISIBLE);
             addCategoriesButton.setVisibility(View.GONE);
             categoryEditText.requestFocus();
         });
     }
 
-    private void setElements(){
-        addCategoriesLayout.setVisibility(View.GONE);
+    private void prepareViews(){
+        //add category layout
+        addCategoryLayout.setVisibility(View.GONE);
 
+        //all date buttons
         for(int i=0;i<datesNumber;i++){
             if(dateCalendars[i]==null){
                 deleteButtons[i].setVisibility(View.INVISIBLE);
@@ -181,10 +182,13 @@ public class AdvancedSearchFragment extends Fragment {
             }
         }
 
+        //category chips
         for(String category:categories){
             initChip(category);
         }
     }
+
+
 
     private void initChip(String category){
         Chip chip = (Chip)LayoutInflater.from(getContext()).inflate(R.layout.chip_with_close_icon, null, false);
@@ -256,7 +260,7 @@ public class AdvancedSearchFragment extends Fragment {
 
         private final Boolean onCheckedValue;
 
-        public MyOnCheckedChangeListener(CheckBox checkBox1, CheckBox checkBox2, int booleanValueId, Boolean onCheckedValue){
+        MyOnCheckedChangeListener(CheckBox checkBox1, CheckBox checkBox2, int booleanValueId, Boolean onCheckedValue){
             this.checkBox1 = checkBox1;
             this.checkBox2 = checkBox2;
             this.booleanValueId = booleanValueId;
@@ -276,7 +280,7 @@ public class AdvancedSearchFragment extends Fragment {
                 booleanValues[booleanValueId] = onCheckedValue;
             }
 
-            addCategoriesLayout.setVisibility(View.GONE);
+            addCategoryLayout.setVisibility(View.GONE);
             addCategoriesButton.setVisibility(View.VISIBLE);
         }
     }

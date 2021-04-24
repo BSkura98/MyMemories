@@ -23,6 +23,7 @@ import java.util.List;
 
 public class FriendsMemoriesFragment extends Fragment {
     private RecyclerView friendsMemoriesRecyclerView;
+
     private MemoryListAdapter adapter;
 
     @Nullable
@@ -30,11 +31,19 @@ public class FriendsMemoriesFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_friends_memories, container, false);
 
-        friendsMemoriesRecyclerView = view.findViewById(R.id.friendsMemoriesRecyclerView);
-
-        new Thread(this::getMemories).start();
+        findViews(view);
+        prepareViews();
 
         return view;
+    }
+
+    private void findViews(View view){
+        friendsMemoriesRecyclerView = view.findViewById(R.id.friendsMemoriesRecyclerView);
+    }
+
+    private void prepareViews(){
+        //recycler view with friends public memories
+        new Thread(this::getMemories).start();
     }
 
     private void getMemories(){
