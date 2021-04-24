@@ -86,18 +86,15 @@ public class AddFriendsActivity extends AppCompatActivity {
 
     private void loadUsers(final User[] users){
         final Activity activity = this;
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                adapter = new UserListAdapter(
-                        getApplicationContext(),
-                        new ArrayList<>(Arrays.asList(users)),
-                        activity,
-                        false
-                );
-                usersRecyclerView.setAdapter(adapter);
-                usersRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-            }
+        runOnUiThread(() -> {
+            adapter = new UserListAdapter(
+                    getApplicationContext(),
+                    new ArrayList<>(Arrays.asList(users)),
+                    activity,
+                    false
+            );
+            usersRecyclerView.setAdapter(adapter);
+            usersRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         });
     }
 

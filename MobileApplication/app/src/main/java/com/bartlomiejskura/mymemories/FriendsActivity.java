@@ -41,42 +41,28 @@ public class FriendsActivity extends AppCompatActivity {
         toolbarTextView.setText("Friends");
         searchButton.setVisibility(View.GONE);
 
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                i.putExtra("fragmentToLoad", "friendsMemoriesFragment");
-                startActivity(i);
-            }
+        backButton.setOnClickListener(v -> {
+            Intent i = new Intent(getApplicationContext(), MainActivity.class);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            i.putExtra("fragmentToLoad", "friendsMemoriesFragment");
+            startActivity(i);
         });
 
         Button addFriendButton = findViewById(R.id.addFriendButton);
-        addFriendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getApplicationContext(), AddFriendsActivity.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(i);
-            }
+        addFriendButton.setOnClickListener(v -> {
+            Intent i = new Intent(getApplicationContext(), AddFriendsActivity.class);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(i);
         });
 
         Button friendRequestsButton = findViewById(R.id.friendRequestsButton);
-        friendRequestsButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getApplicationContext(), FriendRequestsActivity.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(i);
-            }
+        friendRequestsButton.setOnClickListener(v -> {
+            Intent i = new Intent(getApplicationContext(), FriendRequestsActivity.class);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(i);
         });
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                getFriends();
-            }
-        }).start();
+        new Thread(this::getFriends).start();
     }
 
     private void getFriends(){
@@ -88,18 +74,15 @@ public class FriendsActivity extends AppCompatActivity {
             }
             final List<User> friends = new ArrayList<>(Arrays.asList(userArray));
             final Activity activity = this;
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    adapter = new UserListAdapter(
-                            getApplicationContext(),
-                            friends,
-                            activity,
-                            true
-                    );
-                    friendsRecyclerView.setAdapter(adapter);
-                    friendsRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-                }
+            runOnUiThread(() -> {
+                adapter = new UserListAdapter(
+                        getApplicationContext(),
+                        friends,
+                        activity,
+                        true
+                );
+                friendsRecyclerView.setAdapter(adapter);
+                friendsRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
             });
         }catch (Exception e){
             e.printStackTrace();

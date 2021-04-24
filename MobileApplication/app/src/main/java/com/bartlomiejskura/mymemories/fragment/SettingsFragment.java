@@ -207,38 +207,34 @@ public class SettingsFragment extends Fragment {
 
     private void deleteProfilePicture(){
         StorageReference photoRef = FirebaseStorage.getInstance().getReference().getStorage().getReferenceFromUrl(sharedPreferences.getString("avatarUrl", null));
-        photoRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onSuccess(Void aVoid) {
-                Picasso.get()
-                        .load(R.drawable.default_avatar)
-                        .fit()
-                        .centerCrop()
-                        .into(avatarImageView);
-                deleteAvatarButton.setVisibility(View.GONE);
-                changeAvatarButton.setText("Select");
+        photoRef.delete().addOnSuccessListener(aVoid -> {
+            Picasso.get()
+                    .load(R.drawable.default_avatar)
+                    .fit()
+                    .centerCrop()
+                    .into(avatarImageView);
+            deleteAvatarButton.setVisibility(View.GONE);
+            changeAvatarButton.setText("Select");
 
-                try{
-                    User user = new User(
-                            sharedPreferences.getLong("userId", 0),
-                            sharedPreferences.getString("email", null),
-                            sharedPreferences.getString("firstName", null),
-                            sharedPreferences.getString("lastName", null),
-                            sharedPreferences.getString("birthday", null),
-                            null);
+            try{
+                User user = new User(
+                        sharedPreferences.getLong("userId", 0),
+                        sharedPreferences.getString("email", null),
+                        sharedPreferences.getString("firstName", null),
+                        sharedPreferences.getString("lastName", null),
+                        sharedPreferences.getString("birthday", null),
+                        null);
 
-                    EditUserInformationTask editUserInformationTask =
-                            new EditUserInformationTask(
-                                    user,
-                                    sharedPreferences);
-                    Boolean result = editUserInformationTask.execute().get();
-                    if(!result){
-                        return;
-                    }
-                }catch (Exception e){
-                    System.out.println("ERROR:" + e.getMessage());
+                EditUserInformationTask editUserInformationTask =
+                        new EditUserInformationTask(
+                                user,
+                                sharedPreferences);
+                Boolean result = editUserInformationTask.execute().get();
+                if(!result){
+                    return;
                 }
+            }catch (Exception e){
+                System.out.println("ERROR:" + e.getMessage());
             }
         });
     }
@@ -256,50 +252,41 @@ public class SettingsFragment extends Fragment {
                 final StorageReference fileReference = storageReference.child(System.currentTimeMillis() + "." + getFileExtension(imageUri));
 
                 fileReference.putFile(imageUri)
-                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                            @Override
-                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                    @Override
-                                    public void onSuccess(Uri uri) {
-                                        deleteAvatarButton.setVisibility(View.VISIBLE);
-                                        changeAvatarButton.setText("Change");
-                                        Picasso.get()
-                                                .load(uri.toString())
-                                                .fit()
-                                                .centerCrop()
-                                                .into(avatarImageView);
+                        .addOnSuccessListener(taskSnapshot -> taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(uri -> {
+                            deleteAvatarButton.setVisibility(View.VISIBLE);
+                            changeAvatarButton.setText("Change");
+                            Picasso.get()
+                                    .load(uri.toString())
+                                    .fit()
+                                    .centerCrop()
+                                    .into(avatarImageView);
 
-                                        try{
-                                            User user = new User(
-                                                    sharedPreferences.getLong("userId", 0),
-                                                    sharedPreferences.getString("email", null),
-                                                    sharedPreferences.getString("firstName", null),
-                                                    sharedPreferences.getString("lastName", null),
-                                                    sharedPreferences.getString("birthday", null),
-                                                    uri.toString());
+                            try{
+                                User user = new User(
+                                        sharedPreferences.getLong("userId", 0),
+                                        sharedPreferences.getString("email", null),
+                                        sharedPreferences.getString("firstName", null),
+                                        sharedPreferences.getString("lastName", null),
+                                        sharedPreferences.getString("birthday", null),
+                                        uri.toString());
 
 
-                                            EditUserInformationTask editUserInformationTask =
-                                                    new EditUserInformationTask(
-                                                            user,
-                                                            sharedPreferences);
-                                            Boolean result = editUserInformationTask.execute().get();
-                                            if(!result){
-                                                return;
-                                            }
-                                            if(oldAvatarUrl!=null&&!oldAvatarUrl.isEmpty()){
-                                                StorageReference photoRef = FirebaseStorage.getInstance().getReference().getStorage().getReferenceFromUrl(oldAvatarUrl);
-                                                photoRef.delete();
-                                            }
-                                        }catch (Exception e){
-                                            System.out.println("ERROR:" + e.getMessage());
-                                        }
-                                    }
-                                });
-
+                                EditUserInformationTask editUserInformationTask =
+                                        new EditUserInformationTask(
+                                                user,
+                                                sharedPreferences);
+                                Boolean result = editUserInformationTask.execute().get();
+                                if(!result){
+                                    return;
+                                }
+                                if(oldAvatarUrl!=null&&!oldAvatarUrl.isEmpty()){
+                                    StorageReference photoRef = FirebaseStorage.getInstance().getReference().getStorage().getReferenceFromUrl(oldAvatarUrl);
+                                    photoRef.delete();
+                                }
+                            }catch (Exception e){
+                                System.out.println("ERROR:" + e.getMessage());
                             }
-                        });
+                        }));
             }catch (Exception e){
                 System.out.println("ERROR:" + e.getMessage());
             }

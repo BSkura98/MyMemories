@@ -1,5 +1,6 @@
 package com.bartlomiejskura.mymemories.fragment;
 
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -44,24 +45,14 @@ public class MemoriesFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_memories, container, false);
 
-        bindViews(view);
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                getAllMemoriesForDate(date);
-            }
-        }).start();
-
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-        dateButton.setText(sdf.format(date));
-
+        findViews(view);
+        prepareViews();
         setListeners();
 
         return view;
     }
 
-    private void bindViews(View view){
+    private void findViews(View view){
         memoryList = view.findViewById(R.id.memoryList);
         dateButton = view.findViewById(R.id.dateButton);
         addMemoryButton = view.findViewById(R.id.addMemoryButton);
@@ -78,18 +69,28 @@ public class MemoriesFragment extends Fragment {
             date = new Date(date.getTime() - (24 * 3600000));
             String dateText = DateFormat.format("dd-MM-yyyy", date).toString();
             dateButton.setText(dateText);
-            new Thread(() -> getAllMemoriesForDate(date)).start();
+            new Thread(() -> getMemories(date)).start();
         });
 
         nextDayButton.setOnClickListener((view)->{
             date = new Date(date.getTime() + (24 * 3600000));
             String dateText = DateFormat.format("dd-MM-yyyy", date).toString();
             dateButton.setText(dateText);
-            new Thread(() -> getAllMemoriesForDate(date)).start();
+            new Thread(() -> getMemories(date)).start();
         });
     }
 
-    public void getAllMemoriesForDate(Date date){
+    private void prepareViews(){
+        //date button
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        dateButton.setText(sdf.format(date));
+
+        //recycler view with memory list
+        new Thread(() -> getMemories(date)).start();
+    }
+
+
+    private void getMemories(Date date){
         try{
             GetMemoriesForDateTask task = new GetMemoriesForDateTask(getActivity(), date);
             Memory[] memoryArray = task.execute().get();
@@ -126,7 +127,7 @@ public class MemoriesFragment extends Fragment {
 
             dateButton.setText(dateText);
 
-            new Thread(() -> getAllMemoriesForDate(date)).start();
+            new Thread(() -> getMemories(date)).start();
         }, YEAR, MONTH, DATE);
 
         datePickerDialog.show();

@@ -64,18 +64,15 @@ public class YourFriendsFragment extends Fragment {
             }
             final List<User> friends = new ArrayList<>(Arrays.asList(userArray));
             final Activity activity = getActivity();
-            activity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    adapter = new UserListAdapter(
-                            getContext(),
-                            friends,
-                            activity,
-                            true
-                    );
-                    friendsRecyclerView.setAdapter(adapter);
-                    friendsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-                }
+            activity.runOnUiThread(() -> {
+                adapter = new UserListAdapter(
+                        getContext(),
+                        friends,
+                        activity,
+                        true
+                );
+                friendsRecyclerView.setAdapter(adapter);
+                friendsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
             });
         }catch (Exception e){
             e.printStackTrace();

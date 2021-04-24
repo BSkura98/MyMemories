@@ -212,18 +212,15 @@ public class AdvancedSearchFragment extends Fragment {
             date = Calendar.getInstance().get(Calendar.DATE);
         }
 
-        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker datePicker, int year1, int month1, int date) {
-                dateCalendars[dateId] = Calendar.getInstance();
-                dateCalendars[dateId].set(Calendar.YEAR, year1);
-                dateCalendars[dateId].set(Calendar.MONTH, month1);
-                dateCalendars[dateId].set(Calendar.DATE, date);
-                String dateText = DateFormat.format("dd-MM-yyyy", dateCalendars[dateId]).toString();
+        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), (datePicker, year1, month1, date1) -> {
+            dateCalendars[dateId] = Calendar.getInstance();
+            dateCalendars[dateId].set(Calendar.YEAR, year1);
+            dateCalendars[dateId].set(Calendar.MONTH, month1);
+            dateCalendars[dateId].set(Calendar.DATE, date1);
+            String dateText = DateFormat.format("dd-MM-yyyy", dateCalendars[dateId]).toString();
 
-                dateButtons[dateId].setText(dateText);
-                deleteButtons[dateId].setVisibility(View.VISIBLE);
-            }
+            dateButtons[dateId].setText(dateText);
+            deleteButtons[dateId].setVisibility(View.VISIBLE);
         }, year, month, date);
 
         datePickerDialog.show();

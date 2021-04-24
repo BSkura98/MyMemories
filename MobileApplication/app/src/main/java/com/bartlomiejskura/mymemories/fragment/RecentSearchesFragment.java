@@ -41,23 +41,15 @@ public class RecentSearchesFragment extends Fragment {
 
         initElements(view);
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    getRecentSearches();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+        new Thread(() -> {
+            try {
+                getRecentSearches();
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         }).start();
 
-        advancedSearchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((SearchMemoryActivity)getActivity()).changeFragment(true);
-            }
-        });
+        advancedSearchButton.setOnClickListener(v -> ((SearchMemoryActivity)getActivity()).changeFragment(true));
 
         return view;
     }
@@ -82,18 +74,15 @@ public class RecentSearchesFragment extends Fragment {
         }
 
         final SearchMemoryActivity activity = (SearchMemoryActivity)getActivity();
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                adapter = new RecentSearchesAdapter(
-                        getContext(),
-                        recentSearches,
-                        activity
-                );
-                recentSearchesList.setAdapter(adapter);
-                recentSearchesList.setLayoutManager(new LinearLayoutManager(getContext()));
-                filter(((SearchMemoryActivity)getActivity()).getQuery());
-            }
+        getActivity().runOnUiThread(() -> {
+            adapter = new RecentSearchesAdapter(
+                    getContext(),
+                    recentSearches,
+                    activity
+            );
+            recentSearchesList.setAdapter(adapter);
+            recentSearchesList.setLayoutManager(new LinearLayoutManager(getContext()));
+            filter(((SearchMemoryActivity)getActivity()).getQuery());
         });
     }
 
@@ -107,12 +96,7 @@ public class RecentSearchesFragment extends Fragment {
     public void onResume() {
         super.onResume();
         if(adapter!=null){
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    adapter.refresh();
-                }
-            });
+            getActivity().runOnUiThread(() -> adapter.refresh());
         }
     }
 

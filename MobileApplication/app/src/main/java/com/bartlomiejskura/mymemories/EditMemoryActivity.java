@@ -502,17 +502,14 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
         int MONTH = calendar.get(Calendar.MONTH);
         int DATE = calendar.get(Calendar.DATE);
 
-        DatePickerDialog datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker datePicker, int year1, int month1, int date) {
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this, (datePicker, year1, month1, date) -> {
 
-                calendar.set(Calendar.YEAR, year1);
-                calendar.set(Calendar.MONTH, month1);
-                calendar.set(Calendar.DATE, date);
-                String dateText = DateFormat.format("dd-MM-yyyy", calendar).toString();
+            calendar.set(Calendar.YEAR, year1);
+            calendar.set(Calendar.MONTH, month1);
+            calendar.set(Calendar.DATE, date);
+            String dateText = DateFormat.format("dd-MM-yyyy", calendar).toString();
 
-                dateButton.setText(dateText);
-            }
+            dateButton.setText(dateText);
         }, YEAR, MONTH, DATE);
 
         datePickerDialog.show();
@@ -524,14 +521,11 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
         int MINUTE = calendar.get(Calendar.MINUTE);
         boolean is24HourFormat = true;
 
-        TimePickerDialog timePickerDialog = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
-            @Override
-            public void onTimeSet(TimePicker timePicker, int hour1, int minute1) {
-                calendar.set(Calendar.HOUR_OF_DAY, hour1);
-                calendar.set(Calendar.MINUTE, minute1);
-                String dateText = DateFormat.format("HH:mm", calendar).toString();
-                timeButton.setText(dateText);
-            }
+        TimePickerDialog timePickerDialog = new TimePickerDialog(this, (timePicker, hour1, minute1) -> {
+            calendar.set(Calendar.HOUR_OF_DAY, hour1);
+            calendar.set(Calendar.MINUTE, minute1);
+            String dateText = DateFormat.format("HH:mm", calendar).toString();
+            timeButton.setText(dateText);
         }, HOUR, MINUTE, is24HourFormat);
 
         timePickerDialog.show();
@@ -575,22 +569,13 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
                 final StorageReference fileReference = storageReference.child(System.currentTimeMillis() + "." + getFileExtension(imageUri));
 
                 fileReference.putFile(imageUri)
-                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                            @Override
-                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                    @Override
-                                    public void onSuccess(Uri uri) {
-                                        deleteImageButton.setVisibility(View.VISIBLE);
-                                        memoryImage.setVisibility(View.VISIBLE);
-                                        deleteImage(memory.getImageUrl(), true);
-                                        memory.setImageUrl(uri.toString());
-                                        Picasso.get().load(uri.toString()).into(memoryImage);
-                                    }
-                                });
-
-                            }
-                        });
+                        .addOnSuccessListener(taskSnapshot -> taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(uri -> {
+                            deleteImageButton.setVisibility(View.VISIBLE);
+                            memoryImage.setVisibility(View.VISIBLE);
+                            deleteImage(memory.getImageUrl(), true);
+                            memory.setImageUrl(uri.toString());
+                            Picasso.get().load(uri.toString()).into(memoryImage);
+                        }));
             }catch (Exception e){
                 System.out.println("ERROR:" + e.getMessage());
             }
@@ -624,14 +609,11 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
     private void deleteImage(String imageUrl, final boolean imageViewVisible){
         if(imageUrl !=null){
             StorageReference photoRef = FirebaseStorage.getInstance().getReference().getStorage().getReferenceFromUrl(imageUrl);
-            photoRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    memory.setImageUrl(null);
-                    if(!imageViewVisible){
-                        deleteImageButton.setVisibility(View.GONE);
-                        memoryImage.setVisibility(View.GONE);
-                    }
+            photoRef.delete().addOnSuccessListener(aVoid -> {
+                memory.setImageUrl(null);
+                if(!imageViewVisible){
+                    deleteImageButton.setVisibility(View.GONE);
+                    memoryImage.setVisibility(View.GONE);
                 }
             });
         }
@@ -677,29 +659,26 @@ public class EditMemoryActivity extends AppCompatActivity implements AdapterView
     }
 
     private void getLocation(){
-        fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
-            @Override
-            public void onComplete(@NonNull Task<Location> task) {
-                Location location = task.getResult();
-                if(location != null){
-                    try {
-                        mapFragment.getView().setVisibility(View.VISIBLE);
-                        deleteLocationButton.setVisibility(View.VISIBLE);
-                        Geocoder geocoder = new Geocoder(EditMemoryActivity.this, Locale.getDefault());
-                        List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude()), 15f));
-                        latitude = addresses.get(0).getLatitude();
-                        longitude = addresses.get(0).getLongitude();
+        fusedLocationProviderClient.getLastLocation().addOnCompleteListener(task -> {
+            Location location = task.getResult();
+            if(location != null){
+                try {
+                    mapFragment.getView().setVisibility(View.VISIBLE);
+                    deleteLocationButton.setVisibility(View.VISIBLE);
+                    Geocoder geocoder = new Geocoder(EditMemoryActivity.this, Locale.getDefault());
+                    List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude()), 15f));
+                    latitude = addresses.get(0).getLatitude();
+                    longitude = addresses.get(0).getLongitude();
 
-                        if(marker!=null){
-                            marker.remove();
-                        }
-                        MarkerOptions markerOptions = new MarkerOptions();
-                        markerOptions.position(new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude()));
-                        marker = map.addMarker(markerOptions);
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    if(marker!=null){
+                        marker.remove();
                     }
+                    MarkerOptions markerOptions = new MarkerOptions();
+                    markerOptions.position(new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude()));
+                    marker = map.addMarker(markerOptions);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         });

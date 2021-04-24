@@ -100,12 +100,7 @@ public class RecentSearchesAdapter extends RecyclerView.Adapter<RecentSearchesAd
             recentSearchesLinearLayout = itemView.findViewById(R.id.searchLinearLayout);
             search = itemView.findViewById(R.id.search);
 
-            recentSearchesLinearLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    activity.startSearchResultsActivity(search.getText().toString());
-                }
-            });
+            recentSearchesLinearLayout.setOnClickListener(v -> activity.startSearchResultsActivity(search.getText().toString()));
         }
     }
 }

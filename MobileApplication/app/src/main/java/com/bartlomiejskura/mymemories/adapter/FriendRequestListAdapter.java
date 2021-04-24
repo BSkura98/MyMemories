@@ -91,22 +91,12 @@ public class FriendRequestListAdapter extends RecyclerView.Adapter<FriendRequest
             deleteButton = itemView.findViewById(R.id.deleteButton);
 
             if(friendRequestsByOtherUsers){
-                confirmButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        confirmFriendRequest(getAdapterPosition());
-                    }
-                });
+                confirmButton.setOnClickListener(v -> confirmFriendRequest(getAdapterPosition()));
             }else{
                 confirmButton.setVisibility(View.GONE);
             }
 
-            deleteButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    deleteFriendRequest(getAdapterPosition());
-                }
-            });
+            deleteButton.setOnClickListener(v -> deleteFriendRequest(getAdapterPosition()));
         }
 
         private void confirmFriendRequest(int position){

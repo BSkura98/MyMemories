@@ -59,22 +59,19 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
     }
 
     public void sort(List<Category> categories){
-        Collections.sort(categories, new Comparator<Category>() {
-            @Override
-            public int compare(Category category1, Category category2) {
-                if(category1.getMemories()==null){
-                    if(category2.getMemories()==null){
-                        return 0;
-                    }
-                    return 1;
-                }
+        Collections.sort(categories, (category1, category2) -> {
+            if(category1.getMemories()==null){
                 if(category2.getMemories()==null){
-                    return -1;
+                    return 0;
                 }
-                int size1 = category1.getMemories().size();
-                int size2 = category2.getMemories().size();
-                return size1==size2?0:(size1<size2?1:-1);
+                return 1;
             }
+            if(category2.getMemories()==null){
+                return -1;
+            }
+            int size1 = category1.getMemories().size();
+            int size2 = category2.getMemories().size();
+            return size1==size2?0:(size1<size2?1:-1);
         });
     }
 
@@ -90,12 +87,7 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
             memoryNumber = itemView.findViewById(R.id.memoryNumber);
             textView28 = itemView.findViewById(R.id.textView28);
 
-            categoryLinearLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    startMemoryActivity(getAdapterPosition());
-                }
-            });
+            categoryLinearLayout.setOnClickListener(v -> startMemoryActivity(getAdapterPosition()));
         }
 
         private void startMemoryActivity(int position){

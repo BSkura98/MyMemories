@@ -45,28 +45,15 @@ public class FriendRequestsActivity extends AppCompatActivity {
         toolbarTextView.setText("Friend requests");
         searchButton.setVisibility(View.GONE);
 
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getApplicationContext(), FriendsActivity.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(i);
-            }
+        backButton.setOnClickListener(v -> {
+            Intent i = new Intent(getApplicationContext(), FriendsActivity.class);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(i);
         });
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                getFriendRequestsByOthers();
-            }
-        }).start();
+        new Thread(this::getFriendRequestsByOthers).start();
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                getFriendRequestsByUser();
-            }
-        }).start();
+        new Thread(this::getFriendRequestsByUser).start();
     }
 
     private void getFriendRequestsByOthers(){
@@ -95,35 +82,29 @@ public class FriendRequestsActivity extends AppCompatActivity {
 
     private void showFriendRequestsByOthers(final User[] users){
         final Activity activity = this;
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                adapter = new FriendRequestListAdapter(
-                        getApplicationContext(),
-                        new ArrayList<>(Arrays.asList(users)),
-                        activity,
-                        true
-                );
-                requestsByOthers.setAdapter(adapter);
-                requestsByOthers.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-            }
+        runOnUiThread(() -> {
+            adapter = new FriendRequestListAdapter(
+                    getApplicationContext(),
+                    new ArrayList<>(Arrays.asList(users)),
+                    activity,
+                    true
+            );
+            requestsByOthers.setAdapter(adapter);
+            requestsByOthers.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         });
     }
 
     private void showFriendRequestsByUser(final User[] users){
         final Activity activity = this;
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                adapter = new FriendRequestListAdapter(
-                        getApplicationContext(),
-                        new ArrayList<>(Arrays.asList(users)),
-                        activity,
-                        false
-                );
-                requestsByUser.setAdapter(adapter);
-                requestsByUser.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-            }
+        runOnUiThread(() -> {
+            adapter = new FriendRequestListAdapter(
+                    getApplicationContext(),
+                    new ArrayList<>(Arrays.asList(users)),
+                    activity,
+                    false
+            );
+            requestsByUser.setAdapter(adapter);
+            requestsByUser.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         });
     }
 
