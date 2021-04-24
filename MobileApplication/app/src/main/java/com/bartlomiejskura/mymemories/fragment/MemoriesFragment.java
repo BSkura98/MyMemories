@@ -1,5 +1,6 @@
 package com.bartlomiejskura.mymemories.fragment;
 
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -22,6 +23,8 @@ import com.bartlomiejskura.mymemories.adapter.MemoryListAdapter;
 import com.bartlomiejskura.mymemories.model.Memory;
 import com.bartlomiejskura.mymemories.task.GetMemoriesForDateTask;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,35 +41,55 @@ public class MemoriesFragment extends Fragment {
 
     private MemoryListAdapter adapter;
     private Date date = new Date();
+    private List<Memory> memories;
+    private Gson gson = new Gson();
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_memories, container, false);
 
-        bindViews(view);
+        findViews(view);
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                getAllMemoriesForDate(date);
-            }
-        }).start();
+        //if(savedInstanceState != null){
+        //    restoreDataAfterRotation(savedInstanceState);
+        //}else{
+        //    new Thread(() -> getAllMemoriesForDate(date)).start();
+        //}
 
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-        dateButton.setText(sdf.format(date));
-
+        prepareViews(savedInstanceState);
         setListeners();
 
         return view;
     }
 
-    private void bindViews(View view){
+
+    private void findViews(View view){
         memoryList = view.findViewById(R.id.memoryList);
         dateButton = view.findViewById(R.id.dateButton);
         addMemoryButton = view.findViewById(R.id.addMemoryButton);
         previousDayButton = view.findViewById(R.id.previousDayButton);
         nextDayButton = view.findViewById(R.id.nextDayButton);
+    }
+
+    private void prepareViews(Bundle savedInstanceState){
+        if(savedInstanceState==null){
+            //date button
+            @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+            dateButton.setText(sdf.format(date));
+
+            //recycler view with memory list
+            new Thread(() -> getAllMemoriesForDate(date)).start();
+        }else{
+            memories = gson.fromJson(savedInstanceState.getString("memories"), new TypeToken<List<Memory>>(){}.getType());
+            createMemoryListAdapter();
+            @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            try{
+                date = formatter.parse(savedInstanceState.getString("date"));
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
     }
 
     private void setListeners(){
@@ -89,27 +112,54 @@ public class MemoriesFragment extends Fragment {
         });
     }
 
-    public void getAllMemoriesForDate(Date date){
+    private void restoreDataAfterRotation(Bundle savedInstanceState){
+        memories = gson.fromJson(savedInstanceState.getString("memories"), new TypeToken<List<Memory>>(){}.getType());
+        createMemoryListAdapter();
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        try{
+            date = formatter.parse(savedInstanceState.getString("date"));
+           // System.out.println("restoreDataAfterRotation " + formatter.format(formatter.parse(savedInstanceState.getString("date"))));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        String memoriesJson = gson.toJson(memories);
+        outState.putString("memories", memoriesJson);
+        outState.putString("date", formatter.format(date));
+        //System.out.println("onSaveInstanceState "+ formatter.format(date));
+    }
+
+    private void getAllMemoriesForDate(Date date){
         try{
             GetMemoriesForDateTask task = new GetMemoriesForDateTask(getActivity(), date);
             Memory[] memoryArray = task.execute().get();
             if(memoryArray ==null){
                 return;
             }
-            final List<Memory> memories = new ArrayList<>(Arrays.asList(memoryArray));
-            getActivity().runOnUiThread(() -> {
-                adapter = new MemoryListAdapter(
-                        getContext(),
-                        memories,
-                        getActivity()
-                );
-                memoryList.setAdapter(adapter);
-                memoryList.setLayoutManager(new LinearLayoutManager(getContext()));
-            });
+            memories = new ArrayList<>(Arrays.asList(memoryArray));
+            getActivity().runOnUiThread(this::createMemoryListAdapter);
         }catch (Exception e){
             e.printStackTrace();
         }
     }
+
+    private void createMemoryListAdapter(){
+        adapter = new MemoryListAdapter(
+                getContext(),
+                memories,
+                getActivity()
+        );
+        memoryList.setAdapter(adapter);
+        memoryList.setLayoutManager(new LinearLayoutManager(getContext()));
+    }
+
 
     private void selectDate() {
         Calendar calendar = Calendar.getInstance();

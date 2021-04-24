@@ -8,8 +8,6 @@ import android.os.AsyncTask;
 import com.bartlomiejskura.mymemories.model.User;
 import com.google.gson.Gson;
 
-import java.lang.ref.WeakReference;
-
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -18,13 +16,11 @@ import okhttp3.Response;
 
 public class CreateUserTask extends AsyncTask<String, Void, Integer> {
     private final MediaType JSON = MediaType.get("application/json; charset=utf-8");
-    private WeakReference<Activity> activityReference;
     private OkHttpClient httpClient = new OkHttpClient();
     private Gson gson = new Gson();
     private SharedPreferences sharedPreferences;
 
     public CreateUserTask(Activity activity){
-        this.activityReference = new WeakReference<>(activity);
         sharedPreferences = activity.getApplicationContext().getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
     }
 

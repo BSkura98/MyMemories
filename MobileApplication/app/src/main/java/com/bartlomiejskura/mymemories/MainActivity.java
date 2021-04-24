@@ -21,6 +21,7 @@ import com.bartlomiejskura.mymemories.fragment.CategoriesFragment;
 import com.bartlomiejskura.mymemories.fragment.MemoriesFragment;
 import com.bartlomiejskura.mymemories.fragment.FriendsFragment;
 import com.bartlomiejskura.mymemories.fragment.SettingsFragment;
+import com.bartlomiejskura.mymemories.utils.SharedPreferencesUtil;
 import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -43,7 +44,9 @@ public class MainActivity extends AppCompatActivity {
         setListeners();
         prepareViews();
 
-        setFragment();
+        if(savedInstanceState==null){
+            setFragment();
+        }
     }
 
 
@@ -141,17 +144,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void logout() {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.remove("userId");
-        editor.remove("email");
-        editor.remove("firstName");
-        editor.remove("lastName");
-        editor.remove("birthday");
-        editor.remove("token");
-        editor.remove("avatarUrl");
-        editor.remove("friends");
-        editor.remove("friendRequestsIds");
-        editor.apply();
+        SharedPreferencesUtil.logout(sharedPreferences);
 
         drawerLayout.closeDrawer(GravityCompat.START);
 
@@ -161,6 +154,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void exit(){
+        SharedPreferencesUtil.logout(sharedPreferences);
+
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.addCategory(Intent.CATEGORY_HOME);
