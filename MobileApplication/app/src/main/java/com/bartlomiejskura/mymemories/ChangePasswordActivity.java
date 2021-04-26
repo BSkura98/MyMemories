@@ -20,6 +20,9 @@ import java.util.concurrent.ExecutionException;
 public class ChangePasswordActivity extends AppCompatActivity {
     private Button confirmButton;
     private EditText currentPasswordEditText, newPassword1EditText, newPassword2EditText;
+    private Toolbar toolbar;
+    private TextView toolbarTextView;
+    private ImageButton searchButton, backButton;
 
     private SharedPreferences sharedPreferences;
 
@@ -28,40 +31,45 @@ public class ChangePasswordActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_change_password);
 
-        sharedPreferences = getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
-
-        initToolbar();
-        bindViews();
+        findViews();
+        initValues();
+        prepareViews();
         setListeners();
     }
 
-    private void initToolbar(){
-        Toolbar toolbar = findViewById(R.id.toolbarSearchResults);
-        TextView toolbarTextView = findViewById(R.id.toolbarTextView);
-        ImageButton searchButton = findViewById(R.id.searchButton);
-        ImageButton backButton = findViewById(R.id.backButton);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-        toolbarTextView.setText("Change password");
-        searchButton.setVisibility(View.GONE);
-
-        backButton.setOnClickListener(v -> {
-            finish();
-        });
-    }
-
-    private void bindViews(){
+    private void findViews(){
         confirmButton = findViewById(R.id.confirmButton);
         currentPasswordEditText = findViewById(R.id.currentPasswordEditText);
         newPassword1EditText = findViewById(R.id.newPassword1EditText);
         newPassword2EditText = findViewById(R.id.newPassword2EditText);
+        toolbar = findViewById(R.id.toolbarSearchResults);
+        toolbarTextView = findViewById(R.id.toolbarTextView);
+        searchButton = findViewById(R.id.searchButton);
+        backButton = findViewById(R.id.backButton);
+    }
+
+    private void initValues(){
+        sharedPreferences = getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
+    }
+
+    private void prepareViews(){
+        //toolbar
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        toolbarTextView.setText("Change password");
+        searchButton.setVisibility(View.GONE);
     }
 
     private void setListeners(){
         confirmButton.setOnClickListener(v -> {
             new Thread(this::changePassword).start();
         });
+
+        backButton.setOnClickListener(v -> {
+            finish();
+        });
     }
+
 
     private void changePassword(){
         if(!newPassword1EditText.getText().toString().equals(newPassword2EditText.getText().toString())){
@@ -77,9 +85,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
         try {
             changePasswordTask.execute().get();
             finish();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
     }

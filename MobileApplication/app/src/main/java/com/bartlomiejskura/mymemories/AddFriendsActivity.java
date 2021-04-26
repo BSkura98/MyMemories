@@ -28,10 +28,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class AddFriendsActivity extends AppCompatActivity {
-    private SharedPreferences sharedPreferences;
-    private UserListAdapter adapter;
     private RecyclerView usersRecyclerView;
-    private Activity activity = this;
+    private Toolbar toolbar;
+    private TextView toolbarTextView;
+    private ImageButton searchButton, backButton;
+    private SearchView userSearchView;
+
+    private UserListAdapter adapter;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -39,24 +42,35 @@ public class AddFriendsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_friends);
 
-        sharedPreferences = getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
+        findViews();
+        prepareViews();
+        setListeners();
+    }
 
+    private void findViews(){
         usersRecyclerView = findViewById(R.id.usersRecyclerView);
+        toolbar = findViewById(R.id.toolbarSearchResults);
+        toolbarTextView = findViewById(R.id.toolbarTextView);
+        searchButton = findViewById(R.id.searchButton);
+        backButton = findViewById(R.id.backButton);
+        userSearchView = findViewById(R.id.userSearchView);
+    }
 
-        Toolbar toolbar = findViewById(R.id.toolbarSearchResults);
-        TextView toolbarTextView = findViewById(R.id.toolbarTextView);
-        ImageButton searchButton = findViewById(R.id.searchButton);
-        ImageButton backButton = findViewById(R.id.backButton);
+    private void prepareViews(){
+        //toolbar
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         toolbarTextView.setText("Add friends");
         searchButton.setVisibility(View.GONE);
 
-        backButton.setOnClickListener(v -> activity.onBackPressed());
-
-        SearchView userSearchView = findViewById(R.id.userSearchView);
+        //search view
         customizeSearchView(userSearchView);
         userSearchView.setIconifiedByDefault(false);
+    }
+
+    private void setListeners(){
+        backButton.setOnClickListener(v -> onBackPressed());
+
         userSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -70,6 +84,13 @@ public class AddFriendsActivity extends AppCompatActivity {
             }
         });
     }
+
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
+
 
     private void searchFriends(String text){
         GetUsersWithoutFriendsTask task = new GetUsersWithoutFriendsTask(this,
@@ -98,22 +119,17 @@ public class AddFriendsActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-    }
-
     private void customizeSearchView(SearchView searchView) {
         int searchTextId = getResources().getIdentifier("android:id/search_src_text", null, null);
-        EditText searchBox = ((EditText) searchView.findViewById(searchTextId));
+        EditText searchBox = searchView.findViewById(searchTextId);
         searchBox.setBackgroundColor(Color.WHITE);
         searchBox.getLayoutParams().height = LinearLayout.LayoutParams.MATCH_PARENT;
         int search_plateId = getResources().getIdentifier("android:id/search_plate", null, null);
-        View mSearchPlate = ((View) searchView.findViewById(search_plateId));
+        View mSearchPlate = searchView.findViewById(search_plateId);
         mSearchPlate.setBackgroundColor(getResources().getColor(R.color.colorAccent));
 
         int searchCloseImageId = getResources().getIdentifier("android:id/search_close_btn", null, null);
-        ImageView searchClose = ((ImageView) searchView.findViewById(searchCloseImageId));// change color
+        ImageView searchClose = searchView.findViewById(searchCloseImageId);// change color
         searchClose.setBackgroundColor(Color.WHITE);
     }
 }

@@ -12,7 +12,6 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -31,14 +30,12 @@ import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.TimePicker;
 
 import com.bartlomiejskura.mymemories.adapter.FriendsAdapter;
 import com.bartlomiejskura.mymemories.model.Memory;
@@ -56,9 +53,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -67,7 +61,6 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -91,7 +84,7 @@ import java.util.List;
 import java.util.Locale;
 
 
-public class AddMemoryActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, OnMapReadyCallback {
+public class AddMemoryActivity extends AppCompatActivity implements OnMapReadyCallback {
     private ImageView memoryImage;
     private ImageButton deleteImageButton, deleteTimeButton;
     private ImageButton addCategoryButton;
@@ -131,33 +124,13 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_memory);
 
-        bindViews();
-
-        sharedPreferences = getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
-        storageReference = FirebaseStorage.getInstance().getReference("uploads");
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.priorities, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        prioritySpinner.setAdapter(adapter);
-        prioritySpinner.setOnItemSelectedListener(this);
-        deleteImageButton.setVisibility(View.GONE);
-        memoryImage.setVisibility(View.GONE);
-        deleteTimeButton.setVisibility(View.GONE);
-        friends = initFriendsList();
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        mapFragment.getView().setVisibility(View.GONE);
-        deleteLocationButton.setVisibility(View.GONE);
-        addCategoriesLayout.setVisibility(View.GONE);
-
-        dateButton.setText(new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
-
-        toolbarTextView.setText("Add a memory");
-        findViewById(R.id.searchButton).setVisibility(View.GONE);
-
+        findViews();
+        initValues();
+        prepareViews();
         setListeners();
-        mapFragment.getMapAsync(this);
     }
 
-    private void bindViews(){
+    private void findViews(){
         titleEditText = findViewById(R.id.titleEditText);
         description = findViewById(R.id.descriptionEditText);
         categoryEditText = findViewById(R.id.categoryEditText);
@@ -183,6 +156,42 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
         backButton = findViewById(R.id.backButton);
         addCategoriesButton = findViewById(R.id.addCategoriesButton);
         addCategoriesLayout = findViewById(R.id.linearLayout);
+    }
+
+    private void initValues(){
+        sharedPreferences = getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
+        storageReference = FirebaseStorage.getInstance().getReference("uploads");
+
+        friends = initFriendsList();
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+    }
+
+    private void prepareViews(){
+        //priority spinner
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.priorities, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        prioritySpinner.setAdapter(adapter);
+
+        //memory image and delete image button
+        deleteImageButton.setVisibility(View.GONE);
+        memoryImage.setVisibility(View.GONE);
+
+        //date button and delete time button
+        dateButton.setText(new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
+        deleteTimeButton.setVisibility(View.GONE);
+
+        //categories layout
+        addCategoriesLayout.setVisibility(View.GONE);
+
+        //toolbar
+        toolbarTextView.setText("Add a memory");
+        findViewById(R.id.searchButton).setVisibility(View.GONE);
+
+        //map fragment and delete location button
+        deleteLocationButton.setVisibility(View.GONE);
+        mapFragment.getView().setVisibility(View.GONE);
+        mapFragment.getMapAsync(this);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -332,7 +341,89 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
                 addCategoriesButton.setVisibility(View.VISIBLE);
             }
         });
+
+        prioritySpinner.setOnItemSelectedListener(new OnItemSelectedListener());
     }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode ==  PICK_IMAGE_REQUEST && resultCode == RESULT_OK
+                && data != null && data.getData() != null){
+            Uri imageUri = data.getData();
+
+            try{
+                final StorageReference fileReference = storageReference.child(System.currentTimeMillis() + "." + getFileExtension(imageUri));
+
+                fileReference.putFile(imageUri)
+                        .addOnSuccessListener(taskSnapshot -> taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(uri -> {
+                            deleteImageButton.setVisibility(View.VISIBLE);
+                            memoryImage.setVisibility(View.VISIBLE);
+                            deleteImage(memory.getImageUrl(), true);
+                            memory.setImageUrl(uri.toString());
+                            Picasso.get().load(uri.toString()).into(memoryImage);
+                        }));
+            }catch (Exception e){
+                System.out.println("ERROR:" + e.getMessage());
+            }
+        }else if (requestCode == Constants.PLACE_PICKER_REQUEST) {
+            if (resultCode == Activity.RESULT_OK && data != null) {
+                AddressData addressData = data.getParcelableExtra(Constants.ADDRESS_INTENT);
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(addressData.getLatitude(), addressData.getLongitude()), 15f));
+                latitude = addressData.getLatitude();
+                longitude = addressData.getLongitude();
+                mapFragment.getView().setVisibility(View.VISIBLE);
+                deleteLocationButton.setVisibility(View.VISIBLE);
+
+                if(marker!=null){
+                    marker.remove();
+                }
+
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(new LatLng(addressData.getLatitude(), addressData.getLongitude()));
+                marker = map.addMarker(markerOptions);
+            }
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        deleteImage(memory.getImageUrl(), false);
+
+        super.onBackPressed();
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        map = googleMap;
+
+        if (map == null) {
+            return;
+        }
+
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-33.87365, 151.20689), 15f));
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode){
+            case 44:{
+                if(grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    fusedLocationProviderClient.getLastLocation().addOnCompleteListener(task -> {
+                        Location location = task.getResult();
+                        if(location != null){
+                            showPlacePicker(location.getLatitude(), location.getLongitude());
+                        }
+                    });
+                }else{
+                    showPlacePicker(0, 0);
+                }
+            }
+        }
+    }
+
 
     private void addMemory(String title, String description){
         if (title.isEmpty()) {
@@ -346,7 +437,6 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
             calendar.set(year, month, day, hour==null?0:hour, minute==null?0:minute);
         }
 
-        Long memoryOwnerId = sharedPreferences.getLong("userId", 0);
         List<Category> categories = null;
         if(!this.categories.isEmpty()){
             categories = getCategories();
@@ -354,7 +444,6 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
                 return;
             }
         }
-        //Memory memory = new Memory(title, description, sdf.format(Calendar.getInstance().getTime()).replace(" ", "T"), sdf.format(calendar.getTime()).replace(" ", "T"), new User(memoryOwnerId), memoryPriority, tag);
         memory.setShortDescription(title);
         memory.setLongDescription(description==null?"":description);
         memory.setCreationDate(sdf.format(Calendar.getInstance().getTime()).replace(" ", "T"));
@@ -440,71 +529,11 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
         timePickerDialog.show();
     }
 
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        ((TextView) parent.getChildAt(0)).setTextColor(getResources().getColor(R.color.colorAccent));
-        String selected = parent.getItemAtPosition(position).toString();
-        if(selected.equals("High")){
-            memoryPriority=90;
-        }else if(selected.equals("Medium")){
-            memoryPriority = 50;
-        }else if(selected.equals("Low")){
-            memoryPriority = 10;
-        }
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
-    }
-
     private void openFileChooser(){
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(intent, PICK_IMAGE_REQUEST);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if(requestCode ==  PICK_IMAGE_REQUEST && resultCode == RESULT_OK
-                && data != null && data.getData() != null){
-            Uri imageUri = data.getData();
-
-            try{
-                final StorageReference fileReference = storageReference.child(System.currentTimeMillis() + "." + getFileExtension(imageUri));
-
-                fileReference.putFile(imageUri)
-                        .addOnSuccessListener(taskSnapshot -> taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(uri -> {
-                            deleteImageButton.setVisibility(View.VISIBLE);
-                            memoryImage.setVisibility(View.VISIBLE);
-                            deleteImage(memory.getImageUrl(), true);
-                            memory.setImageUrl(uri.toString());
-                            Picasso.get().load(uri.toString()).into(memoryImage);
-                        }));
-            }catch (Exception e){
-                System.out.println("ERROR:" + e.getMessage());
-            }
-        }else if (requestCode == Constants.PLACE_PICKER_REQUEST) {
-            if (resultCode == Activity.RESULT_OK && data != null) {
-                AddressData addressData = data.getParcelableExtra(Constants.ADDRESS_INTENT);
-                map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(addressData.getLatitude(), addressData.getLongitude()), 15f));
-                latitude = addressData.getLatitude();
-                longitude = addressData.getLongitude();
-                mapFragment.getView().setVisibility(View.VISIBLE);
-                deleteLocationButton.setVisibility(View.VISIBLE);
-
-                if(marker!=null){
-                    marker.remove();
-                }
-
-                MarkerOptions markerOptions = new MarkerOptions();
-                markerOptions.position(new LatLng(addressData.getLatitude(), addressData.getLongitude()));
-                marker = map.addMarker(markerOptions);
-            }
-        }
     }
 
     private String getFileExtension(Uri uri) {
@@ -524,13 +553,6 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
                 }
             });
         }
-    }
-
-    @Override
-    public void onBackPressed() {
-        deleteImage(memory.getImageUrl(), false);
-
-        super.onBackPressed();
     }
 
     private ArrayList<User> initFriendsList(){
@@ -591,17 +613,6 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
         });
     }
 
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        map = googleMap;
-
-        if (map == null) {
-            return;
-        }
-
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-33.87365, 151.20689), 15f));
-    }
-
     public void showPlacePicker(double latitude, double longitude){
         Intent intent = new PlacePicker.IntentBuilder()
                 .setLatLong(latitude, longitude)
@@ -624,21 +635,29 @@ public class AddMemoryActivity extends AppCompatActivity implements AdapterView.
         startActivityForResult(intent, Constants.PLACE_PICKER_REQUEST);
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode){
-            case 44:{
-                if(grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    fusedLocationProviderClient.getLastLocation().addOnCompleteListener(task -> {
-                        Location location = task.getResult();
-                        if(location != null){
-                            showPlacePicker(location.getLatitude(), location.getLongitude());
-                        }
-                    });
-                }else{
-                    showPlacePicker(0, 0);
-                }
+
+    class OnItemSelectedListener implements AdapterView.OnItemSelectedListener{
+
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            ((TextView) parent.getChildAt(0)).setTextColor(getResources().getColor(R.color.colorAccent));
+            String selected = parent.getItemAtPosition(position).toString();
+            switch (selected) {
+                case "High":
+                    memoryPriority = 90;
+                    break;
+                case "Medium":
+                    memoryPriority = 50;
+                    break;
+                case "Low":
+                    memoryPriority = 10;
+                    break;
             }
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+
         }
     }
 }

@@ -3,40 +3,28 @@ package com.bartlomiejskura.mymemories;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.widget.TextView;
 
-import com.bartlomiejskura.mymemories.adapter.RecentSearchesAdapter;
 import com.bartlomiejskura.mymemories.fragment.AdvancedSearchFragment;
 import com.bartlomiejskura.mymemories.fragment.RecentSearchesFragment;
-import com.bartlomiejskura.mymemories.fragment.SettingsFragment;
-import com.google.gson.Gson;
-
-import org.json.JSONArray;
-import org.json.JSONException;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.LinkedList;
-import java.util.List;
 
 public class SearchMemoryActivity extends AppCompatActivity {
+    private SearchView searchView;
+    private Toolbar toolbar;
+    private ImageButton backButton;
+    private TextView textView;
+
     private AdvancedSearchFragment advancedSearchFragment;
     private RecentSearchesFragment recentSearchesFragment;
-    private SearchView searchView;
     private Boolean advancedSearch = false;
 
     @Override
@@ -44,18 +32,42 @@ public class SearchMemoryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_memory);
 
-        loadInstanceState(savedInstanceState);
+        findViews();
+        initValues();
+        prepareViews();
+        setListeners();
+        restoreDataAfterRotation(savedInstanceState);
 
-        Toolbar toolbar = findViewById(R.id.toolbar_search);
+        changeFragment(advancedSearch);
+    }
 
+    private void findViews(){
+        toolbar = findViewById(R.id.toolbar_search);
+        searchView = findViewById(R.id.searchView);
+        backButton = findViewById(R.id.backButton);
+
+        int id = searchView.getContext().getResources().getIdentifier("android:id/search_src_text", null, null);
+        textView = searchView.findViewById(id);
+    }
+
+    private void initValues(){
         advancedSearchFragment = new AdvancedSearchFragment();
         recentSearchesFragment = new RecentSearchesFragment();
+    }
 
+    private void prepareViews(){
+        //toolbar
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        searchView = findViewById(R.id.searchView);
+        //search view
         searchView.setIconifiedByDefault(false);
+
+        //text view
+        textView.setTextColor(Color.WHITE);
+    }
+
+    private void setListeners(){
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -72,24 +84,26 @@ public class SearchMemoryActivity extends AppCompatActivity {
             }
         });
 
-        ImageButton backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> {
             Intent i = new Intent(getApplicationContext(), MainActivity.class);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(i);
         });
-
-        int id = searchView.getContext().getResources().getIdentifier("android:id/search_src_text", null, null);
-        TextView textView = (TextView) searchView.findViewById(id);
-        textView.setTextColor(Color.WHITE);
-
-        changeFragment(advancedSearch);
     }
+
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
     }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putBoolean("advancedSearch", advancedSearch);
+    }
+
 
     public void startSearchResultsActivity(final String query){
         new Thread(() -> {
@@ -156,14 +170,7 @@ public class SearchMemoryActivity extends AppCompatActivity {
         return searchView.getQuery().toString();
     }
 
-    @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        outState.putBoolean("advancedSearch", advancedSearch);
-    }
-
-    private void loadInstanceState(Bundle savedInstanceState){
+    private void restoreDataAfterRotation(Bundle savedInstanceState){
         if(savedInstanceState!=null){
             advancedSearch = savedInstanceState.getBoolean("advancedSearch");
         }

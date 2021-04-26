@@ -22,6 +22,10 @@ import java.util.List;
 
 public class SearchResultsActivity extends AppCompatActivity {
     private RecyclerView memoryList;
+    private Toolbar toolbar;
+    private ImageButton searchButton, backButton;
+    private TextView keywordTextView;
+
     private MemoryListAdapter adapter;
 
     @SuppressLint("SetTextI18n")
@@ -30,31 +34,51 @@ public class SearchResultsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_results);
 
-        memoryList = findViewById(R.id.memoryList);
+        findViews();
+        prepareViews();
+        setListeners();
+    }
 
-        Toolbar toolbar = findViewById(R.id.toolbarSearchResults);
+    private void findViews(){
+        memoryList = findViewById(R.id.memoryList);
+        toolbar = findViewById(R.id.toolbarSearchResults);
+        searchButton = findViewById(R.id.searchButton);
+        backButton = findViewById(R.id.backButton);
+        keywordTextView = findViewById(R.id.keywordTextView);
+    }
+
+    private void prepareViews(){
+        //toolbar
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        ImageButton searchButton = findViewById(R.id.searchButton);
+        //keyword text view
+        if(getIntent().getStringExtra("keyword").isEmpty()){
+            keywordTextView.setVisibility(View.GONE);
+        }else{
+            keywordTextView.setText("Results for: "+getIntent().getStringExtra("keyword"));
+        }
+
+        //recycler view with memories
+        new Thread(this::getAllMemories).start();
+    }
+
+    private void setListeners(){
         searchButton.setOnClickListener(v -> finish());
 
-        ImageButton backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> {
             Intent i = new Intent(getApplicationContext(), MainActivity.class);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(i);
         });
-
-        TextView keywordTextView = findViewById(R.id.keywordTextView);
-        keywordTextView.setText("Result for: "+getIntent().getStringExtra("keyword"));
-
-        if(getIntent().getStringExtra("keyword").isEmpty()){
-            keywordTextView.setVisibility(View.GONE);
-        }
-
-        new Thread(this::getAllMemories).start();
     }
+
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
+
 
     public void getAllMemories(){
         try{
@@ -90,10 +114,5 @@ public class SearchResultsActivity extends AppCompatActivity {
         }catch (Exception e){
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
     }
 }

@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bartlomiejskura.mymemories.model.Category;
@@ -37,15 +36,13 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallback {
-    private TextView titleTextView, descriptionTextView, dateTextView, creationDateTextView, priorityTextView, memoryFriends;
+    private TextView titleTextView, descriptionTextView, dateTextView, creationDateTextView, priorityTextView, memoryFriendsTextView;
     private ImageView memoryImage;
-    private LinearLayout publicLayout;
     private SupportMapFragment mapFragment;
     private ChipGroup categoriesChipGroup;
     private ImageButton deleteButton, editButton, untagYourselfButton;
 
     private Memory memory;
-    private GoogleMap map;
     private SharedPreferences sharedPreferences;
 
     @Override
@@ -53,27 +50,85 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_memory);
 
-        bindViews();
-        getMemory();
-        setElements();
+        findViews();
+        initValues();
+        prepareViews();
         setListeners();
-        mapFragment.getMapAsync(this);
     }
 
-    private void bindViews(){
+    private void findViews(){
         titleTextView = findViewById(R.id.titleTextView);
         descriptionTextView = findViewById(R.id.descriptionTextView);
         dateTextView = findViewById(R.id.dateTextView);
         creationDateTextView = findViewById(R.id.creationDateTextView);
         priorityTextView = findViewById(R.id.priorityTextView);
-        memoryFriends = findViewById(R.id.memoryFriends);
+        memoryFriendsTextView = findViewById(R.id.memoryFriends);
         memoryImage = findViewById(R.id.memoryImage);
-        publicLayout = findViewById(R.id.publicLayout);
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         categoriesChipGroup = findViewById(R.id.chipGroup2);
         deleteButton = findViewById(R.id.deleteButton6);
         editButton = findViewById(R.id.editButton3);
         untagYourselfButton = findViewById(R.id.untagYourselfButton2);
+    }
+
+    private void initValues(){
+        Gson gson = new Gson();
+        memory = gson.fromJson(getIntent().getStringExtra("memory"), Memory.class);
+
+        sharedPreferences = getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
+    }
+
+    private void prepareViews(){
+        //title text view
+        titleTextView.setText(memory.getShortDescription());
+
+        //description text view
+        if(memory.getLongDescription().isEmpty()){
+            descriptionTextView.setVisibility(View.GONE);
+        }else{
+            descriptionTextView.setText(memory.getLongDescription());
+        }
+
+        //priority text view
+        priorityTextView.setText(getPriorityOption(memory.getMemoryPriority()));
+
+        //date text view
+        String date = memory.getDate();
+        dateTextView.setText(DateUtil.formatDateTime(date));
+
+        //creation date text view
+        String creationDate = memory.getCreationDate();
+        creationDateTextView.setText(DateUtil.formatDateTime(creationDate));
+
+        //memory friends text view (users tagged in memory)
+        if(memory.getMemoryFriends().size()>0||!memory.getMemoryOwner().getId().equals(sharedPreferences.getLong("userId",0))){
+            memoryFriendsTextView.setText(MemoryUtil.getTaggedFriends(memory, this));
+        }else{
+            memoryFriendsTextView.setVisibility(View.GONE);
+        }
+
+        //memory image
+        if(memory.getImageUrl()!=null){
+            RequestCreator creator = Picasso.get().load(memory.getImageUrl());
+            memoryImage.post(() -> creator.resize(memoryImage.getWidth(), 0)
+                    .into(memoryImage));
+        }else{
+            memoryImage.setVisibility(View.GONE);
+        }
+
+        //text view and icon related to public memory
+        if(!memory.getPublicToFriends()){
+            findViewById(R.id.imageView8).setVisibility(View.GONE);
+            findViewById(R.id.textView11).setVisibility(View.GONE);
+        }
+
+        //categories chip group
+        if(memory.getCategories()!=null&&memory.getCategories().size()>0){
+            initCategoriesChipGroup(memory.getCategories());
+        }
+
+        //map fragment
+        mapFragment.getMapAsync(this);
     }
 
     private void setListeners(){
@@ -88,50 +143,24 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
         }
     }
 
-    private void getMemory(){
-        Gson gson = new Gson();
-        memory = gson.fromJson(getIntent().getStringExtra("memory"), Memory.class);
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+
+        if (googleMap == null) {
+            return;
+        }
+
+        if(memory != null &&memory.getLatitude()!=null&&memory.getLongitude()!=null){
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(memory.getLatitude(), memory.getLongitude()), 15f));
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(new LatLng(memory.getLatitude(), memory.getLongitude()));
+            googleMap.addMarker(markerOptions);
+        }else{
+            mapFragment.getView().setVisibility(View.GONE);
+        }
     }
 
-    private void setElements(){
-        sharedPreferences = getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
-
-        titleTextView.setText(memory.getShortDescription());
-        if(memory.getLongDescription().isEmpty()){
-            descriptionTextView.setVisibility(View.GONE);
-        }else{
-            descriptionTextView.setText(memory.getLongDescription());
-        }
-        priorityTextView.setText(getPriorityOption(memory.getMemoryPriority()));
-        String date = memory.getDate();
-        String creationDate = memory.getCreationDate();
-        dateTextView.setText(DateUtil.formatDateTime(date));
-        creationDateTextView.setText(DateUtil.formatDateTime(creationDate));
-        if(memory.getMemoryFriends().size()>0||!memory.getMemoryOwner().getId().equals(sharedPreferences.getLong("userId",0))){
-            memoryFriends.setText(MemoryUtil.getTaggedFriends(memory, this));
-        }else{
-            memoryFriends.setVisibility(View.GONE);
-        }
-
-        if(memory.getImageUrl()!=null){
-            RequestCreator creator = Picasso.get().load(memory.getImageUrl());
-
-            memoryImage.post(() -> creator.resize(memoryImage.getWidth(), 0)
-                    .into(memoryImage));
-        }else{
-            memoryImage.setVisibility(View.GONE);
-        }
-
-        if(!memory.getPublicToFriends()){
-            findViewById(R.id.imageView8).setVisibility(View.GONE);
-            findViewById(R.id.textView11).setVisibility(View.GONE);
-            //publicLayout.setVisibility(View.GONE);
-        }
-
-        if(memory.getCategories()!=null&&memory.getCategories().size()>0){
-            initCategoriesChipGroup(memory.getCategories());
-        }
-    }
 
     private String getPriorityOption(int priority){
         return priority<=10?"Low priority":(priority<=50?"Medium priority":"High priority");
@@ -202,24 +231,6 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        map = googleMap;
-
-        if (map == null) {
-            return;
-        }
-
-        if(memory != null &&memory.getLatitude()!=null&&memory.getLongitude()!=null){
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(memory.getLatitude(), memory.getLongitude()), 15f));
-            MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.position(new LatLng(memory.getLatitude(), memory.getLongitude()));
-            map.addMarker(markerOptions);
-        }else{
-            mapFragment.getView().setVisibility(View.GONE);
         }
     }
 }
