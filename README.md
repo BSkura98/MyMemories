@@ -2,14 +2,7 @@
 The aim of this project was to create a mobile system for keeping a personal journal. This project is divided into two parts: mobile application and server. The most important functionalities of this system are adding entries with photos, categories or location. The social element is the friends system and publishing entries or tagging friends.
 
 ## Screenshots
-![Sign in](./MobileApplication/img/login_activity.jpg)
-![List of memories](./MobileApplication/img/memories_fragment.jpg)
-![Adding memories](./MobileApplication/img/add_memory_activity.jpg)
-![Memory details](./MobileApplication/img/memory_activity.jpg)
-![Memory search](./MobileApplication/img/search_activity.jpg)
-![List of friends](./MobileApplication/img/friends_fragment.jpg)
-![List of categories](./MobileApplication/img/categories_fragment.jpg)
-![Navigation drawer](./MobileApplication/img/navigation_drawer.jpg)
+<img src="./MobileApplication/img/login_activity.jpg" width="200"> <img src="./MobileApplication/img/memories_fragment.jpg" width="200"> <img src="./MobileApplication/img/add_memory_activity.jpg" width="200"> <img src="./MobileApplication/img/memory_activity.jpg" width="200"> <img src="./MobileApplication/img/search_activity.jpg" width="200"> <img src="./MobileApplication/img/friends_fragment.jpg" width="200"> <img src="./MobileApplication/img/categories_fragment.jpg" width="200"> <img src="./MobileApplication/img/navigation_drawer.jpg" width="200">
 
 ## Technologies
 * Java
