@@ -19,18 +19,26 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".FriendRequestsActivity" />
-        <activity android:name=".AddFriendsActivity" />
-        <activity android:name=".FriendsActivity" />
-        <activity android:name=".SearchResultsActivity" />
-        <activity android:name=".SearchMemoryActivity" />
-        <activity android:name=".CategoryActivity" />
-        <activity android:name=".MemoryActivity" />
-        <activity android:name=".EditMemoryActivity" />
-        <activity android:name=".AddMemoryActivity" />
-        <activity android:name=".MainActivity" />
-        <activity android:name=".RegisterActivity" />
-        <activity android:name=".LoginActivity">
+        <activity android:name=".AddFriendsActivity" android:screenOrientation="portrait"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
+        <activity android:name=".SearchResultsActivity" android:screenOrientation="portrait"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
+        <activity android:name=".SearchMemoryActivity" android:screenOrientation="portrait"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
+        <activity android:name=".CategoryActivity" android:screenOrientation="portrait"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
+        <activity android:name=".MemoryActivity" android:screenOrientation="portrait"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
+        <activity android:name=".EditMemoryActivity" android:screenOrientation="portrait"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
+        <activity android:name=".AddMemoryActivity" android:screenOrientation="portrait"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
+        <activity android:name=".MainActivity" android:screenOrientation="portrait"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
+        <activity android:name=".RegisterActivity" android:screenOrientation="portrait"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
+        <activity android:name=".LoginActivity" android:screenOrientation="portrait"
+            android:configChanges="keyboardHidden|orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
