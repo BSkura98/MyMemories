@@ -16,6 +16,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Address;
@@ -24,8 +25,11 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -198,35 +202,33 @@ public class AddMemoryActivity extends AppCompatActivity implements OnMapReadyCa
     private void setListeners(){
         dateButton.setOnClickListener(v -> {
             selectDate();
-            addCategoriesLayout.setVisibility(View.GONE);
-            addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
         timeButton.setOnClickListener(v -> {
             selectTime();
-            addCategoriesLayout.setVisibility(View.GONE);
-            addCategoriesButton.setVisibility(View.VISIBLE);
+            //addCategoriesLayout.setVisibility(View.GONE);
+            //addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
         selectImageButton.setOnClickListener(v -> {
             openFileChooser();
-            addCategoriesLayout.setVisibility(View.GONE);
-            addCategoriesButton.setVisibility(View.VISIBLE);
+            //addCategoriesLayout.setVisibility(View.GONE);
+            //addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
         saveMemoryButton.setOnClickListener(v -> new Thread(() -> addMemory(titleEditText.getText().toString(), description.getText().toString())).start());
 
         deleteImageButton.setOnClickListener(v -> {
             deleteImage(memory.getImageUrl(), false);
-            addCategoriesLayout.setVisibility(View.GONE);
-            addCategoriesButton.setVisibility(View.VISIBLE);
+            //addCategoriesLayout.setVisibility(View.GONE);
+            //addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
         deleteTimeButton.setOnClickListener(v -> {
             timeButton.setText("Select");
             deleteTimeButton.setVisibility(View.GONE);
-            addCategoriesLayout.setVisibility(View.GONE);
-            addCategoriesButton.setVisibility(View.VISIBLE);
+            //addCategoriesLayout.setVisibility(View.GONE);
+            //addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
         addPersonButton.setOnClickListener(v -> {
@@ -258,14 +260,14 @@ public class AddMemoryActivity extends AppCompatActivity implements OnMapReadyCa
                 friends.remove(friend);
             });
             builder.show();
-            addCategoriesLayout.setVisibility(View.GONE);
-            addCategoriesButton.setVisibility(View.VISIBLE);
+            //addCategoriesLayout.setVisibility(View.GONE);
+            //addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
         makePublicSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             makeMemoryPublic=!makeMemoryPublic;
-            addCategoriesLayout.setVisibility(View.GONE);
-            addCategoriesButton.setVisibility(View.VISIBLE);
+            //addCategoriesLayout.setVisibility(View.GONE);
+            //addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
         addCategoryButton.setOnClickListener(v -> {
@@ -295,8 +297,8 @@ public class AddMemoryActivity extends AppCompatActivity implements OnMapReadyCa
                 ActivityCompat.requestPermissions(AddMemoryActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
             }
 
-            addCategoriesLayout.setVisibility(View.GONE);
-            addCategoriesButton.setVisibility(View.VISIBLE);
+            //addCategoriesLayout.setVisibility(View.GONE);
+            //addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
         selectLocationButton.setOnClickListener(v -> {
@@ -312,8 +314,8 @@ public class AddMemoryActivity extends AppCompatActivity implements OnMapReadyCa
             }else{
                 ActivityCompat.requestPermissions(AddMemoryActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
             }
-            addCategoriesLayout.setVisibility(View.GONE);
-            addCategoriesButton.setVisibility(View.VISIBLE);
+            //addCategoriesLayout.setVisibility(View.GONE);
+            //addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
         deleteLocationButton.setOnClickListener(v -> {
@@ -321,8 +323,8 @@ public class AddMemoryActivity extends AppCompatActivity implements OnMapReadyCa
             longitude = null;
             mapFragment.getView().setVisibility(View.GONE);
             deleteLocationButton.setVisibility(View.GONE);
-            addCategoriesLayout.setVisibility(View.GONE);
-            addCategoriesButton.setVisibility(View.VISIBLE);
+            //addCategoriesLayout.setVisibility(View.GONE);
+            //addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
         backButton.setOnClickListener(v -> {

@@ -249,20 +249,14 @@ public class EditMemoryActivity extends AppCompatActivity implements OnMapReadyC
     private void setListeners(){
         dateButton.setOnClickListener(v -> {
             selectDate();
-            addCategoriesLayout.setVisibility(View.GONE);
-            addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
         timeButton.setOnClickListener(v -> {
             selectTime();
-            addCategoriesLayout.setVisibility(View.GONE);
-            addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
         selectImageButton.setOnClickListener(v -> {
             openFileChooser();
-            addCategoriesLayout.setVisibility(View.GONE);
-            addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
         saveMemoryButton.setOnClickListener(v -> new Thread(() -> editMemory(titleEditText.getText().toString(), descriptionEditText.getText().toString())).start());
@@ -274,15 +268,11 @@ public class EditMemoryActivity extends AppCompatActivity implements OnMapReadyC
                 deleteImageButton.setVisibility(View.GONE);
                 memoryImage.setVisibility(View.GONE);
             }
-            addCategoriesLayout.setVisibility(View.GONE);
-            addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
         deleteTimeButton.setOnClickListener(v -> {
             timeButton.setText("Select");
             deleteTimeButton.setVisibility(View.GONE);
-            addCategoriesLayout.setVisibility(View.GONE);
-            addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
         addPersonButton.setOnClickListener(v -> {
@@ -312,14 +302,10 @@ public class EditMemoryActivity extends AppCompatActivity implements OnMapReadyC
                 friends.remove(friend);
             });
             builder.show();
-            addCategoriesLayout.setVisibility(View.GONE);
-            addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
         makePublicSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             makeMemoryPublic=!makeMemoryPublic;
-            addCategoriesLayout.setVisibility(View.GONE);
-            addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
         addCategoryButton.setOnClickListener(v -> {
@@ -336,8 +322,6 @@ public class EditMemoryActivity extends AppCompatActivity implements OnMapReadyC
             }else{
                 ActivityCompat.requestPermissions(EditMemoryActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
             }
-            addCategoriesLayout.setVisibility(View.GONE);
-            addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
         selectLocationButton.setOnClickListener(v -> {
@@ -353,8 +337,6 @@ public class EditMemoryActivity extends AppCompatActivity implements OnMapReadyC
             }else{
                 ActivityCompat.requestPermissions(EditMemoryActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
             }
-            addCategoriesLayout.setVisibility(View.GONE);
-            addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
         deleteLocationButton.setOnClickListener(v -> {
@@ -362,8 +344,6 @@ public class EditMemoryActivity extends AppCompatActivity implements OnMapReadyC
             longitude = null;
             mapFragment.getView().setVisibility(View.GONE);
             deleteLocationButton.setVisibility(View.GONE);
-            addCategoriesLayout.setVisibility(View.GONE);
-            addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
         backButton.setOnClickListener(v -> {

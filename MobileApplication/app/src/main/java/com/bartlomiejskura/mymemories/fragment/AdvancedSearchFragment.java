@@ -91,8 +91,6 @@ public class AdvancedSearchFragment extends Fragment {
             final int finalI = i;
             dateButtons[i].setOnClickListener(v -> {
                 selectDate(finalI);
-                addCategoryLayout.setVisibility(View.GONE);
-                addCategoriesButton.setVisibility(View.VISIBLE);
             });
         }
 
@@ -102,8 +100,6 @@ public class AdvancedSearchFragment extends Fragment {
                 dateButtons[finalI].setText("Select");
                 deleteButtons[finalI].setVisibility(View.INVISIBLE);
                 dateCalendars[finalI] = null;
-                addCategoryLayout.setVisibility(View.GONE);
-                addCategoriesButton.setVisibility(View.VISIBLE);
             });
         }
 
@@ -113,8 +109,6 @@ public class AdvancedSearchFragment extends Fragment {
             }else{
                 priorityList.remove(Integer.valueOf(90));
             }
-            addCategoryLayout.setVisibility(View.GONE);
-            addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
         mediumPriorityCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -123,8 +117,6 @@ public class AdvancedSearchFragment extends Fragment {
             }else{
                 priorityList.remove(Integer.valueOf(50));
             }
-            addCategoryLayout.setVisibility(View.GONE);
-            addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
         lowPriorityCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -133,8 +125,6 @@ public class AdvancedSearchFragment extends Fragment {
             }else{
                 priorityList.remove(Integer.valueOf(10));
             }
-            addCategoryLayout.setVisibility(View.GONE);
-            addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
         yesPublicCheckBox.setOnCheckedChangeListener(new MyOnCheckedChangeListener(yesPublicCheckBox, noPublicCheckBox, 0, true));
@@ -151,20 +141,23 @@ public class AdvancedSearchFragment extends Fragment {
                 categories.add(category);
             }
             categoryEditText.setText("");
-            //addCategoriesLayout.setVisibility(View.GONE);
-            //addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
         searchButton.setOnClickListener(v -> {
             ((SearchMemoryActivity)getActivity()).startSearchResultsActivity(((SearchMemoryActivity)getActivity()).getQuery());
-            addCategoryLayout.setVisibility(View.GONE);
-            addCategoriesButton.setVisibility(View.VISIBLE);
         });
 
         addCategoriesButton.setOnClickListener(v -> {
             addCategoryLayout.setVisibility(View.VISIBLE);
             addCategoriesButton.setVisibility(View.GONE);
             categoryEditText.requestFocus();
+        });
+
+        categoryEditText.setOnFocusChangeListener((v, hasFocus) -> {
+            if(!hasFocus){
+                addCategoryLayout.setVisibility(View.GONE);
+                addCategoriesButton.setVisibility(View.VISIBLE);
+            }
         });
     }
 
@@ -279,9 +272,6 @@ public class AdvancedSearchFragment extends Fragment {
             }else{
                 booleanValues[booleanValueId] = onCheckedValue;
             }
-
-            addCategoryLayout.setVisibility(View.GONE);
-            addCategoriesButton.setVisibility(View.VISIBLE);
         }
     }
 }
