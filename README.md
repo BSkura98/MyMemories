@@ -30,7 +30,6 @@ The aim of this project was to create a mobile system for keeping a personal jou
 
 To-do list:
 * Renaming categories
-* Checking if AsyncTask is already running when clicking a button repeatedly (for example while adding memory)
 * Change the color in the mobile application
 * Minimize the number of server-side functions
 * Improve data validation in forms

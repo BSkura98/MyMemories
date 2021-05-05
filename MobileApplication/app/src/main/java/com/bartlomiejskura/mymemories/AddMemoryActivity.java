@@ -120,6 +120,7 @@ public class AddMemoryActivity extends AppCompatActivity implements OnMapReadyCa
     private GoogleMap map;
     private Double latitude = null, longitude = null;
     private Marker marker;
+    private Thread saveMemoryThread;
 
     private static final int PICK_IMAGE_REQUEST = 1;
 
@@ -218,7 +219,12 @@ public class AddMemoryActivity extends AppCompatActivity implements OnMapReadyCa
             openFileChooser();
         });
 
-        saveMemoryButton.setOnClickListener(v -> new Thread(() -> addMemory(titleEditText.getText().toString(), description.getText().toString())).start());
+        saveMemoryButton.setOnClickListener(v ->{
+            if(saveMemoryThread==null||!saveMemoryThread.isAlive()){
+                saveMemoryThread = new Thread(() -> addMemory(titleEditText.getText().toString(), description.getText().toString()));
+                saveMemoryThread.start();
+            }
+        } );
 
         deleteImageButton.setOnClickListener(v -> {
             deleteImage(memory.getImageUrl(), false);

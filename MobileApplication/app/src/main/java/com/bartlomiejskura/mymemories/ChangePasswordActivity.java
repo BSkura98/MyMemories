@@ -27,6 +27,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
     private LinearProgressIndicator changePasswordProgressIndicator;
 
     private SharedPreferences sharedPreferences;
+    private Thread changePasswordThread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +69,10 @@ public class ChangePasswordActivity extends AppCompatActivity {
 
     private void setListeners(){
         confirmButton.setOnClickListener(v -> {
-            new Thread(this::changePassword).start();
+            if(changePasswordThread == null || !changePasswordThread.isAlive()){
+                changePasswordThread = new Thread(this::changePassword);
+                changePasswordThread.start();
+            }
         });
 
         backButton.setOnClickListener(v -> {

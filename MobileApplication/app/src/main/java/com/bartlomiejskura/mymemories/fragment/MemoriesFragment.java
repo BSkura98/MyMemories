@@ -41,6 +41,7 @@ public class MemoriesFragment extends Fragment {
 
     private MemoryListAdapter adapter;
     private Date date = new Date();
+    private GetMemoriesForDateTask currentTask;
 
     @Nullable
     @Override
@@ -48,6 +49,7 @@ public class MemoriesFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_memories, container, false);
 
         findViews(view);
+        initValues();
         prepareViews();
         setListeners();
 
@@ -61,6 +63,10 @@ public class MemoriesFragment extends Fragment {
         previousDayButton = view.findViewById(R.id.previousDayButton);
         nextDayButton = view.findViewById(R.id.nextDayButton);
         memoriesFragmentProgressIndicator = view.findViewById(R.id.memoriesFragmentProgressIndicator);
+    }
+
+    private void initValues(){
+        currentTask = new GetMemoriesForDateTask(getActivity(), date);
     }
 
     private void setListeners(){
@@ -100,21 +106,25 @@ public class MemoriesFragment extends Fragment {
                 memoriesFragmentProgressIndicator.setVisibility(View.VISIBLE);
             });
             GetMemoriesForDateTask task = new GetMemoriesForDateTask(getActivity(), date);
+            currentTask = task;
             Memory[] memoryArray = task.execute().get();
-            if(memoryArray ==null){
-                return;
+
+            if(currentTask==task){
+                if(memoryArray ==null){
+                    return;
+                }
+                final List<Memory> memories = new ArrayList<>(Arrays.asList(memoryArray));
+                getActivity().runOnUiThread(() -> {
+                    adapter = new MemoryListAdapter(
+                            getContext(),
+                            memories,
+                            getActivity()
+                    );
+                    memoriesFragmentProgressIndicator.setVisibility(View.GONE);
+                    memoryList.setAdapter(adapter);
+                    memoryList.setLayoutManager(new LinearLayoutManager(getContext()));
+                });
             }
-            final List<Memory> memories = new ArrayList<>(Arrays.asList(memoryArray));
-            getActivity().runOnUiThread(() -> {
-                adapter = new MemoryListAdapter(
-                        getContext(),
-                        memories,
-                        getActivity()
-                );
-                memoriesFragmentProgressIndicator.setVisibility(View.GONE);
-                memoryList.setAdapter(adapter);
-                memoryList.setLayoutManager(new LinearLayoutManager(getContext()));
-            });
         }catch (Exception e){
             getActivity().runOnUiThread(()->memoriesFragmentProgressIndicator.setVisibility(View.GONE));
             e.printStackTrace();
