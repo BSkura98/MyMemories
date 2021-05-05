@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,6 +26,7 @@ import java.util.List;
 public class FriendsMemoriesFragment extends Fragment {
     private RecyclerView friendsMemoriesRecyclerView;
     private CircularProgressIndicator friendsMemoriesProgressIndicator;
+    private TextView noFriendsMemoriesTextView;
 
     private MemoryListAdapter adapter;
 
@@ -42,11 +44,15 @@ public class FriendsMemoriesFragment extends Fragment {
     private void findViews(View view){
         friendsMemoriesRecyclerView = view.findViewById(R.id.friendsMemoriesRecyclerView);
         friendsMemoriesProgressIndicator = view.findViewById(R.id.friendsMemoriesProgressIndicator);
+        noFriendsMemoriesTextView = view.findViewById(R.id.noFriendsMemoriesTextView);
     }
 
     private void prepareViews(){
         //recycler view with friends public memories
         new Thread(this::getMemories).start();
+
+        //TextView with text "No memories"
+        noFriendsMemoriesTextView.setVisibility(View.GONE);
     }
 
     private void getMemories(){
@@ -58,14 +64,19 @@ public class FriendsMemoriesFragment extends Fragment {
             }
             final List<Memory> memories = new ArrayList<>(Arrays.asList(memoryArray));
             getActivity().runOnUiThread(() -> {
-                adapter = new MemoryListAdapter(
-                        getContext(),
-                        memories,
-                        getActivity()
-                );
-                friendsMemoriesProgressIndicator.setVisibility(View.GONE);
-                friendsMemoriesRecyclerView.setAdapter(adapter);
-                friendsMemoriesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                if(memories.isEmpty()){
+                    noFriendsMemoriesTextView.setVisibility(View.VISIBLE);
+                    friendsMemoriesProgressIndicator.setVisibility(View.GONE);
+                }else{
+                    adapter = new MemoryListAdapter(
+                            getContext(),
+                            memories,
+                            getActivity()
+                    );
+                    friendsMemoriesProgressIndicator.setVisibility(View.GONE);
+                    friendsMemoriesRecyclerView.setAdapter(adapter);
+                    friendsMemoriesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                }
             });
         }catch (Exception e){
             getActivity().runOnUiThread(()->friendsMemoriesProgressIndicator.setVisibility(View.GONE));

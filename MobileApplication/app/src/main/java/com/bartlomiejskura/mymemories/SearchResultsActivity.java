@@ -25,7 +25,7 @@ public class SearchResultsActivity extends AppCompatActivity {
     private RecyclerView memoryList;
     private Toolbar toolbar;
     private ImageButton searchButton, backButton;
-    private TextView keywordTextView;
+    private TextView keywordTextView, noSearchResultsTextView;
     private CircularProgressIndicator searchResultsProgressIndicator;
 
     private MemoryListAdapter adapter;
@@ -48,6 +48,7 @@ public class SearchResultsActivity extends AppCompatActivity {
         backButton = findViewById(R.id.backButton);
         keywordTextView = findViewById(R.id.keywordTextView);
         searchResultsProgressIndicator = findViewById(R.id.searchResultsProgressIndicator);
+        noSearchResultsTextView = findViewById(R.id.noSearchResultsTextView);
     }
 
     private void prepareViews(){
@@ -64,6 +65,9 @@ public class SearchResultsActivity extends AppCompatActivity {
 
         //recycler view with memories
         new Thread(this::getMemories).start();
+
+        //TextView with text "No search results"
+        noSearchResultsTextView.setVisibility(View.GONE);
     }
 
     private void setListeners(){
@@ -106,14 +110,19 @@ public class SearchResultsActivity extends AppCompatActivity {
             final List<Memory> memories = new ArrayList<>(Arrays.asList(memoryArray));
             final SearchResultsActivity activity = this;
             runOnUiThread(() -> {
-                adapter = new MemoryListAdapter(
-                        getApplicationContext(),
-                        memories,
-                        activity
-                );
-                searchResultsProgressIndicator.setVisibility(View.GONE);
-                memoryList.setAdapter(adapter);
-                memoryList.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+                if(memories.isEmpty()){
+                    noSearchResultsTextView.setVisibility(View.VISIBLE);
+                    searchResultsProgressIndicator.setVisibility(View.GONE);
+                }else{
+                    adapter = new MemoryListAdapter(
+                            getApplicationContext(),
+                            memories,
+                            activity
+                    );
+                    searchResultsProgressIndicator.setVisibility(View.GONE);
+                    memoryList.setAdapter(adapter);
+                    memoryList.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+                }
             });
         }catch (Exception e){
             runOnUiThread(()->searchResultsProgressIndicator.setVisibility(View.GONE));

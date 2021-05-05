@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -38,6 +39,7 @@ public class MemoriesFragment extends Fragment {
     private FloatingActionButton addMemoryButton;
     private ImageView previousDayButton, nextDayButton;
     private CircularProgressIndicator memoriesFragmentProgressIndicator;
+    private TextView noMemoriesTextView;
 
     private MemoryListAdapter adapter;
     private Date date = new Date();
@@ -63,6 +65,7 @@ public class MemoriesFragment extends Fragment {
         previousDayButton = view.findViewById(R.id.previousDayButton);
         nextDayButton = view.findViewById(R.id.nextDayButton);
         memoriesFragmentProgressIndicator = view.findViewById(R.id.memoriesFragmentProgressIndicator);
+        noMemoriesTextView = view.findViewById(R.id.noMemoriesTextView);
     }
 
     private void initValues(){
@@ -96,6 +99,9 @@ public class MemoriesFragment extends Fragment {
 
         //recycler view with memory list
         new Thread(() -> getMemories(date)).start();
+
+        //TextView with text "No memories for this date"
+        noMemoriesTextView.setVisibility(View.GONE);
     }
 
 
@@ -103,6 +109,7 @@ public class MemoriesFragment extends Fragment {
         try{
             getActivity().runOnUiThread(()->{
                 memoryList.setAdapter(null);
+                noMemoriesTextView.setVisibility(View.GONE);
                 memoriesFragmentProgressIndicator.setVisibility(View.VISIBLE);
             });
             GetMemoriesForDateTask task = new GetMemoriesForDateTask(getActivity(), date);
@@ -114,15 +121,21 @@ public class MemoriesFragment extends Fragment {
                     return;
                 }
                 final List<Memory> memories = new ArrayList<>(Arrays.asList(memoryArray));
+
                 getActivity().runOnUiThread(() -> {
-                    adapter = new MemoryListAdapter(
-                            getContext(),
-                            memories,
-                            getActivity()
-                    );
-                    memoriesFragmentProgressIndicator.setVisibility(View.GONE);
-                    memoryList.setAdapter(adapter);
-                    memoryList.setLayoutManager(new LinearLayoutManager(getContext()));
+                    if(memories.isEmpty()){
+                        memoriesFragmentProgressIndicator.setVisibility(View.GONE);
+                        noMemoriesTextView.setVisibility(View.VISIBLE);
+                    }else{
+                        adapter = new MemoryListAdapter(
+                                getContext(),
+                                memories,
+                                getActivity()
+                        );
+                        memoriesFragmentProgressIndicator.setVisibility(View.GONE);
+                        memoryList.setAdapter(adapter);
+                        memoryList.setLayoutManager(new LinearLayoutManager(getContext()));
+                    }
                 });
             }
         }catch (Exception e){

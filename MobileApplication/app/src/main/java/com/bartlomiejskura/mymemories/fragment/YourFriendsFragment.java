@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,6 +30,7 @@ public class YourFriendsFragment extends Fragment {
     private RecyclerView friendsRecyclerView;
     private Button addFriendButton;
     private CircularProgressIndicator yourFriendsProgressIndicator;
+    private TextView noFriendsTextView;
 
     private UserListAdapter adapter;
 
@@ -48,6 +50,7 @@ public class YourFriendsFragment extends Fragment {
         friendsRecyclerView = view.findViewById(R.id.friendsRecyclerView);
         addFriendButton = view.findViewById(R.id.addFriendButton);
         yourFriendsProgressIndicator = view.findViewById(R.id.yourFriendsProgressIndicator);
+        noFriendsTextView = view.findViewById(R.id.noFriendsTextView);
     }
 
     private void setListeners(){
@@ -61,6 +64,9 @@ public class YourFriendsFragment extends Fragment {
     private void prepareViews(){
         //recycler view with friends
         new Thread(this::getFriends).start();
+
+        //TextView with text "No friends"
+        noFriendsTextView.setVisibility(View.GONE);
     }
 
 
@@ -74,15 +80,20 @@ public class YourFriendsFragment extends Fragment {
             final List<User> friends = new ArrayList<>(Arrays.asList(userArray));
             final Activity activity = getActivity();
             activity.runOnUiThread(() -> {
-                adapter = new UserListAdapter(
-                        getContext(),
-                        friends,
-                        activity,
-                        true
-                );
-                yourFriendsProgressIndicator.setVisibility(View.GONE);
-                friendsRecyclerView.setAdapter(adapter);
-                friendsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                if(friends.isEmpty()){
+                    noFriendsTextView.setVisibility(View.VISIBLE);
+                    yourFriendsProgressIndicator.setVisibility(View.GONE);
+                }else{
+                    adapter = new UserListAdapter(
+                            getContext(),
+                            friends,
+                            activity,
+                            true
+                    );
+                    yourFriendsProgressIndicator.setVisibility(View.GONE);
+                    friendsRecyclerView.setAdapter(adapter);
+                    friendsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                }
             });
         }catch (Exception e){
             getActivity().runOnUiThread(()->yourFriendsProgressIndicator.setVisibility(View.GONE));
