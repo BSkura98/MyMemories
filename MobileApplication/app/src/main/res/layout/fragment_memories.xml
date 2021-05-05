@@ -34,6 +34,7 @@
         app:tint="@android:color/white" />
 
     <LinearLayout
+        android:id="@+id/linearLayout8"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -58,9 +59,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Date"
+            app:cornerRadius="50dp"
             app:icon="@drawable/ic_date_color_accent"
-            app:iconTint="@color/colorAccent"
-            app:cornerRadius="50dp"/>
+            app:iconTint="@color/colorAccent" />
 
         <ImageButton
             android:id="@+id/nextDayButton"
@@ -73,5 +74,16 @@
             android:src="@drawable/ic_arrow_forward"
             android:tint="@color/colorAccent" />
     </LinearLayout>
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/memoriesFragmentProgressIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="8dp"
+        android:indeterminate="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

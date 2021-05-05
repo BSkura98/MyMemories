@@ -17,6 +17,7 @@ import com.bartlomiejskura.mymemories.R;
 import com.bartlomiejskura.mymemories.adapter.FriendRequestListAdapter;
 import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.task.GetFriendRequestsTask;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,6 +25,7 @@ import java.util.Arrays;
 public class FriendRequestsFragment extends Fragment {
     private RecyclerView requestsByOthers, requestsByUser;
     private TextView requestsByOthersTextView, requestsByUserTextView;
+    private CircularProgressIndicator friendRequestsProgressIndicator;
 
     @Nullable
     @Override
@@ -41,6 +43,7 @@ public class FriendRequestsFragment extends Fragment {
         requestsByOthers = view.findViewById(R.id.friendRequests);
         requestsByUserTextView = view.findViewById(R.id.textView17);
         requestsByOthersTextView = view.findViewById(R.id.textView16);
+        friendRequestsProgressIndicator = view.findViewById(R.id.friendRequestsProgressIndicator);
     }
 
     private void prepareViews(){
@@ -88,6 +91,7 @@ public class FriendRequestsFragment extends Fragment {
                     activity,
                     true
             );
+            friendRequestsProgressIndicator.setVisibility(View.GONE);
             requestsByOthers.setAdapter(adapter);
             requestsByOthers.setLayoutManager(new LinearLayoutManager(getContext()));
             requestsByOthers.setNestedScrollingEnabled(false);
@@ -104,6 +108,7 @@ public class FriendRequestsFragment extends Fragment {
                     activity,
                     false
             );
+            friendRequestsProgressIndicator.setVisibility(View.GONE);
             requestsByUser.setAdapter(adapter);
             requestsByUser.setLayoutManager(new LinearLayoutManager(getContext()));
             requestsByUser.setNestedScrollingEnabled(false);

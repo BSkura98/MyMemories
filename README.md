@@ -29,11 +29,9 @@ The aim of this project was to create a mobile system for keeping a personal jou
 * Account settings
 
 To-do list:
-* Progress indicator where needed while fetching data from server
 * Renaming categories
 * Checking if AsyncTask is already running when clicking a button repeatedly (for example while adding memory)
 * Change the color in the mobile application
-* Lock screen rotation
 * Minimize the number of server-side functions
 * Improve data validation in forms
 

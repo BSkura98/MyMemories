@@ -15,6 +15,7 @@ import com.bartlomiejskura.mymemories.R;
 import com.bartlomiejskura.mymemories.adapter.CategoryListAdapter;
 import com.bartlomiejskura.mymemories.model.Category;
 import com.bartlomiejskura.mymemories.task.GetCategoriesTask;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,6 +23,7 @@ import java.util.List;
 
 public class CategoriesFragment extends Fragment {
     private RecyclerView categoryList;
+    private CircularProgressIndicator categoriesProgressIndicator;
 
     private CategoryListAdapter adapter;
 
@@ -38,6 +40,7 @@ public class CategoriesFragment extends Fragment {
 
     private void findViews(View view){
         categoryList = view.findViewById(R.id.categoryList);
+        categoriesProgressIndicator = view.findViewById(R.id.categoriesProgressIndicator);
     }
 
     private void prepareViews(){
@@ -59,10 +62,12 @@ public class CategoriesFragment extends Fragment {
                         categories,
                         getActivity()
                 );
+                categoriesProgressIndicator.setVisibility(View.GONE);
                 categoryList.setAdapter(adapter);
                 categoryList.setLayoutManager(new LinearLayoutManager(getContext()));
             });
         }catch (Exception e){
+            getActivity().runOnUiThread(()->categoriesProgressIndicator.setVisibility(View.GONE));
             e.printStackTrace();
         }
     }

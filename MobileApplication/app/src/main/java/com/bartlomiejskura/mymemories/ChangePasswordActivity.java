@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bartlomiejskura.mymemories.task.ChangePasswordTask;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 
 import java.util.concurrent.ExecutionException;
 
@@ -23,6 +24,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private TextView toolbarTextView;
     private ImageButton searchButton, backButton;
+    private LinearProgressIndicator changePasswordProgressIndicator;
 
     private SharedPreferences sharedPreferences;
 
@@ -46,6 +48,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
         toolbarTextView = findViewById(R.id.toolbarTextView);
         searchButton = findViewById(R.id.searchButton);
         backButton = findViewById(R.id.backButton);
+        changePasswordProgressIndicator = findViewById(R.id.changePasswordProgressIndicator);
     }
 
     private void initValues(){
@@ -58,6 +61,9 @@ public class ChangePasswordActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         toolbarTextView.setText("Change password");
         searchButton.setVisibility(View.GONE);
+
+        //progress indicator
+        changePasswordProgressIndicator.setVisibility(View.GONE);
     }
 
     private void setListeners(){
@@ -77,6 +83,8 @@ public class ChangePasswordActivity extends AppCompatActivity {
             return;
         }
 
+        runOnUiThread(()->changePasswordProgressIndicator.setVisibility(View.VISIBLE));
+
         ChangePasswordTask changePasswordTask =
                 new ChangePasswordTask(
                         currentPasswordEditText.getText().toString(),
@@ -86,6 +94,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
             changePasswordTask.execute().get();
             finish();
         } catch (ExecutionException | InterruptedException e) {
+            runOnUiThread(()->changePasswordProgressIndicator.setVisibility(View.GONE));
             e.printStackTrace();
         }
     }

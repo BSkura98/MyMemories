@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.bartlomiejskura.mymemories.adapter.MemoryListAdapter;
 import com.bartlomiejskura.mymemories.model.Memory;
 import com.bartlomiejskura.mymemories.task.SearchMemoriesTask;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,6 +26,7 @@ public class SearchResultsActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private ImageButton searchButton, backButton;
     private TextView keywordTextView;
+    private CircularProgressIndicator searchResultsProgressIndicator;
 
     private MemoryListAdapter adapter;
 
@@ -45,6 +47,7 @@ public class SearchResultsActivity extends AppCompatActivity {
         searchButton = findViewById(R.id.searchButton);
         backButton = findViewById(R.id.backButton);
         keywordTextView = findViewById(R.id.keywordTextView);
+        searchResultsProgressIndicator = findViewById(R.id.searchResultsProgressIndicator);
     }
 
     private void prepareViews(){
@@ -60,7 +63,7 @@ public class SearchResultsActivity extends AppCompatActivity {
         }
 
         //recycler view with memories
-        new Thread(this::getAllMemories).start();
+        new Thread(this::getMemories).start();
     }
 
     private void setListeners(){
@@ -80,7 +83,7 @@ public class SearchResultsActivity extends AppCompatActivity {
     }
 
 
-    public void getAllMemories(){
+    public void getMemories(){
         try{
             SearchMemoriesTask task = new SearchMemoriesTask(this, getIntent().getStringExtra("keyword"));
 
@@ -108,10 +111,12 @@ public class SearchResultsActivity extends AppCompatActivity {
                         memories,
                         activity
                 );
+                searchResultsProgressIndicator.setVisibility(View.GONE);
                 memoryList.setAdapter(adapter);
                 memoryList.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
             });
         }catch (Exception e){
+            runOnUiThread(()->searchResultsProgressIndicator.setVisibility(View.GONE));
             e.printStackTrace();
         }
     }

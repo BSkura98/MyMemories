@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import com.bartlomiejskura.mymemories.adapter.MemoryListAdapter;
 import com.bartlomiejskura.mymemories.model.Memory;
 import com.bartlomiejskura.mymemories.task.GetMemoriesInCategoryTask;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,6 +25,7 @@ public class CategoryActivity extends AppCompatActivity {
     private TextView toolbarTextView;
     private Toolbar toolbar;
     private ImageButton backButton;
+    private CircularProgressIndicator categoryProgressIndicator;
 
     private MemoryListAdapter adapter;
     private Long categoryId;
@@ -43,6 +46,7 @@ public class CategoryActivity extends AppCompatActivity {
         toolbarTextView = findViewById(R.id.toolbarTextView);
         toolbar = findViewById(R.id.toolbar);
         backButton = findViewById(R.id.backButton);
+        categoryProgressIndicator = findViewById(R.id.categoryProgressIndicator);
     }
 
     private void initValues(){
@@ -83,10 +87,12 @@ public class CategoryActivity extends AppCompatActivity {
                         memories,
                         activity
                 );
+                categoryProgressIndicator.setVisibility(View.GONE);
                 memoryList.setAdapter(adapter);
                 memoryList.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
             });
         }catch (Exception e){
+            runOnUiThread(()->categoryProgressIndicator.setVisibility(View.GONE));
             e.printStackTrace();
         }
     }

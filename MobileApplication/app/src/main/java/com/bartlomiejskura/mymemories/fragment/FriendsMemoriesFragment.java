@@ -15,6 +15,7 @@ import com.bartlomiejskura.mymemories.R;
 import com.bartlomiejskura.mymemories.adapter.MemoryListAdapter;
 import com.bartlomiejskura.mymemories.model.Memory;
 import com.bartlomiejskura.mymemories.task.GetFriendsMemoriesTask;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,6 +24,7 @@ import java.util.List;
 
 public class FriendsMemoriesFragment extends Fragment {
     private RecyclerView friendsMemoriesRecyclerView;
+    private CircularProgressIndicator friendsMemoriesProgressIndicator;
 
     private MemoryListAdapter adapter;
 
@@ -39,6 +41,7 @@ public class FriendsMemoriesFragment extends Fragment {
 
     private void findViews(View view){
         friendsMemoriesRecyclerView = view.findViewById(R.id.friendsMemoriesRecyclerView);
+        friendsMemoriesProgressIndicator = view.findViewById(R.id.friendsMemoriesProgressIndicator);
     }
 
     private void prepareViews(){
@@ -60,10 +63,12 @@ public class FriendsMemoriesFragment extends Fragment {
                         memories,
                         getActivity()
                 );
+                friendsMemoriesProgressIndicator.setVisibility(View.GONE);
                 friendsMemoriesRecyclerView.setAdapter(adapter);
                 friendsMemoriesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
             });
         }catch (Exception e){
+            getActivity().runOnUiThread(()->friendsMemoriesProgressIndicator.setVisibility(View.GONE));
             e.printStackTrace();
         }
     }

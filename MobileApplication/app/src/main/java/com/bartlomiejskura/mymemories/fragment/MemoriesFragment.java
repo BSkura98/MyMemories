@@ -23,6 +23,7 @@ import com.bartlomiejskura.mymemories.adapter.MemoryListAdapter;
 import com.bartlomiejskura.mymemories.model.Memory;
 import com.bartlomiejskura.mymemories.task.GetMemoriesForDateTask;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ public class MemoriesFragment extends Fragment {
     private Button dateButton;
     private FloatingActionButton addMemoryButton;
     private ImageView previousDayButton, nextDayButton;
+    private CircularProgressIndicator memoriesFragmentProgressIndicator;
 
     private MemoryListAdapter adapter;
     private Date date = new Date();
@@ -58,6 +60,7 @@ public class MemoriesFragment extends Fragment {
         addMemoryButton = view.findViewById(R.id.addMemoryButton);
         previousDayButton = view.findViewById(R.id.previousDayButton);
         nextDayButton = view.findViewById(R.id.nextDayButton);
+        memoriesFragmentProgressIndicator = view.findViewById(R.id.memoriesFragmentProgressIndicator);
     }
 
     private void setListeners(){
@@ -92,6 +95,10 @@ public class MemoriesFragment extends Fragment {
 
     private void getMemories(Date date){
         try{
+            getActivity().runOnUiThread(()->{
+                memoryList.setAdapter(null);
+                memoriesFragmentProgressIndicator.setVisibility(View.VISIBLE);
+            });
             GetMemoriesForDateTask task = new GetMemoriesForDateTask(getActivity(), date);
             Memory[] memoryArray = task.execute().get();
             if(memoryArray ==null){
@@ -104,10 +111,12 @@ public class MemoriesFragment extends Fragment {
                         memories,
                         getActivity()
                 );
+                memoriesFragmentProgressIndicator.setVisibility(View.GONE);
                 memoryList.setAdapter(adapter);
                 memoryList.setLayoutManager(new LinearLayoutManager(getContext()));
             });
         }catch (Exception e){
+            getActivity().runOnUiThread(()->memoriesFragmentProgressIndicator.setVisibility(View.GONE));
             e.printStackTrace();
         }
     }

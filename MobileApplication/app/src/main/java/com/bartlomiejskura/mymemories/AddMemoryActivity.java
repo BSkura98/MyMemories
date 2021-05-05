@@ -61,6 +61,7 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.storage.FirebaseStorage;
@@ -103,6 +104,7 @@ public class AddMemoryActivity extends AppCompatActivity implements OnMapReadyCa
     private TextView toolbarTextView;
     private ImageButton backButton;
     private LinearLayout addCategoriesLayout;
+    private LinearProgressIndicator addMemoryProgressIndicator;
 
     private Memory memory = new Memory();
     private Integer day, month, year, hour, minute;
@@ -160,6 +162,7 @@ public class AddMemoryActivity extends AppCompatActivity implements OnMapReadyCa
         backButton = findViewById(R.id.backButton);
         addCategoriesButton = findViewById(R.id.addCategoriesButton);
         addCategoriesLayout = findViewById(R.id.linearLayout);
+        addMemoryProgressIndicator = findViewById(R.id.addMemoryProgressIndicator);
     }
 
     private void initValues(){
@@ -196,6 +199,9 @@ public class AddMemoryActivity extends AppCompatActivity implements OnMapReadyCa
         deleteLocationButton.setVisibility(View.GONE);
         mapFragment.getView().setVisibility(View.GONE);
         mapFragment.getMapAsync(this);
+
+        //progress indicator
+        addMemoryProgressIndicator.setVisibility(View.GONE);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -409,8 +415,13 @@ public class AddMemoryActivity extends AppCompatActivity implements OnMapReadyCa
 
 
     private void addMemory(String title, String description){
+        runOnUiThread(()->addMemoryProgressIndicator.setVisibility(View.VISIBLE));
+
         if (title.isEmpty()) {
-            runOnUiThread(() -> titleInputLayout.setError("Title field cannot be empty!"));
+            runOnUiThread(() -> {
+                titleInputLayout.setError("Title field cannot be empty!");
+                addMemoryProgressIndicator.setVisibility(View.GONE);
+            });
             return;
         }
 
@@ -424,6 +435,7 @@ public class AddMemoryActivity extends AppCompatActivity implements OnMapReadyCa
         if(!this.categories.isEmpty()){
             categories = getCategories();
             if(categories ==null){
+                runOnUiThread(()->addMemoryProgressIndicator.setVisibility(View.GONE));
                 return;
             }
         }
@@ -445,12 +457,14 @@ public class AddMemoryActivity extends AppCompatActivity implements OnMapReadyCa
             CreateMemoryTask createMemoryTask = new CreateMemoryTask(activity, memory);
             Boolean createMemoryResult = createMemoryTask.execute().get();
             if(!createMemoryResult){
+                runOnUiThread(()->addMemoryProgressIndicator.setVisibility(View.GONE));
                 return;
             }
             Intent i = new Intent(getApplicationContext(), MainActivity.class);
             i.putExtra("fragmentToLoad", "datesFragment");
             startActivity(i);
         }catch (Exception e){
+            runOnUiThread(()->addMemoryProgressIndicator.setVisibility(View.GONE));
             System.out.println("ERROR:" + e.getMessage());
         }
     }

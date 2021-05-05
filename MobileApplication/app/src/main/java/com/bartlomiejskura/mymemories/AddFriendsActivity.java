@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.bartlomiejskura.mymemories.adapter.UserListAdapter;
 import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.task.GetUsersWithoutFriendsTask;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +34,7 @@ public class AddFriendsActivity extends AppCompatActivity {
     private TextView toolbarTextView;
     private ImageButton searchButton, backButton;
     private SearchView userSearchView;
+    private CircularProgressIndicator addFriendsProgressIndicator;
 
     private UserListAdapter adapter;
 
@@ -54,6 +56,7 @@ public class AddFriendsActivity extends AppCompatActivity {
         searchButton = findViewById(R.id.searchButton);
         backButton = findViewById(R.id.backButton);
         userSearchView = findViewById(R.id.userSearchView);
+        addFriendsProgressIndicator = findViewById(R.id.addFriendsProgressIndicator);
     }
 
     private void prepareViews(){
@@ -66,6 +69,9 @@ public class AddFriendsActivity extends AppCompatActivity {
         //search view
         customizeSearchView(userSearchView);
         userSearchView.setIconifiedByDefault(false);
+
+        //progress indicator
+        addFriendsProgressIndicator.setVisibility(View.GONE);
     }
 
     private void setListeners(){
@@ -74,7 +80,7 @@ public class AddFriendsActivity extends AppCompatActivity {
         userSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                searchFriends(query);
+                new Thread(()->searchFriends(query)).start();
                 return true;
             }
 
@@ -95,12 +101,20 @@ public class AddFriendsActivity extends AppCompatActivity {
     private void searchFriends(String text){
         GetUsersWithoutFriendsTask task = new GetUsersWithoutFriendsTask(this,
                 text);
+
+        runOnUiThread(()-> {
+            addFriendsProgressIndicator.setVisibility(View.VISIBLE);
+            usersRecyclerView.setAdapter(null);
+        });
         try{
             User[] users = task.execute().get();
             if(users!=null){
                 loadUsers(users);
+            }else{
+                runOnUiThread(()-> addFriendsProgressIndicator.setVisibility(View.GONE));
             }
         }catch (Exception e){
+            runOnUiThread(()-> addFriendsProgressIndicator.setVisibility(View.GONE));
             e.printStackTrace();
         }
     }
@@ -114,6 +128,7 @@ public class AddFriendsActivity extends AppCompatActivity {
                     activity,
                     false
             );
+            addFriendsProgressIndicator.setVisibility(View.GONE);
             usersRecyclerView.setAdapter(adapter);
             usersRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         });

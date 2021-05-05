@@ -19,6 +19,7 @@ import com.bartlomiejskura.mymemories.R;
 import com.bartlomiejskura.mymemories.adapter.UserListAdapter;
 import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.task.GetFriendsTask;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,6 +28,7 @@ import java.util.List;
 public class YourFriendsFragment extends Fragment {
     private RecyclerView friendsRecyclerView;
     private Button addFriendButton;
+    private CircularProgressIndicator yourFriendsProgressIndicator;
 
     private UserListAdapter adapter;
 
@@ -45,6 +47,7 @@ public class YourFriendsFragment extends Fragment {
     private void findViews(View view){
         friendsRecyclerView = view.findViewById(R.id.friendsRecyclerView);
         addFriendButton = view.findViewById(R.id.addFriendButton);
+        yourFriendsProgressIndicator = view.findViewById(R.id.yourFriendsProgressIndicator);
     }
 
     private void setListeners(){
@@ -77,10 +80,12 @@ public class YourFriendsFragment extends Fragment {
                         activity,
                         true
                 );
+                yourFriendsProgressIndicator.setVisibility(View.GONE);
                 friendsRecyclerView.setAdapter(adapter);
                 friendsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
             });
         }catch (Exception e){
+            getActivity().runOnUiThread(()->yourFriendsProgressIndicator.setVisibility(View.GONE));
             e.printStackTrace();
         }
     }

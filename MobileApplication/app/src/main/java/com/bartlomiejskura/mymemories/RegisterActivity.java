@@ -40,10 +40,6 @@ public class RegisterActivity extends AppCompatActivity {
         initValues();
         prepareViews();
         setListeners();
-
-        if(savedInstanceState != null){
-            restoreDataAfterRotation(savedInstanceState);
-        }
     }
 
     private void findViews() {
@@ -78,10 +74,6 @@ public class RegisterActivity extends AppCompatActivity {
         signUpButton.setOnClickListener(v -> {
             registerUser();
         });
-    }
-
-    private void restoreDataAfterRotation(Bundle savedInstanceState){
-        birthdayButton.setText(savedInstanceState.getString("birthday"));
     }
 
 
