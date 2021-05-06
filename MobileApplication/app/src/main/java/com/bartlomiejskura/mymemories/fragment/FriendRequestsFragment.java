@@ -1,5 +1,6 @@
 package com.bartlomiejskura.mymemories.fragment;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -24,7 +25,7 @@ import java.util.Arrays;
 
 public class FriendRequestsFragment extends Fragment {
     private RecyclerView requestsByOthers, requestsByUser;
-    private TextView requestsByOthersTextView, requestsByUserTextView, noFriendRequestsTextView;
+    private TextView requestsByOthersTextView, requestsByUserTextView, messageTextView;
     private CircularProgressIndicator friendRequestsProgressIndicator;
 
     private boolean noFriendRequests;
@@ -47,7 +48,7 @@ public class FriendRequestsFragment extends Fragment {
         requestsByUserTextView = view.findViewById(R.id.textView17);
         requestsByOthersTextView = view.findViewById(R.id.textView16);
         friendRequestsProgressIndicator = view.findViewById(R.id.friendRequestsProgressIndicator);
-        noFriendRequestsTextView = view.findViewById(R.id.noFriendRequestsTextView);
+        messageTextView = view.findViewById(R.id.noFriendRequestsTextView);
     }
 
     private void initValues(){
@@ -64,10 +65,11 @@ public class FriendRequestsFragment extends Fragment {
         new Thread(this::getFriendRequestsByUser).start();
 
         //TextView with text "No friend requests"
-        noFriendRequestsTextView.setVisibility(View.GONE);
+        messageTextView.setVisibility(View.GONE);
     }
 
 
+    @SuppressLint("SetTextI18n")
     private void getFriendRequestsByOthers(){
         try{
             if(getActivity()==null){
@@ -78,13 +80,28 @@ public class FriendRequestsFragment extends Fragment {
             if(users!=null&&users.length!=0){
                 showFriendRequestsByOthers(users);
             }else{
-                setNoFriendRequests();
+                if(task.getError().isEmpty()){
+                    setNoFriendRequests();
+                }else{
+                    getActivity().runOnUiThread(()->{
+                        if(task.getError().contains("Unable to resolve host")){
+                            messageTextView.setText("Problem with the Internet connection");
+                        }else{
+                            messageTextView.setText("A problem occurred");
+                        }
+                        messageTextView.setVisibility(View.VISIBLE);
+                        friendRequestsProgressIndicator.setVisibility(View.GONE);
+                        requestsByOthers.setVisibility(View.GONE);
+                        requestsByUser.setVisibility(View.GONE);
+                    });
+                }
             }
         }catch (Exception e){
             e.printStackTrace();
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private void getFriendRequestsByUser(){
         try{
             if(getActivity()==null){
@@ -95,7 +112,20 @@ public class FriendRequestsFragment extends Fragment {
             if(users!=null&&users.length!=0){
                 showFriendRequestsByUser(users);
             }else{
-                setNoFriendRequests();
+                if(task.getError().isEmpty()){
+                    setNoFriendRequests();
+                }else{
+                    getActivity().runOnUiThread(()->{
+                        if(task.getError().contains("Unable to resolve host")){
+                            messageTextView.setText("Problem with the Internet connection");
+                        }else{
+                            messageTextView.setText("A problem occurred");
+                        }
+                        friendRequestsProgressIndicator.setVisibility(View.GONE);
+                        requestsByOthers.setVisibility(View.GONE);
+                        requestsByUser.setVisibility(View.GONE);
+                    });
+                }
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -140,11 +170,13 @@ public class FriendRequestsFragment extends Fragment {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     synchronized private void setNoFriendRequests(){
         if(noFriendRequests){
             if(getActivity()!=null){
                 getActivity().runOnUiThread(()->{
-                    noFriendRequestsTextView.setVisibility(View.VISIBLE);
+                    messageTextView.setText("No friend requests");
+                    messageTextView.setVisibility(View.VISIBLE);
                     friendRequestsProgressIndicator.setVisibility(View.GONE);
                 });
             }

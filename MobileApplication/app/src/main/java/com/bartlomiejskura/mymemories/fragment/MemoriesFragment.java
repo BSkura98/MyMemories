@@ -39,7 +39,7 @@ public class MemoriesFragment extends Fragment {
     private FloatingActionButton addMemoryButton;
     private ImageView previousDayButton, nextDayButton;
     private CircularProgressIndicator memoriesFragmentProgressIndicator;
-    private TextView noMemoriesTextView;
+    private TextView messageTextView;
 
     private MemoryListAdapter adapter;
     private Date date = new Date();
@@ -65,7 +65,7 @@ public class MemoriesFragment extends Fragment {
         previousDayButton = view.findViewById(R.id.previousDayButton);
         nextDayButton = view.findViewById(R.id.nextDayButton);
         memoriesFragmentProgressIndicator = view.findViewById(R.id.memoriesFragmentProgressIndicator);
-        noMemoriesTextView = view.findViewById(R.id.noMemoriesTextView);
+        messageTextView = view.findViewById(R.id.noMemoriesTextView);
     }
 
     private void initValues(){
@@ -103,10 +103,11 @@ public class MemoriesFragment extends Fragment {
         new Thread(() -> getMemories(date)).start();
 
         //TextView with text "No memories for this date"
-        noMemoriesTextView.setVisibility(View.GONE);
+        messageTextView.setVisibility(View.GONE);
     }
 
 
+    @SuppressLint("SetTextI18n")
     private void getMemories(Date date){
         try{
             if(getActivity()==null){
@@ -114,7 +115,7 @@ public class MemoriesFragment extends Fragment {
             }
             getActivity().runOnUiThread(()->{
                 memoryList.setAdapter(null);
-                noMemoriesTextView.setVisibility(View.GONE);
+                messageTextView.setVisibility(View.GONE);
                 memoriesFragmentProgressIndicator.setVisibility(View.VISIBLE);
             });
             GetMemoriesForDateTask task = new GetMemoriesForDateTask(getActivity(), date);
@@ -123,6 +124,15 @@ public class MemoriesFragment extends Fragment {
 
             if(currentTask==task){
                 if(memoryArray ==null){
+                    getActivity().runOnUiThread(()->{
+                        messageTextView.setVisibility(View.VISIBLE);
+                        if(task.getError().contains("Unable to resolve host")){
+                            messageTextView.setText("Problem with the Internet connection");
+                        }else{
+                            messageTextView.setText("A problem occurred");
+                        }
+                        memoriesFragmentProgressIndicator.setVisibility(View.GONE);
+                    });
                     return;
                 }
                 final List<Memory> memories = new ArrayList<>(Arrays.asList(memoryArray));
@@ -130,7 +140,8 @@ public class MemoriesFragment extends Fragment {
                 getActivity().runOnUiThread(() -> {
                     if(memories.isEmpty()){
                         memoriesFragmentProgressIndicator.setVisibility(View.GONE);
-                        noMemoriesTextView.setVisibility(View.VISIBLE);
+                        messageTextView.setText("No memories for this date");
+                        messageTextView.setVisibility(View.VISIBLE);
                     }else{
                         adapter = new MemoryListAdapter(
                                 getContext(),

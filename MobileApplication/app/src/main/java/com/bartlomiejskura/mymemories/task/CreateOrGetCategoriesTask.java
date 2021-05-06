@@ -27,6 +27,7 @@ public class CreateOrGetCategoriesTask extends AsyncTask<Void, Void, Category[]>
     private OkHttpClient httpClient = new OkHttpClient();
     private Gson gson = new Gson();
     private SharedPreferences sharedPreferences;
+    private String error = "";
 
     private List<String> categoriesNames;
 
@@ -67,8 +68,13 @@ public class CreateOrGetCategoriesTask extends AsyncTask<Void, Void, Category[]>
             }
             return responseArray;
         } catch (Exception e) {
+            error = e.getMessage();
             System.out.println("ERROR:" + e.getMessage());
             return null;
         }
+    }
+
+    public String getError(){
+        return error;
     }
 }

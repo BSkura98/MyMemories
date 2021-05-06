@@ -25,7 +25,7 @@ public class SearchResultsActivity extends AppCompatActivity {
     private RecyclerView memoryList;
     private Toolbar toolbar;
     private ImageButton searchButton, backButton;
-    private TextView keywordTextView, noSearchResultsTextView;
+    private TextView keywordTextView, messageTextView;
     private CircularProgressIndicator searchResultsProgressIndicator;
 
     private MemoryListAdapter adapter;
@@ -48,7 +48,7 @@ public class SearchResultsActivity extends AppCompatActivity {
         backButton = findViewById(R.id.backButton);
         keywordTextView = findViewById(R.id.keywordTextView);
         searchResultsProgressIndicator = findViewById(R.id.searchResultsProgressIndicator);
-        noSearchResultsTextView = findViewById(R.id.noSearchResultsTextView);
+        messageTextView = findViewById(R.id.noSearchResultsTextView);
     }
 
     private void prepareViews(){
@@ -67,7 +67,7 @@ public class SearchResultsActivity extends AppCompatActivity {
         new Thread(this::getMemories).start();
 
         //TextView with text "No search results"
-        noSearchResultsTextView.setVisibility(View.GONE);
+        messageTextView.setVisibility(View.GONE);
     }
 
     private void setListeners(){
@@ -87,6 +87,7 @@ public class SearchResultsActivity extends AppCompatActivity {
     }
 
 
+    @SuppressLint("SetTextI18n")
     public void getMemories(){
         try{
             SearchMemoriesTask task = new SearchMemoriesTask(this, getIntent().getStringExtra("keyword"));
@@ -105,13 +106,23 @@ public class SearchResultsActivity extends AppCompatActivity {
             task.setCategories(categories!=null&&categories.isEmpty()?null:categories);
             Memory[] memoryArray = task.execute().get();
             if(memoryArray ==null){
+                runOnUiThread(()->{
+                    messageTextView.setVisibility(View.VISIBLE);
+                    if(task.getError().contains("Unable to resolve host")){
+                        messageTextView.setText("Problem with the Internet connection");
+                    }else{
+                        messageTextView.setText("A problem occurred");
+                    }
+                    searchResultsProgressIndicator.setVisibility(View.GONE);
+                });
                 return;
             }
             final List<Memory> memories = new ArrayList<>(Arrays.asList(memoryArray));
             final SearchResultsActivity activity = this;
             runOnUiThread(() -> {
                 if(memories.isEmpty()){
-                    noSearchResultsTextView.setVisibility(View.VISIBLE);
+                    messageTextView.setText("No search results");
+                    messageTextView.setVisibility(View.VISIBLE);
                     searchResultsProgressIndicator.setVisibility(View.GONE);
                 }else{
                     adapter = new MemoryListAdapter(

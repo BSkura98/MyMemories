@@ -23,6 +23,7 @@ public class SearchMemoriesTask extends AsyncTask<Void, Void, Memory[]> {
     private OkHttpClient httpClient = new OkHttpClient();
     private Gson gson = new Gson();
     private SharedPreferences sharedPreferences;
+    private String error = "";
 
     private String keyword;
     private Boolean hasImage = null;
@@ -62,10 +63,15 @@ public class SearchMemoriesTask extends AsyncTask<Void, Void, Memory[]> {
             }
             return memories;
         }catch (IOException | JSONException e){
+            error = e.getMessage();
             System.out.println("ERROR: " + e.getMessage());
         }
 
         return null;
+    }
+
+    public String getError(){
+        return error;
     }
 
     private String createUrl(){

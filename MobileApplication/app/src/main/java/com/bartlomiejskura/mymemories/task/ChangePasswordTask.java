@@ -16,6 +16,7 @@ public class ChangePasswordTask extends AsyncTask<Void, Void, Boolean> {
     private Gson gson = new Gson();
     private SharedPreferences sharedPreferences;
     private String oldPassword, newPassword;
+    private String error = "";
 
     public ChangePasswordTask(String oldPassword, String newPassword, SharedPreferences sharedPreferences){
         this.oldPassword = oldPassword;
@@ -43,9 +44,14 @@ public class ChangePasswordTask extends AsyncTask<Void, Void, Boolean> {
                 return false;
             }
         } catch (Exception e) {
+            error = e.getMessage();
             System.out.println("ERROR:" + e.getMessage());
             return false;
         }
         return true;
+    }
+
+    public String getError(){
+        return error;
     }
 }

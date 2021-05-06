@@ -22,6 +22,7 @@ public class CreateUserTask extends AsyncTask<String, Void, Integer> {
     private OkHttpClient httpClient = new OkHttpClient();
     private Gson gson = new Gson();
     private SharedPreferences sharedPreferences;
+    private String error = "";
 
     public CreateUserTask(Activity activity){
         this.activityReference = new WeakReference<>(activity);
@@ -60,6 +61,7 @@ public class CreateUserTask extends AsyncTask<String, Void, Integer> {
             editor.putString("birthday", userResponse.getBirthday());
             editor.apply();
         } catch (Exception e) {
+            error = e.getMessage();
             System.out.println("ERROR in CreateUserTask: " + e.getMessage());
             if (e.getMessage() != null) {
                 if(e.getMessage().equals("timeout")){
@@ -71,5 +73,9 @@ public class CreateUserTask extends AsyncTask<String, Void, Integer> {
             return -1;
         }
         return response.code();
+    }
+
+    public String getError(){
+        return error;
     }
 }

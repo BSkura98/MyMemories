@@ -1,5 +1,6 @@
 package com.bartlomiejskura.mymemories.task;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -26,6 +27,7 @@ public class GetMemoriesForDateTask extends AsyncTask<Void, Void, Memory[]> {
     private Gson gson = new Gson();
     private SharedPreferences sharedPreferences;
     private Date date;
+    private String error = "";
 
     public GetMemoriesForDateTask(Activity activity, Date date){
         this.activity = activity;
@@ -35,7 +37,7 @@ public class GetMemoriesForDateTask extends AsyncTask<Void, Void, Memory[]> {
 
     @Override
     protected Memory[] doInBackground(Void... voids) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
         Request request = new Request.Builder()
                 .url("https://mymemories-2.herokuapp.com/memory/getAllForDate?email="+sharedPreferences.getString("email", "")+"&time="+sdf.format(date).replace(" ", "T"))
@@ -56,9 +58,14 @@ public class GetMemoriesForDateTask extends AsyncTask<Void, Void, Memory[]> {
             }
             return memories;
         }catch (IOException | JSONException e){
+            error = e.getMessage();
             System.out.println("ERROR: " + e.getMessage());
         }
 
         return null;
+    }
+
+    public String getError(){
+        return error;
     }
 }

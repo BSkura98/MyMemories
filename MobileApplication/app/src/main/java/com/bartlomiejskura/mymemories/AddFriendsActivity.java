@@ -7,9 +7,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -31,7 +28,7 @@ import java.util.Arrays;
 public class AddFriendsActivity extends AppCompatActivity {
     private RecyclerView usersRecyclerView;
     private Toolbar toolbar;
-    private TextView toolbarTextView, searchFriendsMessageTextView;
+    private TextView toolbarTextView, messageTextView;
     private ImageButton searchButton, backButton;
     private SearchView userSearchView;
     private CircularProgressIndicator addFriendsProgressIndicator;
@@ -58,7 +55,7 @@ public class AddFriendsActivity extends AppCompatActivity {
         backButton = findViewById(R.id.backButton);
         userSearchView = findViewById(R.id.userSearchView);
         addFriendsProgressIndicator = findViewById(R.id.addFriendsProgressIndicator);
-        searchFriendsMessageTextView = findViewById(R.id.searchFriendsMessageTextView);
+        messageTextView = findViewById(R.id.searchFriendsMessageTextView);
     }
 
     private void prepareViews(){
@@ -76,7 +73,7 @@ public class AddFriendsActivity extends AppCompatActivity {
         addFriendsProgressIndicator.setVisibility(View.GONE);
 
         //TextView with message "No search results"
-        searchFriendsMessageTextView.setVisibility(View.GONE);
+        messageTextView.setVisibility(View.GONE);
     }
 
     private void setListeners(){
@@ -106,13 +103,14 @@ public class AddFriendsActivity extends AppCompatActivity {
     }
 
 
+    @SuppressLint("SetTextI18n")
     private void searchFriends(String text){
         GetUsersWithoutFriendsTask task = new GetUsersWithoutFriendsTask(this,
                 text);
 
         runOnUiThread(()-> {
             addFriendsProgressIndicator.setVisibility(View.VISIBLE);
-            searchFriendsMessageTextView.setVisibility(View.GONE);
+            messageTextView.setVisibility(View.GONE);
             usersRecyclerView.setAdapter(null);
         });
         try{
@@ -120,7 +118,15 @@ public class AddFriendsActivity extends AppCompatActivity {
             if(users!=null){
                 loadUsers(users);
             }else{
-                runOnUiThread(()-> addFriendsProgressIndicator.setVisibility(View.GONE));
+                runOnUiThread(()-> {
+                    messageTextView.setVisibility(View.VISIBLE);
+                    if(task.getError().contains("Unable to resolve host")){
+                        messageTextView.setText("Problem with the Internet connection");
+                    }else{
+                        messageTextView.setText("A problem occurred");
+                    }
+                    addFriendsProgressIndicator.setVisibility(View.GONE);
+                });
             }
         }catch (Exception e){
             runOnUiThread(()-> addFriendsProgressIndicator.setVisibility(View.GONE));
@@ -128,11 +134,13 @@ public class AddFriendsActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private void loadUsers(final User[] users){
         final Activity activity = this;
         runOnUiThread(() -> {
             if(users.length==0){
-                searchFriendsMessageTextView.setVisibility(View.VISIBLE);
+                messageTextView.setText("No search results");
+                messageTextView.setVisibility(View.VISIBLE);
                 addFriendsProgressIndicator.setVisibility(View.GONE);
             }else{
                 adapter = new UserListAdapter(

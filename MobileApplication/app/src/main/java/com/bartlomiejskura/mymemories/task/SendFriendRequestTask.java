@@ -21,6 +21,7 @@ public class SendFriendRequestTask extends AsyncTask<Void, Void, Boolean> {
     private OkHttpClient httpClient = new OkHttpClient();
     private Gson gson = new Gson();
     private SharedPreferences sharedPreferences;
+    private String error = "";
 
     private final MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
@@ -50,9 +51,14 @@ public class SendFriendRequestTask extends AsyncTask<Void, Void, Boolean> {
                 return false;
             }
         } catch (Exception e) {
+            error = e.getMessage();
             System.out.println("ERROR:" + e.getMessage());
             return false;
         }
         return true;
+    }
+
+    public String getError(){
+        return error;
     }
 }

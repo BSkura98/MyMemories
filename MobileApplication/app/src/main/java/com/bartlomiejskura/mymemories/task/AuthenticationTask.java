@@ -25,6 +25,7 @@ public class AuthenticationTask extends AsyncTask<String, Void, Boolean> {
     private OkHttpClient httpClient = new OkHttpClient();
     private Gson gson = new Gson();
     private SharedPreferences sharedPreferences;
+    private String error = "";
 
     public AuthenticationTask(Activity activity){
         this.activityReference = new WeakReference<>(activity);
@@ -71,6 +72,7 @@ public class AuthenticationTask extends AsyncTask<String, Void, Boolean> {
             editor.apply();
             return true;
         }catch (IOException e){
+            error = e.getMessage();
             System.out.println("ERROR in AuthenticationTask: " + e.getMessage());
             if (e.getMessage() != null) {
                 if(e.getMessage().equals("timeout")){
@@ -99,5 +101,9 @@ public class AuthenticationTask extends AsyncTask<String, Void, Boolean> {
         if(activityReference.get() instanceof LoginActivity){
             ((LoginActivity)(activityReference.get())).setLoginProgressIndicatorVisibility(View.GONE);
         }
+    }
+
+    public String getError(){
+        return error;
     }
 }

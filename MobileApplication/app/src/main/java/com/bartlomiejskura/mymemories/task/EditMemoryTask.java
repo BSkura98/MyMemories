@@ -22,6 +22,7 @@ public class EditMemoryTask extends AsyncTask<Void, Void, Boolean> {
     private OkHttpClient httpClient = new OkHttpClient();
     private Gson gson = new Gson();
     private SharedPreferences sharedPreferences;
+    private String error = "";
 
     public EditMemoryTask(Activity activity, Memory memory){
         this.activity = activity;
@@ -50,9 +51,14 @@ public class EditMemoryTask extends AsyncTask<Void, Void, Boolean> {
                 return false;
             }
         } catch (Exception e) {
+            error = e.getMessage();
             System.out.println("ERROR:" + e.getMessage());
             return false;
         }
         return true;
+    }
+
+    public String getError(){
+        return error;
     }
 }

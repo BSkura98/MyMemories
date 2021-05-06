@@ -25,6 +25,7 @@ public class GetMemoriesInCategoryTask extends AsyncTask<Void, Void, Memory[]> {
     private Gson gson = new Gson();
     private SharedPreferences sharedPreferences;
     private Long categoryId;
+    private String error = "";
 
     public GetMemoriesInCategoryTask(Activity activity, Long categoryId){
         this.activity = activity;
@@ -53,9 +54,14 @@ public class GetMemoriesInCategoryTask extends AsyncTask<Void, Void, Memory[]> {
             }
             return memories;
         }catch (IOException | JSONException e){
+            error = e.getMessage();
             System.out.println("ERROR: " + e.getMessage());
         }
 
         return null;
+    }
+
+    public String getError(){
+        return error;
     }
 }

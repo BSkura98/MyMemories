@@ -24,6 +24,7 @@ public class GetUsersWithoutFriendsTask extends AsyncTask<Void, Void, User[]> {
     private Gson gson = new Gson();
     private SharedPreferences sharedPreferences;
     private String name;
+    private String error = "";
 
     public GetUsersWithoutFriendsTask(Activity activity, String name){
         this.activity = activity;
@@ -52,9 +53,14 @@ public class GetUsersWithoutFriendsTask extends AsyncTask<Void, Void, User[]> {
             }
             return users;
         }catch (IOException | JSONException e){
+            error = e.getMessage();
             System.out.println("ERROR: " + e.getMessage());
         }
 
         return null;
+    }
+
+    public String getError(){
+        return error;
     }
 }

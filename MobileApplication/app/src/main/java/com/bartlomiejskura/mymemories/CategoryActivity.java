@@ -5,6 +5,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -22,7 +23,7 @@ import java.util.List;
 
 public class CategoryActivity extends AppCompatActivity {
     private RecyclerView memoryList;
-    private TextView toolbarTextView;
+    private TextView toolbarTextView, messageTextView;
     private Toolbar toolbar;
     private ImageButton backButton;
     private CircularProgressIndicator categoryProgressIndicator;
@@ -47,6 +48,7 @@ public class CategoryActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         backButton = findViewById(R.id.backButton);
         categoryProgressIndicator = findViewById(R.id.categoryProgressIndicator);
+        messageTextView = findViewById(R.id.categoryMessageTextView);
     }
 
     private void initValues(){
@@ -65,6 +67,9 @@ public class CategoryActivity extends AppCompatActivity {
 
         //recycler view with memories
         new Thread(this::getMemories).start();
+
+        //message TextView showing problems
+        messageTextView.setVisibility(View.GONE);
     }
 
     private void setListeners(){
@@ -72,11 +77,21 @@ public class CategoryActivity extends AppCompatActivity {
     }
 
 
+    @SuppressLint("SetTextI18n")
     public void getMemories(){
         try{
             GetMemoriesInCategoryTask task = new GetMemoriesInCategoryTask(this, categoryId);
             Memory[] memoryArray = task.execute().get();
             if(memoryArray ==null){
+                runOnUiThread(()->{
+                    messageTextView.setVisibility(View.VISIBLE);
+                    if(task.getError().contains("Unable to resolve host")){
+                        messageTextView.setText("Problem with the Internet connection");
+                    }else{
+                        messageTextView.setText("A problem occurred");
+                    }
+                    categoryProgressIndicator.setVisibility(View.GONE);
+                });
                 return;
             }
             final List<Memory> memories = new ArrayList<>(Arrays.asList(memoryArray));

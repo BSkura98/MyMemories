@@ -23,6 +23,7 @@ public class GetUserInformationTask extends AsyncTask<String, Void, Boolean> {
     private OkHttpClient httpClient = new OkHttpClient();
     private Gson gson = new Gson();
     private SharedPreferences sharedPreferences;
+    private String error = "";
 
     public GetUserInformationTask(LoginActivity activityReference){
         this.activityReference = new WeakReference<>(activityReference);
@@ -45,6 +46,7 @@ public class GetUserInformationTask extends AsyncTask<String, Void, Boolean> {
             response = httpClient.newCall(request).execute();
             user = gson.fromJson(response.body().string(), User.class);
         }catch (IOException e){
+            error = e.getMessage();
             System.out.println("ERROR in GetUserInformationTask: " + e.getMessage());
             activityReference.get().showSnackbar("A problem occurred while getting user information. Please try again.");
             return false;
@@ -79,5 +81,9 @@ public class GetUserInformationTask extends AsyncTask<String, Void, Boolean> {
         if(!aBoolean){
             activityReference.get().setLoginProgressIndicatorVisibility(View.GONE);
         }
+    }
+
+    public String getError(){
+        return error;
     }
 }

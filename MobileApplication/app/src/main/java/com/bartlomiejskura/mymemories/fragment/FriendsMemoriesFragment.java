@@ -1,5 +1,6 @@
 package com.bartlomiejskura.mymemories.fragment;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,7 +27,7 @@ import java.util.List;
 public class FriendsMemoriesFragment extends Fragment {
     private RecyclerView friendsMemoriesRecyclerView;
     private CircularProgressIndicator friendsMemoriesProgressIndicator;
-    private TextView noFriendsMemoriesTextView;
+    private TextView messageTextView;
 
     private MemoryListAdapter adapter;
 
@@ -44,7 +45,7 @@ public class FriendsMemoriesFragment extends Fragment {
     private void findViews(View view){
         friendsMemoriesRecyclerView = view.findViewById(R.id.friendsMemoriesRecyclerView);
         friendsMemoriesProgressIndicator = view.findViewById(R.id.friendsMemoriesProgressIndicator);
-        noFriendsMemoriesTextView = view.findViewById(R.id.noFriendsMemoriesTextView);
+        messageTextView = view.findViewById(R.id.noFriendsMemoriesTextView);
     }
 
     private void prepareViews(){
@@ -52,9 +53,10 @@ public class FriendsMemoriesFragment extends Fragment {
         new Thread(this::getMemories).start();
 
         //TextView with text "No memories"
-        noFriendsMemoriesTextView.setVisibility(View.GONE);
+        messageTextView.setVisibility(View.GONE);
     }
 
+    @SuppressLint("SetTextI18n")
     private void getMemories(){
         try{
             if(getActivity()==null){
@@ -63,12 +65,22 @@ public class FriendsMemoriesFragment extends Fragment {
             GetFriendsMemoriesTask task = new GetFriendsMemoriesTask(getActivity());
             Memory[] memoryArray = task.execute().get();
             if(memoryArray ==null){
+                getActivity().runOnUiThread(()->{
+                    messageTextView.setVisibility(View.VISIBLE);
+                    if(task.getError().contains("Unable to resolve host")){
+                        messageTextView.setText("Problem with the Internet connection");
+                    }else{
+                        messageTextView.setText("A problem occurred");
+                    }
+                    friendsMemoriesProgressIndicator.setVisibility(View.GONE);
+                });
                 return;
             }
             final List<Memory> memories = new ArrayList<>(Arrays.asList(memoryArray));
             getActivity().runOnUiThread(() -> {
                 if(memories.isEmpty()){
-                    noFriendsMemoriesTextView.setVisibility(View.VISIBLE);
+                    messageTextView.setText("No memories");
+                    messageTextView.setVisibility(View.VISIBLE);
                     friendsMemoriesProgressIndicator.setVisibility(View.GONE);
                 }else{
                     adapter = new MemoryListAdapter(

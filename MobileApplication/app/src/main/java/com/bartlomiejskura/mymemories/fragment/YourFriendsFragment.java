@@ -1,5 +1,6 @@
 package com.bartlomiejskura.mymemories.fragment;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -30,7 +31,7 @@ public class YourFriendsFragment extends Fragment {
     private RecyclerView friendsRecyclerView;
     private Button addFriendButton;
     private CircularProgressIndicator yourFriendsProgressIndicator;
-    private TextView noFriendsTextView;
+    private TextView messageTextView;
 
     private UserListAdapter adapter;
 
@@ -50,7 +51,7 @@ public class YourFriendsFragment extends Fragment {
         friendsRecyclerView = view.findViewById(R.id.friendsRecyclerView);
         addFriendButton = view.findViewById(R.id.addFriendButton);
         yourFriendsProgressIndicator = view.findViewById(R.id.yourFriendsProgressIndicator);
-        noFriendsTextView = view.findViewById(R.id.noFriendsTextView);
+        messageTextView = view.findViewById(R.id.noFriendsTextView);
     }
 
     private void setListeners(){
@@ -66,10 +67,11 @@ public class YourFriendsFragment extends Fragment {
         new Thread(this::getFriends).start();
 
         //TextView with text "No friends"
-        noFriendsTextView.setVisibility(View.GONE);
+        messageTextView.setVisibility(View.GONE);
     }
 
 
+    @SuppressLint("SetTextI18n")
     private void getFriends(){
         try{
             if(getActivity()==null){
@@ -78,13 +80,23 @@ public class YourFriendsFragment extends Fragment {
             GetFriendsTask task = new GetFriendsTask(getActivity());
             User[] userArray = task.execute().get();
             if(userArray ==null){
+                getActivity().runOnUiThread(()->{
+                    messageTextView.setVisibility(View.VISIBLE);
+                    if(task.getError().contains("Unable to resolve host")){
+                        messageTextView.setText("Problem with the Internet connection");
+                    }else{
+                        messageTextView.setText("A problem occurred");
+                    }
+                    yourFriendsProgressIndicator.setVisibility(View.GONE);
+                });
                 return;
             }
             final List<User> friends = new ArrayList<>(Arrays.asList(userArray));
             final Activity activity = getActivity();
             activity.runOnUiThread(() -> {
                 if(friends.isEmpty()){
-                    noFriendsTextView.setVisibility(View.VISIBLE);
+                    messageTextView.setText("No friends");
+                    messageTextView.setVisibility(View.VISIBLE);
                     yourFriendsProgressIndicator.setVisibility(View.GONE);
                 }else{
                     adapter = new UserListAdapter(

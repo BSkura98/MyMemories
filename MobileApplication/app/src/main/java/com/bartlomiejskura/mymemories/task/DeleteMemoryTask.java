@@ -24,6 +24,7 @@ public class DeleteMemoryTask extends AsyncTask<Void, Void, Boolean> {
     private Long memoryId;
     private OkHttpClient httpClient = new OkHttpClient();
     private Gson gson = new Gson();
+    private String error = "";
 
     public DeleteMemoryTask(Activity activity, Long memoryId) {
         this.activity = activity;
@@ -43,8 +44,13 @@ public class DeleteMemoryTask extends AsyncTask<Void, Void, Boolean> {
             httpClient.newCall(request).execute();
             return true;
         }catch (IOException e){
+            error = e.getMessage();
             System.out.println("ERROR: " + e.getMessage());
         }
         return false;
+    }
+
+    public String getError(){
+        return error;
     }
 }

@@ -18,6 +18,7 @@ public class EditUserInformationTask extends AsyncTask<Void, Void, Boolean> {
     private OkHttpClient httpClient = new OkHttpClient();
     private Gson gson = new Gson();
     private SharedPreferences sharedPreferences;
+    private String error = "";
 
     public EditUserInformationTask(User user, SharedPreferences sharedPreferences){
         this.user = user;
@@ -54,9 +55,14 @@ public class EditUserInformationTask extends AsyncTask<Void, Void, Boolean> {
             editor.putString("avatarUrl", userResponse.getAvatarUrl());
             editor.apply();
         } catch (Exception e) {
+            error = e.getMessage();
             System.out.println("ERROR:" + e.getMessage());
             return false;
         }
         return true;
+    }
+
+    public String getError(){
+        return error;
     }
 }

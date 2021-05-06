@@ -24,6 +24,7 @@ public class GetFriendRequestsTask extends AsyncTask<Void, Void, User[]> {
     private Gson gson = new Gson();
     private SharedPreferences sharedPreferences;
     private boolean requestsSentByUser;
+    private String error = "";
 
     public GetFriendRequestsTask(Activity activity, boolean requestsSentByUser){
         this.activity = activity;
@@ -59,9 +60,14 @@ public class GetFriendRequestsTask extends AsyncTask<Void, Void, User[]> {
             }
             return users;
         }catch (IOException | JSONException e){
+            error = e.getMessage();
             System.out.println("ERROR: " + e.getMessage());
         }
 
         return null;
+    }
+
+    public String getError(){
+        return error;
     }
 }
