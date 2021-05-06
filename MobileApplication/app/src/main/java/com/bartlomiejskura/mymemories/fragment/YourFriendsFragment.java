@@ -72,6 +72,9 @@ public class YourFriendsFragment extends Fragment {
 
     private void getFriends(){
         try{
+            if(getActivity()==null){
+                throw new NullPointerException();
+            }
             GetFriendsTask task = new GetFriendsTask(getActivity());
             User[] userArray = task.execute().get();
             if(userArray ==null){
@@ -96,7 +99,9 @@ public class YourFriendsFragment extends Fragment {
                 }
             });
         }catch (Exception e){
-            getActivity().runOnUiThread(()->yourFriendsProgressIndicator.setVisibility(View.GONE));
+            if(getActivity()!=null){
+                getActivity().runOnUiThread(()->yourFriendsProgressIndicator.setVisibility(View.GONE));
+            }
             e.printStackTrace();
         }
     }

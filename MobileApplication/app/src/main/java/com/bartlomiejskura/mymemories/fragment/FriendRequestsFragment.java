@@ -69,8 +69,11 @@ public class FriendRequestsFragment extends Fragment {
 
 
     private void getFriendRequestsByOthers(){
-        GetFriendRequestsTask task = new GetFriendRequestsTask(getActivity(), false);
         try{
+            if(getActivity()==null){
+                throw new NullPointerException();
+            }
+            GetFriendRequestsTask task = new GetFriendRequestsTask(getActivity(), false);
             User[] users = task.execute().get();
             if(users!=null&&users.length!=0){
                 showFriendRequestsByOthers(users);
@@ -83,8 +86,11 @@ public class FriendRequestsFragment extends Fragment {
     }
 
     private void getFriendRequestsByUser(){
-        GetFriendRequestsTask task = new GetFriendRequestsTask(getActivity(), true);
         try{
+            if(getActivity()==null){
+                throw new NullPointerException();
+            }
+            GetFriendRequestsTask task = new GetFriendRequestsTask(getActivity(), true);
             User[] users = task.execute().get();
             if(users!=null&&users.length!=0){
                 showFriendRequestsByUser(users);
@@ -98,44 +104,50 @@ public class FriendRequestsFragment extends Fragment {
 
     private void showFriendRequestsByOthers(final User[] users){
         final Activity activity = getActivity();
-        activity.runOnUiThread(() -> {
-            requestsByOthersTextView.setVisibility(View.VISIBLE);
-            FriendRequestListAdapter adapter = new FriendRequestListAdapter(
-                    getContext(),
-                    new ArrayList<>(Arrays.asList(users)),
-                    activity,
-                    true
-            );
-            friendRequestsProgressIndicator.setVisibility(View.GONE);
-            requestsByOthers.setAdapter(adapter);
-            requestsByOthers.setLayoutManager(new LinearLayoutManager(getContext()));
-            requestsByOthers.setNestedScrollingEnabled(false);
-        });
+        if(activity!=null){
+            activity.runOnUiThread(() -> {
+                requestsByOthersTextView.setVisibility(View.VISIBLE);
+                FriendRequestListAdapter adapter = new FriendRequestListAdapter(
+                        getContext(),
+                        new ArrayList<>(Arrays.asList(users)),
+                        activity,
+                        true
+                );
+                friendRequestsProgressIndicator.setVisibility(View.GONE);
+                requestsByOthers.setAdapter(adapter);
+                requestsByOthers.setLayoutManager(new LinearLayoutManager(getContext()));
+                requestsByOthers.setNestedScrollingEnabled(false);
+            });
+        }
     }
 
     private void showFriendRequestsByUser(final User[] users){
         final Activity activity = getActivity();
-        activity.runOnUiThread(() -> {
-            requestsByUserTextView.setVisibility(View.VISIBLE);
-            FriendRequestListAdapter adapter = new FriendRequestListAdapter(
-                    getContext(),
-                    new ArrayList<>(Arrays.asList(users)),
-                    activity,
-                    false
-            );
-            friendRequestsProgressIndicator.setVisibility(View.GONE);
-            requestsByUser.setAdapter(adapter);
-            requestsByUser.setLayoutManager(new LinearLayoutManager(getContext()));
-            requestsByUser.setNestedScrollingEnabled(false);
-        });
+        if(activity!=null){
+            activity.runOnUiThread(() -> {
+                requestsByUserTextView.setVisibility(View.VISIBLE);
+                FriendRequestListAdapter adapter = new FriendRequestListAdapter(
+                        getContext(),
+                        new ArrayList<>(Arrays.asList(users)),
+                        activity,
+                        false
+                );
+                friendRequestsProgressIndicator.setVisibility(View.GONE);
+                requestsByUser.setAdapter(adapter);
+                requestsByUser.setLayoutManager(new LinearLayoutManager(getContext()));
+                requestsByUser.setNestedScrollingEnabled(false);
+            });
+        }
     }
 
     synchronized private void setNoFriendRequests(){
         if(noFriendRequests){
-            getActivity().runOnUiThread(()->{
-                noFriendRequestsTextView.setVisibility(View.VISIBLE);
-                friendRequestsProgressIndicator.setVisibility(View.GONE);
-            });
+            if(getActivity()!=null){
+                getActivity().runOnUiThread(()->{
+                    noFriendRequestsTextView.setVisibility(View.VISIBLE);
+                    friendRequestsProgressIndicator.setVisibility(View.GONE);
+                });
+            }
         }else{
             noFriendRequests = true;
         }

@@ -69,7 +69,9 @@ public class MemoriesFragment extends Fragment {
     }
 
     private void initValues(){
-        currentTask = new GetMemoriesForDateTask(getActivity(), date);
+        if(getActivity()!=null){
+            currentTask = new GetMemoriesForDateTask(getActivity(), date);
+        }
     }
 
     private void setListeners(){
@@ -107,6 +109,9 @@ public class MemoriesFragment extends Fragment {
 
     private void getMemories(Date date){
         try{
+            if(getActivity()==null){
+                throw new NullPointerException();
+            }
             getActivity().runOnUiThread(()->{
                 memoryList.setAdapter(null);
                 noMemoriesTextView.setVisibility(View.GONE);
@@ -139,7 +144,9 @@ public class MemoriesFragment extends Fragment {
                 });
             }
         }catch (Exception e){
-            getActivity().runOnUiThread(()->memoriesFragmentProgressIndicator.setVisibility(View.GONE));
+            if(getActivity()!=null){
+                getActivity().runOnUiThread(()->memoriesFragmentProgressIndicator.setVisibility(View.GONE));
+            }
             e.printStackTrace();
         }
     }
@@ -150,6 +157,9 @@ public class MemoriesFragment extends Fragment {
         int MONTH = calendar.get(Calendar.MONTH);
         int DATE = calendar.get(Calendar.DATE);
 
+        if(getContext()==null){
+            return;
+        }
         DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), (datePicker, year1, month1, date1) -> {
 
             date.setDate(date1);

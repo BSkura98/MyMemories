@@ -57,6 +57,9 @@ public class FriendsMemoriesFragment extends Fragment {
 
     private void getMemories(){
         try{
+            if(getActivity()==null){
+                throw new NullPointerException();
+            }
             GetFriendsMemoriesTask task = new GetFriendsMemoriesTask(getActivity());
             Memory[] memoryArray = task.execute().get();
             if(memoryArray ==null){
@@ -79,7 +82,9 @@ public class FriendsMemoriesFragment extends Fragment {
                 }
             });
         }catch (Exception e){
-            getActivity().runOnUiThread(()->friendsMemoriesProgressIndicator.setVisibility(View.GONE));
+            if(getActivity()!=null){
+                getActivity().runOnUiThread(()->friendsMemoriesProgressIndicator.setVisibility(View.GONE));
+            }
             e.printStackTrace();
         }
     }

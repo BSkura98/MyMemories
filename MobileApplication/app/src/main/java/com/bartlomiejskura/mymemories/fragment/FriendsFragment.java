@@ -35,6 +35,10 @@ public class FriendsFragment extends Fragment {
     }
 
     private void initNavigationView(){
+        if(getActivity()==null){
+            return;
+        }
+
         friendsMemoriesFragment = new FriendsMemoriesFragment();
         yourFriendsFragment = new YourFriendsFragment();
         friendRequestsFragment = new FriendRequestsFragment();

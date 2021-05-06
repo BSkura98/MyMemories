@@ -85,7 +85,9 @@ public class AdvancedSearchFragment extends Fragment {
     }
 
     private void setListeners(){
-        normalSearchButton.setOnClickListener(v -> ((SearchMemoryActivity)getActivity()).changeFragment(false));
+        if(getActivity()!=null){
+            normalSearchButton.setOnClickListener(v -> ((SearchMemoryActivity)getActivity()).changeFragment(false));
+        }
 
         for(int i=0;i<datesNumber;i++){
             final int finalI = i;

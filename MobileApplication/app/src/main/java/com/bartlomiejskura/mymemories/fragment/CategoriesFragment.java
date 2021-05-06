@@ -1,5 +1,6 @@
 package com.bartlomiejskura.mymemories.fragment;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -56,6 +57,9 @@ public class CategoriesFragment extends Fragment {
 
     private void getCategories(){
         try{
+            if(getActivity()==null){
+                throw new NullPointerException();
+            }
             GetCategoriesTask task = new GetCategoriesTask(getActivity());
             Category[] categoryArray = task.execute().get();
             if(categoryArray ==null){
@@ -78,7 +82,9 @@ public class CategoriesFragment extends Fragment {
                 }
             });
         }catch (Exception e){
-            getActivity().runOnUiThread(()->categoriesProgressIndicator.setVisibility(View.GONE));
+            if(getActivity()!=null){
+                getActivity().runOnUiThread(()->categoriesProgressIndicator.setVisibility(View.GONE));
+            }
             e.printStackTrace();
         }
     }

@@ -90,7 +90,9 @@ public class SettingsFragment extends Fragment {
     }
 
     private void initValues(){
-        sharedPreferences = getContext().getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
+        if(getContext()!=null){
+            sharedPreferences = getContext().getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
+        }
         storageReference = FirebaseStorage.getInstance().getReference("avatars");
     }
 
@@ -108,7 +110,9 @@ public class SettingsFragment extends Fragment {
                         sharedPreferences.getString("lastName", null),
                         sharedPreferences.getString("birthday", null),
                         sharedPreferences.getString("avatarUrl", null));
-                    getActivity().runOnUiThread(() -> firstNameEditText.setText(sharedPreferences.getString("firstName", null)));
+                    if(getActivity()!=null){
+                        getActivity().runOnUiThread(() -> firstNameEditText.setText(sharedPreferences.getString("firstName", null)));
+                    }
                 })
                 .start();
             }
@@ -131,9 +135,10 @@ public class SettingsFragment extends Fragment {
                             secondNameEditText.getText().toString(),
                             sharedPreferences.getString("birthday", null),
                             sharedPreferences.getString("avatarUrl", null));
-                    getActivity().runOnUiThread(()->secondNameEditText.setText(sharedPreferences.getString("lastName", null)));
-                })
-                        .start();
+                    if(getActivity()!=null){
+                        getActivity().runOnUiThread(()->secondNameEditText.setText(sharedPreferences.getString("lastName", null)));
+                    }
+                }).start();
             }
             setEditTextEditable(firstNameEditText, textInputLayout,firstNameButton,false);
             setEditTextEditable(secondNameEditText, textInputLayout2,secondNameButton,!secondNameEditionActive);
@@ -154,7 +159,9 @@ public class SettingsFragment extends Fragment {
                         sharedPreferences.getString("lastName", null),
                         sharedPreferences.getString("birthday", null),
                         sharedPreferences.getString("avatarUrl", null));
-                    getActivity().runOnUiThread(()->emailEditText.setText(sharedPreferences.getString("email", null)));
+                    if(getActivity()!=null){
+                        getActivity().runOnUiThread(()->emailEditText.setText(sharedPreferences.getString("email", null)));
+                    }
                 }).start();
             }
             setEditTextEditable(firstNameEditText, textInputLayout,firstNameButton,false);
@@ -209,6 +216,7 @@ public class SettingsFragment extends Fragment {
     }
 
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -271,6 +279,7 @@ public class SettingsFragment extends Fragment {
         startActivityForResult(intent, PICK_IMAGE_REQUEST);
     }
 
+    @SuppressLint("SetTextI18n")
     private void deleteProfilePicture(){
         StorageReference photoRef = FirebaseStorage.getInstance().getReference().getStorage().getReferenceFromUrl(sharedPreferences.getString("avatarUrl", null));
         photoRef.delete().addOnSuccessListener(aVoid -> {
@@ -306,6 +315,9 @@ public class SettingsFragment extends Fragment {
     }
 
     private String getFileExtension(Uri uri) {
+        if(getActivity()==null){
+            return null;
+        }
         ContentResolver cR = getActivity().getContentResolver();
         MimeTypeMap mime = MimeTypeMap.getSingleton();
         return mime.getExtensionFromMimeType(cR.getType(uri));
@@ -344,9 +356,7 @@ public class SettingsFragment extends Fragment {
                         sharedPreferences);
         try {
             editUserInformationTask.execute().get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -356,6 +366,9 @@ public class SettingsFragment extends Fragment {
         int MONTH = calendar.get(Calendar.MONTH);
         int DATE = calendar.get(Calendar.DATE);
 
+        if(getContext()==null){
+            return;
+        }
         DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), (datePicker, year1, month1, date) -> {
 
             calendar.set(Calendar.YEAR, year1);
@@ -365,7 +378,7 @@ public class SettingsFragment extends Fragment {
 
             birthdayButton.setText(dateText);
 
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             new Thread(() -> editUserInformation(
                     sharedPreferences.getLong("userId", 0),
                     sharedPreferences.getString("email", null),

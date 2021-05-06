@@ -53,6 +53,9 @@ public class RecentSearchesFragment extends Fragment {
     }
 
     private void initValues(){
+        if(getActivity()==null){
+            return;
+        }
         sharedPreferences = getActivity().getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
     }
 
@@ -61,6 +64,9 @@ public class RecentSearchesFragment extends Fragment {
     }
 
     private void setListeners(){
+        if(getActivity()==null){
+            return;
+        }
         advancedSearchButton.setOnClickListener(v -> ((SearchMemoryActivity)getActivity()).changeFragment(true));
     }
 
@@ -68,7 +74,7 @@ public class RecentSearchesFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if(adapter!=null){
+        if(adapter!=null&& getActivity()!=null){
             getActivity().runOnUiThread(() -> adapter.refresh());
         }
     }
@@ -94,7 +100,10 @@ public class RecentSearchesFragment extends Fragment {
         }
 
         final SearchMemoryActivity activity = (SearchMemoryActivity)getActivity();
-        getActivity().runOnUiThread(() -> {
+        if(activity==null){
+            return;
+        }
+        activity.runOnUiThread(() -> {
             adapter = new RecentSearchesAdapter(
                     getContext(),
                     recentSearches,
