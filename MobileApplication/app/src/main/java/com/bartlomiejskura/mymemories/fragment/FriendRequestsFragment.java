@@ -24,8 +24,10 @@ import java.util.Arrays;
 
 public class FriendRequestsFragment extends Fragment {
     private RecyclerView requestsByOthers, requestsByUser;
-    private TextView requestsByOthersTextView, requestsByUserTextView;
+    private TextView requestsByOthersTextView, requestsByUserTextView, noFriendRequestsTextView;
     private CircularProgressIndicator friendRequestsProgressIndicator;
+
+    private boolean noFriendRequests;
 
     @Nullable
     @Override
@@ -33,6 +35,7 @@ public class FriendRequestsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_friend_requests, container, false);
 
         findViews(view);
+        initValues();
         prepareViews();
 
         return view;
@@ -44,6 +47,11 @@ public class FriendRequestsFragment extends Fragment {
         requestsByUserTextView = view.findViewById(R.id.textView17);
         requestsByOthersTextView = view.findViewById(R.id.textView16);
         friendRequestsProgressIndicator = view.findViewById(R.id.friendRequestsProgressIndicator);
+        noFriendRequestsTextView = view.findViewById(R.id.noFriendRequestsTextView);
+    }
+
+    private void initValues(){
+        noFriendRequests = false;
     }
 
     private void prepareViews(){
@@ -54,6 +62,9 @@ public class FriendRequestsFragment extends Fragment {
         //recycler views with friend requests
         new Thread(this::getFriendRequestsByOthers).start();
         new Thread(this::getFriendRequestsByUser).start();
+
+        //TextView with text "No friend requests"
+        noFriendRequestsTextView.setVisibility(View.GONE);
     }
 
 
@@ -63,6 +74,8 @@ public class FriendRequestsFragment extends Fragment {
             User[] users = task.execute().get();
             if(users!=null&&users.length!=0){
                 showFriendRequestsByOthers(users);
+            }else{
+                setNoFriendRequests();
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -73,8 +86,10 @@ public class FriendRequestsFragment extends Fragment {
         GetFriendRequestsTask task = new GetFriendRequestsTask(getActivity(), true);
         try{
             User[] users = task.execute().get();
-            if(users!=null){
+            if(users!=null&&users.length!=0){
                 showFriendRequestsByUser(users);
+            }else{
+                setNoFriendRequests();
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -113,5 +128,16 @@ public class FriendRequestsFragment extends Fragment {
             requestsByUser.setLayoutManager(new LinearLayoutManager(getContext()));
             requestsByUser.setNestedScrollingEnabled(false);
         });
+    }
+
+    synchronized private void setNoFriendRequests(){
+        if(noFriendRequests){
+            getActivity().runOnUiThread(()->{
+                noFriendRequestsTextView.setVisibility(View.VISIBLE);
+                friendRequestsProgressIndicator.setVisibility(View.GONE);
+            });
+        }else{
+            noFriendRequests = true;
+        }
     }
 }

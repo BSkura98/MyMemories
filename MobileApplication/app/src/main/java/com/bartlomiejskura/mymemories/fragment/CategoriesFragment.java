@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,6 +25,7 @@ import java.util.List;
 public class CategoriesFragment extends Fragment {
     private RecyclerView categoryList;
     private CircularProgressIndicator categoriesProgressIndicator;
+    private TextView categoriesMessageTextView;
 
     private CategoryListAdapter adapter;
 
@@ -41,11 +43,15 @@ public class CategoriesFragment extends Fragment {
     private void findViews(View view){
         categoryList = view.findViewById(R.id.categoryList);
         categoriesProgressIndicator = view.findViewById(R.id.categoriesProgressIndicator);
+        categoriesMessageTextView = view.findViewById(R.id.categoriesMessageTextView);
     }
 
     private void prepareViews(){
         //recycler view with category list
         new Thread(this::getCategories).start();
+
+        //TextView with text "No categories"
+        categoriesMessageTextView.setVisibility(View.GONE);
     }
 
     private void getCategories(){
@@ -57,14 +63,19 @@ public class CategoriesFragment extends Fragment {
             }
             final List<Category> categories = new ArrayList<>(Arrays.asList(categoryArray));
             getActivity().runOnUiThread(() -> {
-                adapter = new CategoryListAdapter(
-                        getContext(),
-                        categories,
-                        getActivity()
-                );
-                categoriesProgressIndicator.setVisibility(View.GONE);
-                categoryList.setAdapter(adapter);
-                categoryList.setLayoutManager(new LinearLayoutManager(getContext()));
+                if(categories.isEmpty()){
+                    categoriesMessageTextView.setVisibility(View.VISIBLE);
+                    categoriesProgressIndicator.setVisibility(View.GONE);
+                }else{
+                    adapter = new CategoryListAdapter(
+                            getContext(),
+                            categories,
+                            getActivity()
+                    );
+                    categoriesProgressIndicator.setVisibility(View.GONE);
+                    categoryList.setAdapter(adapter);
+                    categoryList.setLayoutManager(new LinearLayoutManager(getContext()));
+                }
             });
         }catch (Exception e){
             getActivity().runOnUiThread(()->categoriesProgressIndicator.setVisibility(View.GONE));

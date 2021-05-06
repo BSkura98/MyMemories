@@ -31,12 +31,13 @@ import java.util.Arrays;
 public class AddFriendsActivity extends AppCompatActivity {
     private RecyclerView usersRecyclerView;
     private Toolbar toolbar;
-    private TextView toolbarTextView;
+    private TextView toolbarTextView, searchFriendsMessageTextView;
     private ImageButton searchButton, backButton;
     private SearchView userSearchView;
     private CircularProgressIndicator addFriendsProgressIndicator;
 
     private UserListAdapter adapter;
+    private Thread searchFriendsThread;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -57,6 +58,7 @@ public class AddFriendsActivity extends AppCompatActivity {
         backButton = findViewById(R.id.backButton);
         userSearchView = findViewById(R.id.userSearchView);
         addFriendsProgressIndicator = findViewById(R.id.addFriendsProgressIndicator);
+        searchFriendsMessageTextView = findViewById(R.id.searchFriendsMessageTextView);
     }
 
     private void prepareViews(){
@@ -72,6 +74,9 @@ public class AddFriendsActivity extends AppCompatActivity {
 
         //progress indicator
         addFriendsProgressIndicator.setVisibility(View.GONE);
+
+        //TextView with message "No search results"
+        searchFriendsMessageTextView.setVisibility(View.GONE);
     }
 
     private void setListeners(){
@@ -80,7 +85,10 @@ public class AddFriendsActivity extends AppCompatActivity {
         userSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                new Thread(()->searchFriends(query)).start();
+                if(searchFriendsThread==null||!searchFriendsThread.isAlive()){
+                    searchFriendsThread = new Thread(()->searchFriends(query));
+                    searchFriendsThread.start();
+                }
                 return true;
             }
 
@@ -104,6 +112,7 @@ public class AddFriendsActivity extends AppCompatActivity {
 
         runOnUiThread(()-> {
             addFriendsProgressIndicator.setVisibility(View.VISIBLE);
+            searchFriendsMessageTextView.setVisibility(View.GONE);
             usersRecyclerView.setAdapter(null);
         });
         try{
@@ -122,15 +131,20 @@ public class AddFriendsActivity extends AppCompatActivity {
     private void loadUsers(final User[] users){
         final Activity activity = this;
         runOnUiThread(() -> {
-            adapter = new UserListAdapter(
-                    getApplicationContext(),
-                    new ArrayList<>(Arrays.asList(users)),
-                    activity,
-                    false
-            );
-            addFriendsProgressIndicator.setVisibility(View.GONE);
-            usersRecyclerView.setAdapter(adapter);
-            usersRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+            if(users.length==0){
+                searchFriendsMessageTextView.setVisibility(View.VISIBLE);
+                addFriendsProgressIndicator.setVisibility(View.GONE);
+            }else{
+                adapter = new UserListAdapter(
+                        getApplicationContext(),
+                        new ArrayList<>(Arrays.asList(users)),
+                        activity,
+                        false
+                );
+                addFriendsProgressIndicator.setVisibility(View.GONE);
+                usersRecyclerView.setAdapter(adapter);
+                usersRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+            }
         });
     }
 
