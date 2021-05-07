@@ -588,6 +588,7 @@ public class EditMemoryActivity extends AppCompatActivity implements OnMapReadyC
             }
             Intent i = new Intent(getApplicationContext(), MainActivity.class);
             i.putExtra("fragmentToLoad", "datesFragment");
+            i.putExtra("date", memory.getDate());
             startActivity(i);
         }catch (Exception e){
             runOnUiThread(()->editMemoryProgressIndicator.setVisibility(View.GONE));

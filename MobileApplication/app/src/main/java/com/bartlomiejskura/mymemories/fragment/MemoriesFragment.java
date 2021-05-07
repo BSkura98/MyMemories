@@ -26,12 +26,14 @@ import com.bartlomiejskura.mymemories.task.GetMemoriesForDateTask;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class MemoriesFragment extends Fragment {
     private RecyclerView memoryList;
@@ -71,6 +73,19 @@ public class MemoriesFragment extends Fragment {
     private void initValues(){
         if(getActivity()!=null){
             currentTask = new GetMemoriesForDateTask(getActivity(), date);
+        }
+
+        if(getActivity()!=null){
+            String dateFromIntent=getActivity().getIntent().getStringExtra("date");
+            if(dateFromIntent!=null){
+                dateFromIntent = dateFromIntent.replace("T", " ");
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.ENGLISH);
+                try {
+                    date = formatter.parse(dateFromIntent);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 

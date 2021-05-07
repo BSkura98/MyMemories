@@ -188,10 +188,11 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
         try{
             Boolean result = task.execute().get();
             if(result){
-                Intent returnIntent = new Intent();
-                returnIntent.putExtra("hasBackPressed",true);
-                setResult(Activity.RESULT_OK,returnIntent);
-                finish();
+                Intent i = new Intent(this, MainActivity.class);
+                i.putExtra("date", memory.getDate());
+                i.putExtra("fragmentToLoad", "datesFragment");
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(i);
             }else{
                 runOnUiThread(()->{
                     if(task.getError().contains("Unable to resolve host")){

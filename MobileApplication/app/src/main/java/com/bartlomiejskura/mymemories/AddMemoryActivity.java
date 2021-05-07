@@ -479,6 +479,7 @@ public class AddMemoryActivity extends AppCompatActivity implements OnMapReadyCa
             }
             Intent i = new Intent(getApplicationContext(), MainActivity.class);
             i.putExtra("fragmentToLoad", "datesFragment");
+            i.putExtra("date", memory.getDate());
             startActivity(i);
         }catch (Exception e){
             runOnUiThread(()->addMemoryProgressIndicator.setVisibility(View.GONE));

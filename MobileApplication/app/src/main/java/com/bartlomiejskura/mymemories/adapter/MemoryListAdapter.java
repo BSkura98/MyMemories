@@ -1,5 +1,6 @@
 package com.bartlomiejskura.mymemories.adapter;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -166,7 +167,7 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
 
     private void sort(List<Memory> memories){
         Collections.sort(memories, (memory1, memory2) -> {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-ddd hh:mm:ss");
+            @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-ddd hh:mm:ss");
             try {
                 Date strDate1 = sdf.parse(memory1.getDate().replace("T"," "));
                 Date strDate2 = sdf.parse(memory2.getDate().replace("T"," "));
@@ -183,13 +184,13 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
         return dateElements[2]+"-"+dateElements[1]+"-"+dateElements[0]+" "+dateElements[3]+":"+dateElements[4];
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+    class MyViewHolder extends RecyclerView.ViewHolder {
         TextView memoryTitle, memoryDate, memoryDescription, memoryFriends;
         LinearLayout memoryLinearLayout, memoryFriendLinearLayout;
         ImageView memoryImage;
         MaterialCardView cardView;
 
-        public MyViewHolder(@NonNull View itemView) {
+        MyViewHolder(@NonNull View itemView) {
             super(itemView);
 
             cardView = itemView.findViewById(R.id.card);
