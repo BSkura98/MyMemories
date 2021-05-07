@@ -1,6 +1,7 @@
 package com.bartlomiejskura.mymemories;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.app.Activity;
 import android.content.Context;
@@ -27,6 +28,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
@@ -41,6 +43,7 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
     private SupportMapFragment mapFragment;
     private ChipGroup categoriesChipGroup;
     private ImageButton deleteButton, editButton, untagYourselfButton;
+    private ConstraintLayout memoryConstraintLayout;
 
     private Memory memory;
     private SharedPreferences sharedPreferences;
@@ -69,6 +72,7 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
         deleteButton = findViewById(R.id.deleteButton6);
         editButton = findViewById(R.id.editButton3);
         untagYourselfButton = findViewById(R.id.untagYourselfButton2);
+        memoryConstraintLayout = findViewById(R.id.memoryConstraintLayout);
     }
 
     private void initValues(){
@@ -188,8 +192,19 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
                 returnIntent.putExtra("hasBackPressed",true);
                 setResult(Activity.RESULT_OK,returnIntent);
                 finish();
+            }else{
+                runOnUiThread(()->{
+                    if(task.getError().contains("Unable to resolve host")){
+                        Snackbar.make(memoryConstraintLayout, "Problem with the Internet connection", Snackbar.LENGTH_LONG).show();
+                    }else{
+                        Snackbar.make(memoryConstraintLayout, "A problem occurred", Snackbar.LENGTH_LONG).show();
+                    }
+                });
             }
         }catch (Exception e){
+            runOnUiThread(()->{
+                Snackbar.make(memoryConstraintLayout, "A problem occurred", Snackbar.LENGTH_LONG).show();
+            });
             e.printStackTrace();
         }
     }
@@ -226,10 +241,19 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
                 returnIntent.putExtra("hasBackPressed",true);
                 setResult(Activity.RESULT_OK,returnIntent);
                 finish();
+            }else{
+                runOnUiThread(()->{
+                    if(editMemoryTask.getError().contains("Unable to resolve host")){
+                        Snackbar.make(memoryConstraintLayout, "Problem with the Internet connection", Snackbar.LENGTH_LONG).show();
+                    }else{
+                        Snackbar.make(memoryConstraintLayout, "A problem occurred", Snackbar.LENGTH_LONG).show();
+                    }
+                });
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
+            runOnUiThread(()->{
+                Snackbar.make(memoryConstraintLayout, "A problem occurred", Snackbar.LENGTH_LONG).show();
+            });
             e.printStackTrace();
         }
     }

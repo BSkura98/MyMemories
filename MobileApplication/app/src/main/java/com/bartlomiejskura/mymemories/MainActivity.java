@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -22,6 +23,7 @@ import com.bartlomiejskura.mymemories.fragment.MemoriesFragment;
 import com.bartlomiejskura.mymemories.fragment.FriendsFragment;
 import com.bartlomiejskura.mymemories.fragment.SettingsFragment;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
 
 public class MainActivity extends AppCompatActivity {
     private NavigationView navigationView;
@@ -29,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private ImageButton searchButton;
     private Toolbar toolbar;
+    private ConstraintLayout fragmentContainer;
 
     private SharedPreferences sharedPreferences;
 
@@ -53,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         drawerLayout = findViewById(R.id.drawer_layout);
         searchButton = findViewById(R.id.searchButton);
+        fragmentContainer = findViewById(R.id.fragment_container);
     }
 
     private void initValues(){
@@ -211,5 +215,11 @@ public class MainActivity extends AppCompatActivity {
             drawerLayout.closeDrawer(GravityCompat.START);
             return true;
         }
+    }
+
+    public void showSnackbar(String message){
+        runOnUiThread(()->{
+            Snackbar.make(fragmentContainer, message, Snackbar.LENGTH_LONG).show();
+        });
     }
 }

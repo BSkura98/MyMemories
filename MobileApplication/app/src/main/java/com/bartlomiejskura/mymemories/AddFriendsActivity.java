@@ -2,6 +2,7 @@ package com.bartlomiejskura.mymemories;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -21,6 +22,7 @@ import com.bartlomiejskura.mymemories.adapter.UserListAdapter;
 import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.task.GetUsersWithoutFriendsTask;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,6 +34,7 @@ public class AddFriendsActivity extends AppCompatActivity {
     private ImageButton searchButton, backButton;
     private SearchView userSearchView;
     private CircularProgressIndicator addFriendsProgressIndicator;
+    private ConstraintLayout addFriendsConstraintLayout;
 
     private UserListAdapter adapter;
     private Thread searchFriendsThread;
@@ -56,6 +59,7 @@ public class AddFriendsActivity extends AppCompatActivity {
         userSearchView = findViewById(R.id.userSearchView);
         addFriendsProgressIndicator = findViewById(R.id.addFriendsProgressIndicator);
         messageTextView = findViewById(R.id.searchFriendsMessageTextView);
+        addFriendsConstraintLayout = findViewById(R.id.addFriendsConstraintLayout);
     }
 
     private void prepareViews(){
@@ -168,5 +172,11 @@ public class AddFriendsActivity extends AppCompatActivity {
         int searchCloseImageId = getResources().getIdentifier("android:id/search_close_btn", null, null);
         ImageView searchClose = searchView.findViewById(searchCloseImageId);// change color
         searchClose.setBackgroundColor(Color.WHITE);
+    }
+
+    public void showSnackbar(String message){
+        runOnUiThread(()->{
+            Snackbar.make(addFriendsConstraintLayout, message, Snackbar.LENGTH_LONG).show();
+        });
     }
 }

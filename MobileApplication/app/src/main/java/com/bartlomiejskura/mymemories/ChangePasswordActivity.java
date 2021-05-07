@@ -2,6 +2,7 @@ package com.bartlomiejskura.mymemories;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -11,10 +12,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bartlomiejskura.mymemories.task.ChangePasswordTask;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.concurrent.ExecutionException;
 
@@ -25,6 +26,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
     private TextView toolbarTextView;
     private ImageButton searchButton, backButton;
     private LinearProgressIndicator changePasswordProgressIndicator;
+    private ConstraintLayout changePasswordConstraintLayout;
 
     private SharedPreferences sharedPreferences;
     private Thread changePasswordThread;
@@ -50,6 +52,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
         searchButton = findViewById(R.id.searchButton);
         backButton = findViewById(R.id.backButton);
         changePasswordProgressIndicator = findViewById(R.id.changePasswordProgressIndicator);
+        changePasswordConstraintLayout = findViewById(R.id.changePasswordConstraintLayout);
     }
 
     private void initValues(){
@@ -83,7 +86,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
 
     private void changePassword(){
         if(!newPassword1EditText.getText().toString().equals(newPassword2EditText.getText().toString())){
-            runOnUiThread(() -> Toast.makeText(ChangePasswordActivity.this, "Passwords given in fields \"New password\" and \"Confirm new password\" are not the same!", Toast.LENGTH_LONG).show());
+            runOnUiThread(() -> Snackbar.make(changePasswordConstraintLayout, "Passwords given in fields \"New password\" and \"Confirm new password\" are not the same!", Snackbar.LENGTH_LONG).show());
             return;
         }
 
@@ -95,7 +98,18 @@ public class ChangePasswordActivity extends AppCompatActivity {
                         newPassword1EditText.getText().toString(),
                         sharedPreferences);
         try {
-            changePasswordTask.execute().get();
+            boolean result = changePasswordTask.execute().get();
+            if(!result){
+                runOnUiThread(()->{
+                    if(changePasswordTask.getError().contains("Unable to resolve host")){
+                        Snackbar.make(changePasswordConstraintLayout, "Problem with the Internet connection", Snackbar.LENGTH_LONG).show();
+                    }else{
+                        Snackbar.make(changePasswordConstraintLayout, "A problem occurred", Snackbar.LENGTH_LONG).show();
+                    }
+                    changePasswordProgressIndicator.setVisibility(View.GONE);
+                });
+                return;
+            }
             finish();
         } catch (ExecutionException | InterruptedException e) {
             runOnUiThread(()->changePasswordProgressIndicator.setVisibility(View.GONE));

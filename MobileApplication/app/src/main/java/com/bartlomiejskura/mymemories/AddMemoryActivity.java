@@ -3,6 +3,7 @@ package com.bartlomiejskura.mymemories;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
@@ -62,6 +63,7 @@ import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.storage.FirebaseStorage;
@@ -105,6 +107,7 @@ public class AddMemoryActivity extends AppCompatActivity implements OnMapReadyCa
     private ImageButton backButton;
     private LinearLayout addCategoriesLayout;
     private LinearProgressIndicator addMemoryProgressIndicator;
+    private ConstraintLayout addMemoryConstraintLayout;
 
     private Memory memory = new Memory();
     private Integer day, month, year, hour, minute;
@@ -164,6 +167,7 @@ public class AddMemoryActivity extends AppCompatActivity implements OnMapReadyCa
         addCategoriesButton = findViewById(R.id.addCategoriesButton);
         addCategoriesLayout = findViewById(R.id.linearLayout);
         addMemoryProgressIndicator = findViewById(R.id.addMemoryProgressIndicator);
+        addMemoryConstraintLayout = findViewById(R.id.addMemoryConstraintLayout);
     }
 
     private void initValues(){
@@ -205,7 +209,7 @@ public class AddMemoryActivity extends AppCompatActivity implements OnMapReadyCa
         addMemoryProgressIndicator.setVisibility(View.GONE);
     }
 
-    @SuppressLint("ClickableViewAccessibility")
+    @SuppressLint({"ClickableViewAccessibility", "SetTextI18n"})
     private void setListeners(){
         dateButton.setOnClickListener(v -> {
             selectDate();
@@ -431,7 +435,7 @@ public class AddMemoryActivity extends AppCompatActivity implements OnMapReadyCa
             return;
         }
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         Calendar calendar = Calendar.getInstance();
         if(year!=null&&month!=null&&day!=null){
             calendar.set(year, month, day, hour==null?0:hour, minute==null?0:minute);
@@ -463,7 +467,14 @@ public class AddMemoryActivity extends AppCompatActivity implements OnMapReadyCa
             CreateMemoryTask createMemoryTask = new CreateMemoryTask(activity, memory);
             Boolean createMemoryResult = createMemoryTask.execute().get();
             if(!createMemoryResult){
-                runOnUiThread(()->addMemoryProgressIndicator.setVisibility(View.GONE));
+                runOnUiThread(()->{
+                    if(createMemoryTask.getError().contains("Unable to resolve host")){
+                        Snackbar.make(addMemoryConstraintLayout, "Problem with the Internet connection", Snackbar.LENGTH_LONG).show();
+                    }else{
+                        Snackbar.make(addMemoryConstraintLayout, "A problem occurred", Snackbar.LENGTH_LONG).show();
+                    }
+                    addMemoryProgressIndicator.setVisibility(View.GONE);
+                });
                 return;
             }
             Intent i = new Intent(getApplicationContext(), MainActivity.class);

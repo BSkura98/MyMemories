@@ -14,6 +14,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bartlomiejskura.mymemories.MainActivity;
 import com.bartlomiejskura.mymemories.R;
 import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.task.ConfirmFriendRequestTask;
@@ -76,12 +77,12 @@ public class FriendRequestListAdapter extends RecyclerView.Adapter<FriendRequest
         return dateElements[2]+"-"+dateElements[1]+"-"+dateElements[0];
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+    class MyViewHolder extends RecyclerView.ViewHolder {
         TextView nameTextView, birthdateTextView;
         ImageView avatarImageView;
         Button confirmButton, deleteButton;
 
-        public MyViewHolder(@NonNull View itemView) {
+        MyViewHolder(@NonNull View itemView) {
             super(itemView);
 
             nameTextView = itemView.findViewById(R.id.nameTextView);
@@ -109,6 +110,14 @@ public class FriendRequestListAdapter extends RecyclerView.Adapter<FriendRequest
                     users.remove(position);
                     notifyItemRemoved(position);
                     notifyItemRangeChanged(position, users.size());
+                }else{
+                    if(activity instanceof MainActivity){
+                        if(task.getError().contains("Unable to resolve host")){
+                            ((MainActivity)activity).showSnackbar("Problem with the Internet connection");
+                        }else{
+                            ((MainActivity)activity).showSnackbar("A problem occurred");
+                        }
+                    }
                 }
             }catch (Exception e){
                 e.printStackTrace();
@@ -132,6 +141,14 @@ public class FriendRequestListAdapter extends RecyclerView.Adapter<FriendRequest
                     users.remove(position);
                     notifyItemRemoved(position);
                     notifyItemRangeChanged(position, users.size());
+                }else{
+                    if(activity instanceof MainActivity){
+                        if(task.getError().contains("Unable to resolve host")){
+                            ((MainActivity)activity).showSnackbar("Problem with the Internet connection");
+                        }else{
+                            ((MainActivity)activity).showSnackbar("A problem occurred");
+                        }
+                    }
                 }
             }catch (Exception e){
                 e.printStackTrace();

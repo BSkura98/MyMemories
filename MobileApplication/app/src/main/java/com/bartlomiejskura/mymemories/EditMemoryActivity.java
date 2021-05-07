@@ -3,6 +3,7 @@ package com.bartlomiejskura.mymemories;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
@@ -58,6 +59,7 @@ import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.storage.FirebaseStorage;
@@ -98,6 +100,7 @@ public class EditMemoryActivity extends AppCompatActivity implements OnMapReadyC
     private ImageButton backButton;
     private LinearLayout addCategoriesLayout;
     private LinearProgressIndicator editMemoryProgressIndicator;
+    private ConstraintLayout editMemoryConstraintLayout;
 
 
     private Memory memory = new Memory();
@@ -158,6 +161,7 @@ public class EditMemoryActivity extends AppCompatActivity implements OnMapReadyC
         addCategoriesButton = findViewById(R.id.addCategoriesButton);
         addCategoriesLayout = findViewById(R.id.linearLayout);
         editMemoryProgressIndicator = findViewById(R.id.editMemoryProgressIndicator);
+        editMemoryConstraintLayout = findViewById(R.id.editMemoryConstraintLayout);
     }
 
     private void initValues(){
@@ -494,6 +498,7 @@ public class EditMemoryActivity extends AppCompatActivity implements OnMapReadyC
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private void initChipMemoryFriend(final User friend){
         LayoutInflater inflater = LayoutInflater.from(EditMemoryActivity.this);
         Chip chip = (Chip)inflater.inflate(R.layout.chip_with_close_icon, null, false);
@@ -539,7 +544,7 @@ public class EditMemoryActivity extends AppCompatActivity implements OnMapReadyC
                 return;
             }
         }
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         memory.setId(getIntent().getLongExtra("memoryId", 0));
         memory.setShortDescription(title);
         memory.setLongDescription(description==null?"":description);
@@ -568,7 +573,14 @@ public class EditMemoryActivity extends AppCompatActivity implements OnMapReadyC
             EditMemoryTask editMemoryTask = new EditMemoryTask(activity, memory);
             Boolean editMemoryResult = editMemoryTask.execute().get();
             if(!editMemoryResult){
-                runOnUiThread(()->editMemoryProgressIndicator.setVisibility(View.GONE));
+                runOnUiThread(()->{
+                    if(editMemoryTask.getError().contains("Unable to resolve host")){
+                        Snackbar.make(editMemoryConstraintLayout, "Problem with the Internet connection", Snackbar.LENGTH_LONG).show();
+                    }else{
+                        Snackbar.make(editMemoryConstraintLayout, "A problem occurred", Snackbar.LENGTH_LONG).show();
+                    }
+                    editMemoryProgressIndicator.setVisibility(View.GONE);
+                });
                 return;
             }
             if(oldImageToDelete){

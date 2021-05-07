@@ -27,9 +27,11 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.bartlomiejskura.mymemories.ChangePasswordActivity;
+import com.bartlomiejskura.mymemories.MainActivity;
 import com.bartlomiejskura.mymemories.R;
 import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.task.EditUserInformationTask;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -340,6 +342,7 @@ public class SettingsFragment extends Fragment {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private void editUserInformation(Long id, String email, String firstName, String lastName, String birthday, String uri){
         User user = new User(
                 id,
@@ -355,7 +358,23 @@ public class SettingsFragment extends Fragment {
                         user,
                         sharedPreferences);
         try {
-            editUserInformationTask.execute().get();
+            boolean result = editUserInformationTask.execute().get();
+            if(!result){
+                if(getActivity() instanceof MainActivity){
+                    if(editUserInformationTask.getError().contains("Unable to resolve host")){
+                        ((MainActivity)getActivity()).showSnackbar("Problem with the Internet connection");
+                    }else{
+                        ((MainActivity)getActivity()).showSnackbar("A problem occurred");
+                    }
+                }
+
+                firstNameEditText.setText(sharedPreferences.getString("firstName", ""));
+                secondNameEditText.setText(sharedPreferences.getString("lastName", ""));
+                emailEditText.setText(sharedPreferences.getString("email", ""));
+                String date = sharedPreferences.getString("birthday", "");
+                calendar.set(Integer.parseInt(date.substring(0, 4)), Integer.parseInt(date.substring(5, 7))-1, Integer.parseInt(date.substring(8, 10)), Integer.parseInt(date.substring(11, 13)), Integer.parseInt(date.substring(14, 16)));
+                birthdayButton.setText(date.substring(8, 10) + "-" + date.substring(5, 7) + "-" + date.substring(0, 4));
+            }
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
