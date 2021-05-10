@@ -29,30 +29,31 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="8dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
                 android:text="Requests sent by you"
-                android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body1" />
+                android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Subtitle1" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/friendRequests2"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp" />
+                android:paddingBottom="8dp" />
 
             <TextView
                 android:id="@+id/textView16"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="8dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
                 android:text="Requests from other users"
-                android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body1" />
+                android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Subtitle1" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/friendRequests"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp">
+                android:layout_height="match_parent">
 
             </androidx.recyclerview.widget.RecyclerView>
         </LinearLayout>
