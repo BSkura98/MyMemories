@@ -1,5 +1,6 @@
 package com.bartlomiejskura.mymemories.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +34,7 @@ public class FriendsAdapter extends ArrayAdapter<User> {
         return initView(position, convertView, parent);
     }
 
+    @SuppressLint("SetTextI18n")
     private View initView(int position, View convertView, ViewGroup parent){
         if(convertView == null){
             convertView = LayoutInflater.from(getContext()).inflate(
@@ -41,6 +43,9 @@ public class FriendsAdapter extends ArrayAdapter<User> {
         }
         ImageView avatarImageView = convertView.findViewById(R.id.avatarImageView);
         TextView nameTextView = convertView.findViewById(R.id.nameTextView);
+        TextView birthdayTextView = convertView.findViewById(R.id.birthdateTextView);
+
+        convertView.findViewById(R.id.requestButton).setVisibility(View.GONE);
 
         User user = getItem(position);
         if(user!=null){
@@ -58,7 +63,13 @@ public class FriendsAdapter extends ArrayAdapter<User> {
                         .into(avatarImageView);
             }
             nameTextView.setText(user.getFirstName().concat(" ").concat(user.getLastName()));
+            birthdayTextView.setText("date of birth: "+getFormattedDate(user.getBirthday()));
         }
         return convertView;
+    }
+
+    private String getFormattedDate(String date){
+        String[] dateElements = date.replace("T", " ").replace("-", " ").replace(":"," ").split(" ");
+        return dateElements[2]+"-"+dateElements[1]+"-"+dateElements[0];
     }
 }
