@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.bartlomiejskura.mymemories.model.Category;
 import com.bartlomiejskura.mymemories.model.Memory;
 import com.bartlomiejskura.mymemories.task.DeleteMemoryTask;
+import com.bartlomiejskura.mymemories.task.DeleteUserFromMemoryTask;
 import com.bartlomiejskura.mymemories.task.EditMemoryTask;
 import com.bartlomiejskura.mymemories.utils.DateUtil;
 import com.bartlomiejskura.mymemories.utils.MemoryUtil;
@@ -235,8 +236,8 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
         memory.removeMemoryFriend(sharedPreferences.getLong("userId",0));
 
         try{
-            EditMemoryTask editMemoryTask = new EditMemoryTask(this, memory);
-            Boolean editMemoryResult = editMemoryTask.execute().get();
+            DeleteUserFromMemoryTask task = new DeleteUserFromMemoryTask(this, memory);
+            Boolean editMemoryResult = task.execute().get();
             if(editMemoryResult){
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra("hasBackPressed",true);
@@ -244,7 +245,7 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
                 finish();
             }else{
                 runOnUiThread(()->{
-                    if(editMemoryTask.getError().contains("Unable to resolve host")){
+                    if(task.getError().contains("Unable to resolve host")){
                         Snackbar.make(memoryConstraintLayout, "Problem with the Internet connection", Snackbar.LENGTH_LONG).show();
                     }else{
                         Snackbar.make(memoryConstraintLayout, "A problem occurred", Snackbar.LENGTH_LONG).show();

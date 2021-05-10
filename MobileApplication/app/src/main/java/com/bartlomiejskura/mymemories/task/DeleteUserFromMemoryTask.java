@@ -1,0 +1,61 @@
+package com.bartlomiejskura.mymemories.task;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
+
+import com.bartlomiejskura.mymemories.model.Memory;
+import com.google.gson.Gson;
+
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
+public class DeleteUserFromMemoryTask extends AsyncTask<Void, Void, Boolean> {
+    private final MediaType JSON = MediaType.get("application/json; charset=utf-8");
+    private Memory memory;
+    private OkHttpClient httpClient = new OkHttpClient();
+    private Gson gson = new Gson();
+    private SharedPreferences sharedPreferences;
+    private String error = "";
+
+    public DeleteUserFromMemoryTask(Activity activity, Memory memory){
+        this.memory = memory;
+        sharedPreferences = activity.getApplicationContext().getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
+    }
+
+    @Override
+    protected Boolean doInBackground(Void... voids) {
+        String json = gson.toJson(memory);
+
+        RequestBody requestBody = RequestBody.create(JSON, json);
+
+        Request request = new Request.Builder()
+                .url("https://mymemories-2.herokuapp.com/memory/deleteUserFromMemory?email="+sharedPreferences.getString("email", "")+"&memoryId="+memory.getId())
+                .put(requestBody)
+                .addHeader("Authorization", "Bearer "+sharedPreferences.getString("token", null))
+                .build();
+        Response response;
+
+        try {
+            response = httpClient.newCall(request).execute();
+
+            Memory memoryResponse = gson.fromJson(response.body().string(), Memory.class);
+            if(memory==null||memoryResponse==null){
+                return false;
+            }
+        } catch (Exception e) {
+            error = e.getMessage();
+            System.out.println("ERROR:" + e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    public String getError(){
+        return error;
+    }
+}

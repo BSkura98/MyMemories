@@ -181,4 +181,14 @@ public class MemoryService {
 
         return publicMemories;
     }
+
+    public Memory deleteUserFromMemory(String email, Long memoryId) throws EntityNotFoundException {
+        Memory memory = memoryRepository.findById(memoryId).orElseThrow(EntityNotFoundException::new);
+        User user = userRepository.findByEmail(email);
+
+        List<User> newTaggedUsers = memory.getMemoryFriends();
+        newTaggedUsers.remove(user);
+        memory.setMemoryFriends(newTaggedUsers);
+        return memoryRepository.save(memory);
+    }
 }

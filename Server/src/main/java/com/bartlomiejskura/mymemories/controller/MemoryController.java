@@ -112,4 +112,14 @@ public class MemoryController {
                 dateStart==null?null:LocalDateTime.parse(dateStart), dateEnd==null?null:LocalDateTime.parse(dateEnd),
                 memoryPriorities, publicToFriends, isSharedMemory, categories);
     }
+
+    @PutMapping("/deleteUserFromMemory")
+    @PreAuthorize("#email.equals(authentication.name)")
+    public Memory deleteUserFromMemory(@RequestParam(value = "email") String email, @RequestParam(value="memoryId")Long memoryId){
+        try {
+            return memoryService.deleteUserFromMemory(email, memoryId);
+        } catch (EntityNotFoundException e) {
+            return null;
+        }
+    }
 }
