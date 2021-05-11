@@ -184,6 +184,10 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
         return dateElements[2]+"-"+dateElements[1]+"-"+dateElements[0]+" "+dateElements[3]+":"+dateElements[4];
     }
 
+    public List<Memory> getMemories(){
+        return memories;
+    }
+
     class MyViewHolder extends RecyclerView.ViewHolder {
         TextView memoryTitle, memoryDate, memoryDescription, memoryFriends;
         LinearLayout memoryLinearLayout, memoryFriendLinearLayout;

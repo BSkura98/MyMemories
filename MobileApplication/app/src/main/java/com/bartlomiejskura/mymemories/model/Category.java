@@ -8,6 +8,13 @@ public class Category {
     private User user;
     private List<Memory> memories;
 
+    public Category(Long id, String name, User user, List<Memory> memories) {
+        this.id = id;
+        this.name = name;
+        this.user = user;
+        this.memories = memories;
+    }
+
     public Category(Long id, String name, User user) {
         this.id = id;
         this.name = name;

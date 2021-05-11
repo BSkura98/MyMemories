@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CategoryActivity">
+    tools:context=".CategoryActivity"
+    android:id="@+id/categoryConstraintLayout">
 
     <include
         android:id="@+id/toolbar"

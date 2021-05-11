@@ -2,10 +2,13 @@ package com.bartlomiejskura.mymemories;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -13,23 +16,29 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.bartlomiejskura.mymemories.adapter.MemoryListAdapter;
+import com.bartlomiejskura.mymemories.model.Category;
 import com.bartlomiejskura.mymemories.model.Memory;
+import com.bartlomiejskura.mymemories.model.User;
+import com.bartlomiejskura.mymemories.task.EditCategoryTask;
 import com.bartlomiejskura.mymemories.task.GetMemoriesInCategoryTask;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class CategoryActivity extends AppCompatActivity {
+public class CategoryActivity extends AppCompatActivity implements ChangeCategoryNameDialog.DialogListener {
     private RecyclerView memoryList;
     private TextView toolbarTextView, messageTextView;
     private Toolbar toolbar;
-    private ImageButton backButton;
+    private ImageButton backButton, editCategoryNameButton;
     private CircularProgressIndicator categoryProgressIndicator;
+    private ConstraintLayout categoryConstraintLayout;
 
     private MemoryListAdapter adapter;
     private Long categoryId;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,10 +58,14 @@ public class CategoryActivity extends AppCompatActivity {
         backButton = findViewById(R.id.backButton);
         categoryProgressIndicator = findViewById(R.id.categoryProgressIndicator);
         messageTextView = findViewById(R.id.categoryMessageTextView);
+        editCategoryNameButton = findViewById(R.id.editButton);
+        categoryConstraintLayout = findViewById(R.id.categoryConstraintLayout);
     }
 
     private void initValues(){
         categoryId = getIntent().getLongExtra("categoryId",0);
+
+        sharedPreferences = getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
     }
 
     private void prepareViews(){
@@ -74,6 +87,38 @@ public class CategoryActivity extends AppCompatActivity {
 
     private void setListeners(){
         backButton.setOnClickListener(v -> super.onBackPressed());
+
+        editCategoryNameButton.setOnClickListener(v->{
+            openChangeCategoryNameDialog();
+        });
+    }
+
+
+    @Override
+    public void applyCategoryName(String name) {
+        try{
+            if(name.isEmpty()){
+                runOnUiThread(()-> Snackbar.make(categoryConstraintLayout, "Incorrect category name", Snackbar.LENGTH_LONG).show());
+                return;
+            }
+            EditCategoryTask task = new EditCategoryTask(this, new Category(categoryId, name, new User(sharedPreferences.getLong("userId", 0),sharedPreferences.getString("email","")), adapter.getMemories()));
+            boolean result = task.execute().get();
+            runOnUiThread(()->{
+                if(result){
+                    toolbarTextView.setText(name);
+                }else{
+                    if(task.getError().contains("Unable to resolve host")){
+                        Snackbar.make(categoryConstraintLayout, "Problem with the Internet connection", Snackbar.LENGTH_LONG).show();
+                    }else if(task.getError().contains("409")){
+                        Snackbar.make(categoryConstraintLayout, "Category with the given name already exists", Snackbar.LENGTH_LONG).show();
+                    }else{
+                        Snackbar.make(categoryConstraintLayout, "A problem occurred", Snackbar.LENGTH_LONG).show();
+                    }
+                }
+            });
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
 
@@ -110,5 +155,10 @@ public class CategoryActivity extends AppCompatActivity {
             runOnUiThread(()->categoryProgressIndicator.setVisibility(View.GONE));
             e.printStackTrace();
         }
+    }
+
+    public void openChangeCategoryNameDialog(){
+        ChangeCategoryNameDialog dialog = new ChangeCategoryNameDialog(getIntent().getStringExtra("category"));
+        dialog.show(getSupportFragmentManager(), "change category name dialog");
     }
 }
