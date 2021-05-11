@@ -1,5 +1,6 @@
 package com.bartlomiejskura.mymemories.service;
 
+import com.bartlomiejskura.mymemories.exception.DuplicateEntryException;
 import com.bartlomiejskura.mymemories.exception.EntityNotFoundException;
 import com.bartlomiejskura.mymemories.model.Category;
 import com.bartlomiejskura.mymemories.model.User;
@@ -45,6 +46,16 @@ public class CategoryService {
     }
 
     public Category editCategory(Category category){
+        if(category.getUser()==null){
+            return null;
+        }
+        try{
+            Category c = categoryRepository.findByNameAndUserId(category.getName(), category.getUser().getID());
+            if(c != null){
+                throw new DuplicateEntryException();
+            }
+        }catch (NullPointerException ignored){ }
+
         return categoryRepository.save(category);
     }
 
