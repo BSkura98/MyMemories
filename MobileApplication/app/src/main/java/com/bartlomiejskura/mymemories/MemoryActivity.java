@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.bartlomiejskura.mymemories.model.Category;
 import com.bartlomiejskura.mymemories.model.Memory;
+import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.task.DeleteMemoryTask;
 import com.bartlomiejskura.mymemories.task.DeleteUserFromMemoryTask;
 import com.bartlomiejskura.mymemories.task.EditMemoryTask;
@@ -137,17 +138,35 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
 
         //map fragment
         mapFragment.getMapAsync(this);
+
+        //edit, delete and untag buttons
+        if(!memory.getMemoryOwner().getId().equals(sharedPreferences.getLong("userId",0))){
+            boolean hideUntagButton=true;
+            if(memory.getMemoryFriends()!=null&&!memory.getMemoryFriends().isEmpty()){
+                for(User friend:memory.getMemoryFriends()){
+                    if(friend.getId().equals(sharedPreferences.getLong("userId",0))){
+                        hideUntagButton=false;
+                        break;
+                    }
+                }
+
+            }
+            if(hideUntagButton){
+                untagYourselfButton.setVisibility(View.GONE);
+            }
+            deleteButton.setVisibility(View.GONE);
+            editButton.setVisibility(View.GONE);
+        }else{
+            untagYourselfButton.setVisibility(View.GONE);
+        }
     }
 
     private void setListeners(){
         if(!memory.getMemoryOwner().getId().equals(sharedPreferences.getLong("userId",0))){
             untagYourselfButton.setOnClickListener(v -> untagYourselfFromMemory());
-            deleteButton.setVisibility(View.GONE);
-            editButton.setVisibility(View.GONE);
         }else{
             editButton.setOnClickListener(v -> editMemory());
             deleteButton.setOnClickListener(v -> deleteMemory());
-            untagYourselfButton.setVisibility(View.GONE);
         }
     }
 
