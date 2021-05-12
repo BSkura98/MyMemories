@@ -150,10 +150,34 @@ public class MemoryService {
     }
 
     public Memory editMemory(Memory memory){
+        try {
+            Memory m = memoryRepository.findById(memory.getID()).orElseThrow(EntityNotFoundException::new);
+            for(Category category:m.getCategories()){
+                if(memory.getCategories()==null||!memory.getCategories().contains(category)){
+                    if(category.getMemories().size()==1){
+                        categoryRepository.delete(category);
+                    }
+                }
+            }
+        } catch (EntityNotFoundException e) {
+            e.printStackTrace();
+        }
+
         return memoryRepository.save(memory);
     }
 
     public void deleteMemory(Long memoryId){
+        try {
+            Memory m = memoryRepository.findById(memoryId).orElseThrow(EntityNotFoundException::new);
+            for(Category category:m.getCategories()){
+                if(category.getMemories().size()==1){
+                    categoryRepository.delete(category);
+                }
+            }
+        } catch (EntityNotFoundException e) {
+            e.printStackTrace();
+        }
+
         memoryRepository.deleteById(memoryId);
     }
 
