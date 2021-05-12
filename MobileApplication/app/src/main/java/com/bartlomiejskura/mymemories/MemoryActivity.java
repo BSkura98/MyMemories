@@ -98,8 +98,11 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
         priorityTextView.setText(getPriorityOption(memory.getMemoryPriority()));
 
         //date text view
-        String date = memory.getDate();
-        dateTextView.setText(DateUtil.formatDateTime(date));
+        if(memory.getDate().endsWith("0")){
+            dateTextView.setText(DateUtil.formatDate(memory.getDate()));
+        }else{
+            dateTextView.setText(DateUtil.formatDateTime(memory.getDate()));
+        }
 
         //creation date text view
         String creationDate = memory.getCreationDate();

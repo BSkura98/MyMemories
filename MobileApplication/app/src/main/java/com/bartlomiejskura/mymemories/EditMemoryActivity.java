@@ -195,7 +195,12 @@ public class EditMemoryActivity extends AppCompatActivity implements OnMapReadyC
         String date = getIntent().getStringExtra("date");
         calendar.set(Integer.parseInt(date.substring(0, 4)), Integer.parseInt(date.substring(5, 7))-1, Integer.parseInt(date.substring(8, 10)), Integer.parseInt(date.substring(11, 13)), Integer.parseInt(date.substring(14, 16)));
         dateButton.setText(date.substring(8, 10) + "-" + date.substring(5, 7) + "-" + date.substring(0, 4));
-        timeButton.setText(date.substring(11, 16));
+        if(getIntent().getStringExtra("date").endsWith("0")){
+            timeButton.setText("Select");
+            deleteTimeButton.setVisibility(View.GONE);
+        }else{
+            timeButton.setText(date.substring(11, 16));
+        }
 
         //add categories layout
         addCategoriesLayout.setVisibility(View.GONE);
@@ -544,6 +549,13 @@ public class EditMemoryActivity extends AppCompatActivity implements OnMapReadyC
                 return;
             }
         }
+
+        if(timeButton.getText().equals("Select")){//second should be 0 if user didn't choose time or 1 if time was chosen
+            calendar.set(Calendar.SECOND, 0);
+        }else{
+            calendar.set(Calendar.SECOND, 1);
+        }
+
         @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         memory.setId(getIntent().getLongExtra("memoryId", 0));
         memory.setShortDescription(title);
@@ -637,6 +649,8 @@ public class EditMemoryActivity extends AppCompatActivity implements OnMapReadyC
             calendar.set(Calendar.MINUTE, minute1);
             String dateText = DateFormat.format("HH:mm", calendar).toString();
             timeButton.setText(dateText);
+
+            deleteTimeButton.setVisibility(View.VISIBLE);
         }, HOUR, MINUTE, is24HourFormat);
 
         timePickerDialog.show();

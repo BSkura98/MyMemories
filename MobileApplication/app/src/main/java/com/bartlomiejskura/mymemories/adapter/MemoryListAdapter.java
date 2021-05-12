@@ -22,6 +22,7 @@ import com.bartlomiejskura.mymemories.R;
 import com.bartlomiejskura.mymemories.model.Memory;
 import com.bartlomiejskura.mymemories.model.Category;
 import com.bartlomiejskura.mymemories.model.User;
+import com.bartlomiejskura.mymemories.utils.DateUtil;
 import com.google.android.material.card.MaterialCardView;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
@@ -59,12 +60,19 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
 
     @Override
     public void onBindViewHolder(@NonNull MemoryListAdapter.MyViewHolder holder, int position) {
+        //title
         Typeface typeface = ResourcesCompat.getFont(context,R.font.quando);
         holder.memoryTitle.setTypeface(typeface);
-
         holder.memoryTitle.setText(memories.get(position).getShortDescription());
-        holder.memoryDate.setText(getFormattedDate(memories.get(position).getDate()));
 
+        //date
+        if(memories.get(position).getDate().endsWith("0")){
+            holder.memoryDate.setText(DateUtil.formatDate(memories.get(position).getDate()));
+        }else{
+            holder.memoryDate.setText(DateUtil.formatDateTime(memories.get(position).getDate()));
+        }
+
+        //card view stroke
         holder.cardView.setStrokeWidth(4);
         holder.cardView.setStrokeColor(activity.getResources().getColor(memories.get(position).getMemoryPriority()>=90?R.color.colorAccent:
                 (memories.get(position).getMemoryPriority()>=50)?R.color.colorAccentVeryLight:R.color.white));
@@ -177,11 +185,6 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
                 return 0;
             }
         });
-    }
-
-    private String getFormattedDate(String date){
-        String[] dateElements = date.replace("T", " ").replace("-", " ").replace(":"," ").split(" ");
-        return dateElements[2]+"-"+dateElements[1]+"-"+dateElements[0]+" "+dateElements[3]+":"+dateElements[4];
     }
 
     public List<Memory> getMemories(){

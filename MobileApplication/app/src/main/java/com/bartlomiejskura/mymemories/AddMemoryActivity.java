@@ -17,7 +17,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Address;
@@ -439,6 +438,11 @@ public class AddMemoryActivity extends AppCompatActivity implements OnMapReadyCa
         Calendar calendar = Calendar.getInstance();
         if(year!=null&&month!=null&&day!=null){
             calendar.set(year, month, day, hour==null?0:hour, minute==null?0:minute);
+        }
+        if(timeButton.getText().equals("Select")){//second should be 0 if user didn't choose time or 1 if time was chosen
+            calendar.set(Calendar.SECOND, 0);
+        }else{
+            calendar.set(Calendar.SECOND, 1);
         }
 
         List<Category> categories = null;

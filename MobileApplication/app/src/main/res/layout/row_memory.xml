@@ -70,7 +70,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="Date"
                     android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Caption"
                     android:textColor="?android:attr/textColorSecondary" />
 
