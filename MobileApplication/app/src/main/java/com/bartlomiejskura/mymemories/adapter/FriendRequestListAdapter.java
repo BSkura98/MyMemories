@@ -101,10 +101,10 @@ public class FriendRequestListAdapter extends RecyclerView.Adapter<FriendRequest
         }
 
         private void confirmFriendRequest(int position){
-            ConfirmFriendRequestTask task = new ConfirmFriendRequestTask(activity,
-                    sharedPreferences.getString("email", ""),
-                    users.get(position).getId());
             try{
+                ConfirmFriendRequestTask task = new ConfirmFriendRequestTask(activity,
+                        sharedPreferences.getString("email", ""),
+                        users.get(position).getId());
                 Boolean result = task.execute().get();
                 if(result){
                     users.remove(position);
@@ -126,16 +126,16 @@ public class FriendRequestListAdapter extends RecyclerView.Adapter<FriendRequest
 
         private void deleteFriendRequest(int position){
             RemoveFriendRequestTask task;
-            if(friendRequestsByOtherUsers){
-                task = new RemoveFriendRequestTask(activity,
-                        sharedPreferences.getString("email", ""),
-                        users.get(position).getEmail());
-            }else{
-                task = new RemoveFriendRequestTask(activity,
-                        users.get(position).getEmail(),
-                        sharedPreferences.getString("email", ""));
-            }
             try{
+                if(friendRequestsByOtherUsers){
+                    task = new RemoveFriendRequestTask(activity,
+                            sharedPreferences.getString("email", ""),
+                            users.get(position).getEmail());
+                }else{
+                    task = new RemoveFriendRequestTask(activity,
+                            users.get(position).getEmail(),
+                            sharedPreferences.getString("email", ""));
+                }
                 Boolean result = task.execute().get();
                 if(result){
                     users.remove(position);

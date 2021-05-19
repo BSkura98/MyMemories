@@ -106,10 +106,10 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.MyView
         }
 
         private void sendFriendRequest(int position){
-            SendFriendRequestTask task = new SendFriendRequestTask(activity,
-                    sharedPreferences.getString("email", ""),
-                    users.get(position).getId());
             try{
+                SendFriendRequestTask task = new SendFriendRequestTask(activity,
+                        sharedPreferences.getString("email", ""),
+                        users.get(position).getId());
                 Boolean result = task.execute().get();
                 if(result){
                     users.remove(position);
