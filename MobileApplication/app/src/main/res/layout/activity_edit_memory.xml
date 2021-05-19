@@ -199,6 +199,7 @@
                         android:id="@+id/categoryEditText"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:inputType="text"
                         android:paddingTop="12dp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -464,7 +465,7 @@
                     android:id="@+id/titleEditText"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:inputType="textMultiLine" />
+                    android:inputType="text" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
