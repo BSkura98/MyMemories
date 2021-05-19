@@ -138,7 +138,7 @@ public class AdvancedSearchFragment extends Fragment {
 
         addCategoryButton.setOnClickListener(v -> {
             String category = categoryEditText.getText().toString().toLowerCase();
-            if(!categories.contains(category)||category.isEmpty()){
+            if(!categories.contains(category)&&!category.isEmpty()){
                 initChip(category);
                 categories.add(category);
             }

@@ -331,7 +331,7 @@ public class EditMemoryActivity extends AppCompatActivity implements OnMapReadyC
 
         addCategoryButton.setOnClickListener(v -> {
             String category = categoryEditText.getText().toString().toLowerCase();
-            if(!categories.contains(category)||category.isEmpty()){
+            if(!categories.contains(category)&&!category.isEmpty()){
                 initChipCategory(category);
             }
             categoryEditText.setText("");

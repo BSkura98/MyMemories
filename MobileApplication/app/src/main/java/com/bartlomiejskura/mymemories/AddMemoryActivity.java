@@ -277,7 +277,7 @@ public class AddMemoryActivity extends AppCompatActivity implements OnMapReadyCa
             LayoutInflater inflater = LayoutInflater.from(AddMemoryActivity.this);
 
             String category = categoryEditText.getText().toString().toLowerCase();
-            if(!categories.contains(category)||category.isEmpty()){
+            if(!categories.contains(category)&&!category.isEmpty()){
                 Chip chip = (Chip)inflater.inflate(R.layout.chip_with_close_icon, null, false);
                 chip.setText(category);
                 chip.setOnCloseIconClickListener(v12 -> {
