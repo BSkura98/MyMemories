@@ -3,6 +3,7 @@ package com.bartlomiejskura.mymemories;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.widget.ImageButton;
@@ -16,6 +17,8 @@ import com.bartlomiejskura.mymemories.fragment.AdvancedSearchFragment;
 import com.bartlomiejskura.mymemories.fragment.RecentSearchesFragment;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 public class SearchMemoryActivity extends AppCompatActivity {
     private SearchView searchView;
@@ -116,18 +119,34 @@ public class SearchMemoryActivity extends AppCompatActivity {
         i.putExtra("keyword", query);
 
         if(advancedSearch){
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             if(advancedSearchFragment.getDateCalendars()[0]!=null){
-                i.putExtra("creationDateStart", sdf.format(advancedSearchFragment.getDateCalendars()[0].getTime()).replace(" ", "T"));
+                Calendar calendar = advancedSearchFragment.getDateCalendars()[0];
+                calendar.set(Calendar.HOUR_OF_DAY, 0);
+                calendar.set(Calendar.MINUTE, 0);
+                calendar.set(Calendar.SECOND, 0);
+                i.putExtra("creationDateStart", sdf.format(calendar.getTime()).replace(" ", "T"));
             }
             if(advancedSearchFragment.getDateCalendars()[1]!=null){
-                i.putExtra("creationDateEnd", sdf.format(advancedSearchFragment.getDateCalendars()[1].getTime()).replace(" ", "T"));
+                Calendar calendar = advancedSearchFragment.getDateCalendars()[1];
+                calendar.set(Calendar.HOUR_OF_DAY, 23);
+                calendar.set(Calendar.MINUTE, 59);
+                calendar.set(Calendar.SECOND, 59);
+                i.putExtra("creationDateEnd", sdf.format(calendar.getTime()).replace(" ", "T"));
             }
             if(advancedSearchFragment.getDateCalendars()[2]!=null){
-                i.putExtra("dateStart", sdf.format(advancedSearchFragment.getDateCalendars()[2].getTime()).replace(" ", "T"));
+                Calendar calendar = advancedSearchFragment.getDateCalendars()[2];
+                calendar.set(Calendar.HOUR_OF_DAY, 0);
+                calendar.set(Calendar.MINUTE, 0);
+                calendar.set(Calendar.SECOND, 0);
+                i.putExtra("dateStart", sdf.format(calendar.getTime()).replace(" ", "T"));
             }
             if(advancedSearchFragment.getDateCalendars()[3]!=null){
-                i.putExtra("dateEnd", sdf.format(advancedSearchFragment.getDateCalendars()[3].getTime()).replace(" ", "T"));
+                Calendar calendar = advancedSearchFragment.getDateCalendars()[3];
+                calendar.set(Calendar.HOUR_OF_DAY, 23);
+                calendar.set(Calendar.MINUTE, 59);
+                calendar.set(Calendar.SECOND, 59);
+                i.putExtra("dateEnd", sdf.format(calendar.getTime()).replace(" ", "T"));
             }
             if(advancedSearchFragment.getPublicToFriends()!=null){
                 i.putExtra("publicToFriends", advancedSearchFragment.getPublicToFriends()?"true":"false");
