@@ -24,18 +24,21 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 public class FriendRequestListAdapter extends RecyclerView.Adapter<FriendRequestListAdapter.MyViewHolder> {
+    private TextView subtitleTextView;
+
     private Context context;
     private List<User> users;
     private Activity activity;
     private SharedPreferences sharedPreferences;
     private boolean friendRequestsByOtherUsers;
 
-    public FriendRequestListAdapter(Context context, List<User> users, Activity activity, boolean friendRequestsByOtherUsers){
+    public FriendRequestListAdapter(Context context, List<User> users, Activity activity, boolean friendRequestsByOtherUsers, TextView subtitleTextView){
         this.context = context;
         this.users = users;
         this.activity = activity;
         sharedPreferences = activity.getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
         this.friendRequestsByOtherUsers = friendRequestsByOtherUsers;
+        this.subtitleTextView = subtitleTextView;
     }
 
     @NonNull
@@ -141,6 +144,9 @@ public class FriendRequestListAdapter extends RecyclerView.Adapter<FriendRequest
                     users.remove(position);
                     notifyItemRemoved(position);
                     notifyItemRangeChanged(position, users.size());
+                    if(users.isEmpty()){
+                        subtitleTextView.setVisibility(View.GONE);
+                    }
                 }else{
                     if(activity instanceof MainActivity){
                         if(task.getError().contains("Unable to resolve host")){

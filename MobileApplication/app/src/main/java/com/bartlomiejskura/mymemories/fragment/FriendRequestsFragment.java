@@ -141,7 +141,8 @@ public class FriendRequestsFragment extends Fragment {
                         getContext(),
                         new ArrayList<>(Arrays.asList(users)),
                         activity,
-                        true
+                        true,
+                        requestsByOthersTextView
                 );
                 friendRequestsProgressIndicator.setVisibility(View.GONE);
                 requestsByOthers.setAdapter(adapter);
@@ -160,7 +161,8 @@ public class FriendRequestsFragment extends Fragment {
                         getContext(),
                         new ArrayList<>(Arrays.asList(users)),
                         activity,
-                        false
+                        false,
+                        requestsByUserTextView
                 );
                 friendRequestsProgressIndicator.setVisibility(View.GONE);
                 requestsByUser.setAdapter(adapter);
