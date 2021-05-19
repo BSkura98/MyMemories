@@ -35,16 +35,12 @@
                 android:id="@+id/descriptionTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="30dp"
-                android:layout_marginLeft="30dp"
-                android:layout_marginTop="15dp"
-                android:layout_marginEnd="30dp"
-                android:layout_marginRight="30dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
                 android:text="Description"
-                android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body2"
-                android:textSize="14sp"
+                android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body1"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout11" />
 
@@ -52,9 +48,8 @@
                 android:id="@+id/textView9"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="30dp"
-                android:layout_marginLeft="30dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="15dp"
                 android:paddingBottom="20dp"
                 android:text="Last modified:"
                 android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Caption"
@@ -75,12 +70,12 @@
                 android:id="@+id/chipGroup2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="30dp"
-                android:layout_marginTop="30dp"
-                android:layout_marginEnd="30dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/descriptionTextView">
+                app:layout_constraintTop_toBottomOf="@+id/divider3">
 
             </com.google.android.material.chip.ChipGroup>
 
@@ -89,11 +84,9 @@
                 class="com.google.android.gms.maps.SupportMapFragment"
                 android:layout_width="match_parent"
                 android:layout_height="130dp"
-                android:layout_marginStart="30dp"
-                android:layout_marginLeft="30dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="30dp"
-                android:layout_marginRight="30dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/chipGroup2"
@@ -105,10 +98,9 @@
                 android:layout_height="wrap_content"
                 android:background="@color/colorPrimary"
                 android:orientation="vertical"
-                android:paddingTop="15dp"
-                android:paddingBottom="15dp"
+                android:paddingTop="20dp"
+                android:paddingBottom="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/memoryImage">
 
@@ -116,10 +108,10 @@
                     android:id="@+id/publicLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="30dp"
-                    android:layout_marginLeft="30dp"
-                    android:layout_marginEnd="30dp"
-                    android:layout_marginRight="30dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginRight="20dp"
                     android:orientation="horizontal">
 
                     <ImageView
@@ -141,46 +133,15 @@
                         android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Caption"
                         android:textColor="@color/white" />
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@null"
-                        android:gravity="right"
-                        android:orientation="horizontal">
-
-                        <ImageButton
-                            android:id="@+id/editButton3"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginRight="12dp"
-                            android:background="@null"
-                            android:tint="@color/white"
-                            map:srcCompat="@drawable/ic_edit" />
-
-                        <ImageButton
-                            android:id="@+id/deleteButton6"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:background="@null"
-                            android:tint="@color/white"
-                            map:srcCompat="@drawable/ic_delete" />
-
-                        <ImageButton
-                            android:id="@+id/untagYourselfButton2"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:background="@null"
-                            android:tint="@color/white"
-                            map:srcCompat="@drawable/baseline_person_remove_24" />
-                    </LinearLayout>
                 </LinearLayout>
 
                 <TextView
                     android:id="@+id/titleTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="30dp"
-                    android:layout_marginRight="30dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:paddingTop="2dp"
                     android:text="Title"
                     android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Headline5"
                     android:textColor="@color/white" />
@@ -189,12 +150,42 @@
                     android:id="@+id/memoryFriends"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="30dp"
-                    android:layout_marginRight="30dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
                     android:text=""
                     android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Subtitle1"
                     android:textColor="@color/white" />
 
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="24dp"
+                android:layout_marginTop="14dp"
+                android:layout_marginEnd="20dp"
+                android:background="@null"
+                android:gravity="right"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="@id/linearLayout7"
+                app:layout_constraintTop_toTopOf="@id/linearLayout7">
+
+                <ImageButton
+                    android:id="@+id/moreButton"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:background="@null"
+                    android:contentDescription="More"
+                    android:tint="@color/white"
+                    map:srcCompat="@drawable/ic_more_vert" />
+
+                <ImageButton
+                    android:id="@+id/untagYourselfButton2"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:background="@null"
+                    android:contentDescription="Untag"
+                    android:tint="@color/white"
+                    map:srcCompat="@drawable/baseline_person_remove_24" />
             </LinearLayout>
 
             <LinearLayout
@@ -213,7 +204,7 @@
                     android:id="@+id/dateTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="30dp"
+                    android:layout_marginLeft="20dp"
                     android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body1"
                     android:textColor="@color/colorAccent"
                     android:textSize="12sp" />
@@ -222,7 +213,7 @@
                     android:id="@+id/priorityTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="30dp"
+                    android:layout_marginRight="20dp"
                     android:gravity="right"
                     android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body1"
                     android:textColor="@color/colorAccent"
@@ -233,9 +224,9 @@
                 android:id="@+id/divider3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="30dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="30dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginEnd="20dp"
                 android:background="?android:attr/listDivider"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

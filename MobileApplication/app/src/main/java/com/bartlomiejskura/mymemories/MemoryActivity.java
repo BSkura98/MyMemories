@@ -3,15 +3,18 @@ package com.bartlomiejskura.mymemories;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.bartlomiejskura.mymemories.model.Category;
@@ -19,7 +22,6 @@ import com.bartlomiejskura.mymemories.model.Memory;
 import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.task.DeleteMemoryTask;
 import com.bartlomiejskura.mymemories.task.DeleteUserFromMemoryTask;
-import com.bartlomiejskura.mymemories.task.EditMemoryTask;
 import com.bartlomiejskura.mymemories.utils.DateUtil;
 import com.bartlomiejskura.mymemories.utils.MemoryUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -40,12 +42,13 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallback {
-    private TextView titleTextView, descriptionTextView, dateTextView, creationDateTextView, priorityTextView, memoryFriendsTextView;
-    private ImageView memoryImage;
+    private TextView titleTextView, descriptionTextView, dateTextView, creationDateTextView, priorityTextView, memoryFriendsTextView, publicTextView;
+    private ImageView memoryImage, publicIcon;
     private SupportMapFragment mapFragment;
     private ChipGroup categoriesChipGroup;
-    private ImageButton deleteButton, editButton, untagYourselfButton;
+    private ImageButton moreButton, editButton, untagYourselfButton;
     private ConstraintLayout memoryConstraintLayout;
+    private View divider;
 
     private Memory memory;
     private SharedPreferences sharedPreferences;
@@ -71,10 +74,13 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
         memoryImage = findViewById(R.id.memoryImage);
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         categoriesChipGroup = findViewById(R.id.chipGroup2);
-        deleteButton = findViewById(R.id.deleteButton6);
-        editButton = findViewById(R.id.editButton3);
+        moreButton = findViewById(R.id.moreButton);
+        //editButton = findViewById(R.id.editButton3);
         untagYourselfButton = findViewById(R.id.untagYourselfButton2);
         memoryConstraintLayout = findViewById(R.id.memoryConstraintLayout);
+        publicIcon =  findViewById(R.id.imageView8);
+        publicTextView = findViewById(R.id.textView11);
+        divider = findViewById(R.id.divider3);
     }
 
     private void initValues(){
@@ -84,6 +90,7 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
         sharedPreferences = getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
     }
 
+    @SuppressLint("SetTextI18n")
     private void prepareViews(){
         //title text view
         titleTextView.setText(memory.getShortDescription());
@@ -127,13 +134,17 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
 
         //text view and icon related to public memory
         if(!memory.getPublicToFriends()){
-            findViewById(R.id.imageView8).setVisibility(View.GONE);
-            findViewById(R.id.textView11).setVisibility(View.GONE);
+            publicIcon.setImageResource(R.drawable.ic_lock_outline);
+            publicTextView.setText("Private");
+            //findViewById(R.id.imageView8).setVisibility(View.GONE);
+            //findViewById(R.id.textView11).setVisibility(View.GONE);
         }
 
         //categories chip group
         if(memory.getCategories()!=null&&memory.getCategories().size()>0){
             initCategoriesChipGroup(memory.getCategories());
+        }else{
+            categoriesChipGroup.setVisibility(View.GONE);
         }
 
         //map fragment
@@ -154,10 +165,15 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
             if(hideUntagButton){
                 untagYourselfButton.setVisibility(View.GONE);
             }
-            deleteButton.setVisibility(View.GONE);
-            editButton.setVisibility(View.GONE);
+            moreButton.setVisibility(View.GONE);
+            //editButton.setVisibility(View.GONE);
         }else{
             untagYourselfButton.setVisibility(View.GONE);
+        }
+
+        //divider
+        if(memory.getLongDescription().isEmpty()){
+            divider.setVisibility(View.GONE);
         }
     }
 
@@ -165,8 +181,12 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
         if(!memory.getMemoryOwner().getId().equals(sharedPreferences.getLong("userId",0))){
             untagYourselfButton.setOnClickListener(v -> untagYourselfFromMemory());
         }else{
-            editButton.setOnClickListener(v -> editMemory());
-            deleteButton.setOnClickListener(v -> deleteMemory());
+            //editButton.setOnClickListener(v -> editMemory());
+            //moreButton.setOnClickListener(v -> deleteMemory());
+
+            moreButton.setOnClickListener(v->{
+                showPopup();
+            });
         }
     }
 
@@ -252,6 +272,24 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
         i.putExtra("categories", gson.toJson(categories));
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(i);
+    }
+
+    public void showPopup(){
+        PopupMenu popupMenu = new PopupMenu(this, moreButton);
+        popupMenu.setOnMenuItemClickListener(item->{
+            switch (item.getItemId()){
+                case R.id.editItem:
+                    editMemory();
+                    return true;
+                case R.id.deleteItem:
+                    new Thread(this::deleteMemory).start();
+                    return true;
+                default:
+                    return false;
+            }
+        });
+        popupMenu.inflate(R.menu.menu_edit_delete);
+        popupMenu.show();
     }
 
     private void untagYourselfFromMemory(){
