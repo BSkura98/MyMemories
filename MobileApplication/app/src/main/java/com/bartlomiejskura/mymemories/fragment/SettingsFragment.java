@@ -31,11 +31,10 @@ import com.bartlomiejskura.mymemories.MainActivity;
 import com.bartlomiejskura.mymemories.R;
 import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.task.EditUserInformationTask;
-import com.google.android.gms.tasks.OnFailureListener;
+import com.bumptech.glide.Glide;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -188,11 +187,7 @@ public class SettingsFragment extends Fragment {
         //avatar settings
         String avatarUrl = sharedPreferences.getString("avatarUrl", null);
         if(avatarUrl!=null&&!avatarUrl.isEmpty()){
-            Picasso.get()
-                    .load(avatarUrl)
-                    .fit()
-                    .centerCrop()
-                    .into(avatarImageView);
+            Glide.with(this).load(avatarUrl).into(avatarImageView);
         }else{
             deleteAvatarButton.setVisibility(View.GONE);
             changeAvatarButton.setText("Select");
@@ -235,11 +230,7 @@ public class SettingsFragment extends Fragment {
                         .addOnSuccessListener(taskSnapshot -> taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(uri -> {
                             deleteAvatarButton.setVisibility(View.VISIBLE);
                             changeAvatarButton.setText("Change");
-                            Picasso.get()
-                                    .load(uri.toString())
-                                    .fit()
-                                    .centerCrop()
-                                    .into(avatarImageView);
+                            Glide.with(this).load(imageUri).into(avatarImageView);
 
                             try{
                                 User user = new User(
@@ -285,11 +276,7 @@ public class SettingsFragment extends Fragment {
     private void deleteProfilePicture(){
         StorageReference photoRef = FirebaseStorage.getInstance().getReference().getStorage().getReferenceFromUrl(sharedPreferences.getString("avatarUrl", null));
         photoRef.delete().addOnSuccessListener(aVoid -> {
-            Picasso.get()
-                    .load(R.drawable.default_avatar)
-                    .fit()
-                    .centerCrop()
-                    .into(avatarImageView);
+            Glide.with(this).load(R.drawable.default_avatar).into(avatarImageView);
             deleteAvatarButton.setVisibility(View.GONE);
             changeAvatarButton.setText("Select");
 

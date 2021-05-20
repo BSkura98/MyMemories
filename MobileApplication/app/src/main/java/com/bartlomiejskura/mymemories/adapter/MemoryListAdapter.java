@@ -23,9 +23,9 @@ import com.bartlomiejskura.mymemories.model.Memory;
 import com.bartlomiejskura.mymemories.model.Category;
 import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.utils.DateUtil;
+import com.bumptech.glide.Glide;
 import com.google.android.material.card.MaterialCardView;
 import com.google.gson.Gson;
-import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -87,11 +87,7 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
             holder.memoryImage.setVisibility(View.GONE);
         }else{
             holder.memoryImage.setVisibility(View.VISIBLE);
-            Picasso.get()
-                    .load(memories.get(position).getImageUrl())
-                    .fit()
-                    .centerCrop()
-                    .into(holder.memoryImage);
+            Glide.with(activity).load(memories.get(position).getImageUrl()).into(holder.memoryImage);
         }
 
         if(memories.get(position).getMemoryOwner().getId().equals(sharedPreferences.getLong("userId",0))){

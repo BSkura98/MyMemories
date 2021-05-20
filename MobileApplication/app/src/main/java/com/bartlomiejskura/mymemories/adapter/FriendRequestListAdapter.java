@@ -19,7 +19,7 @@ import com.bartlomiejskura.mymemories.R;
 import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.task.ConfirmFriendRequestTask;
 import com.bartlomiejskura.mymemories.task.RemoveFriendRequestTask;
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -56,17 +56,9 @@ public class FriendRequestListAdapter extends RecyclerView.Adapter<FriendRequest
         holder.birthdateTextView.setText("date of birth: "+getFormattedDate(users.get(position).getBirthday()));
 
         if(users.get(position).getAvatarUrl()!=null){
-            Picasso.get()
-                    .load(users.get(position).getAvatarUrl())
-                    .fit()
-                    .centerCrop()
-                    .into(holder.avatarImageView);
+            Glide.with(activity).load(users.get(position).getAvatarUrl()).into(holder.avatarImageView);
         }else{
-            Picasso.get()
-                    .load(R.drawable.default_avatar)
-                    .fit()
-                    .centerCrop()
-                    .into(holder.avatarImageView);
+            Glide.with(activity).load(R.drawable.default_avatar).into(holder.avatarImageView);
         }
     }
 

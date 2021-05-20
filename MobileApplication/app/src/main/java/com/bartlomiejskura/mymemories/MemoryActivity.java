@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -24,6 +23,8 @@ import com.bartlomiejskura.mymemories.task.DeleteMemoryTask;
 import com.bartlomiejskura.mymemories.task.DeleteUserFromMemoryTask;
 import com.bartlomiejskura.mymemories.utils.DateUtil;
 import com.bartlomiejskura.mymemories.utils.MemoryUtil;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -34,8 +35,6 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.RequestCreator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,7 +89,7 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
         sharedPreferences = getSharedPreferences("MyMemoriesPref", Context.MODE_PRIVATE);
     }
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint({"SetTextI18n", "CheckResult"})
     private void prepareViews(){
         //title text view
         titleTextView.setText(memory.getShortDescription());
@@ -125,9 +124,7 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
 
         //memory image
         if(memory.getImageUrl()!=null){
-            RequestCreator creator = Picasso.get().load(memory.getImageUrl());
-            memoryImage.post(() -> creator.resize(memoryImage.getWidth(), 0)
-                    .into(memoryImage));
+            Glide.with(this).load(memory.getImageUrl()).apply(new RequestOptions().fitCenter()).into(memoryImage);
         }else{
             memoryImage.setVisibility(View.GONE);
         }

@@ -1,6 +1,7 @@
 package com.bartlomiejskura.mymemories.adapter;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,13 +15,16 @@ import androidx.annotation.Nullable;
 
 import com.bartlomiejskura.mymemories.R;
 import com.bartlomiejskura.mymemories.model.User;
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
 public class FriendsAdapter extends ArrayAdapter<User> {
-    public FriendsAdapter(Context context, ArrayList<User> userList){
+    private Activity activity;
+
+    public FriendsAdapter(Context context, ArrayList<User> userList, Activity activity){
         super(context, 0, userList);
+        this.activity = activity;
     }
 
     @NonNull
@@ -50,17 +54,9 @@ public class FriendsAdapter extends ArrayAdapter<User> {
         User user = getItem(position);
         if(user!=null){
             if(user.getAvatarUrl()!=null){
-                Picasso.get()
-                        .load(user.getAvatarUrl())
-                        .fit()
-                        .centerCrop()
-                        .into(avatarImageView);
+                Glide.with(activity).load(user.getAvatarUrl()).into(avatarImageView);
             }else{
-                Picasso.get()
-                        .load(R.drawable.default_avatar)
-                        .fit()
-                        .centerCrop()
-                        .into(avatarImageView);
+                Glide.with(activity).load(R.drawable.default_avatar).into(avatarImageView);
             }
             nameTextView.setText(user.getFirstName().concat(" ").concat(user.getLastName()));
             birthdayTextView.setText("date of birth: "+getFormattedDate(user.getBirthday()));

@@ -25,11 +25,8 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -48,6 +45,7 @@ import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.task.CreateMemoryTask;
 import com.bartlomiejskura.mymemories.task.CreateOrGetCategoriesTask;
 import com.bartlomiejskura.mymemories.utils.CircleTransform;
+import com.bumptech.glide.Glide;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -229,9 +227,7 @@ public class AddMemoryActivity extends AppCompatActivity implements OnMapReadyCa
             }
         } );
 
-        deleteImageButton.setOnClickListener(v -> {
-            deleteImage(memory.getImageUrl(), false);
-        });
+        deleteImageButton.setOnClickListener(v -> deleteImage(memory.getImageUrl(), false));
 
         deleteTimeButton.setOnClickListener(v -> {
             timeButton.setText("Select");
@@ -241,7 +237,7 @@ public class AddMemoryActivity extends AppCompatActivity implements OnMapReadyCa
         addPersonButton.setOnClickListener(v -> {
             MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(AddMemoryActivity.this);
             builder.setTitle("Tag a Friend");
-            FriendsAdapter adapter = new FriendsAdapter(getApplicationContext(), friends);
+            FriendsAdapter adapter = new FriendsAdapter(getApplicationContext(), friends, this);
             builder.setAdapter(adapter, (dialog, which) -> {
                 final User friend = friends.get(which);
                 LayoutInflater inflater = LayoutInflater.from(AddMemoryActivity.this);
@@ -361,7 +357,7 @@ public class AddMemoryActivity extends AppCompatActivity implements OnMapReadyCa
                             memoryImage.setVisibility(View.VISIBLE);
                             deleteImage(memory.getImageUrl(), true);
                             memory.setImageUrl(uri.toString());
-                            Picasso.get().load(uri.toString()).into(memoryImage);
+                            Glide.with(this).load(imageUri).into(memoryImage);
                         }));
             }catch (Exception e){
                 System.out.println("ERROR:" + e.getMessage());

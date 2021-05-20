@@ -45,6 +45,7 @@ import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.task.CreateOrGetCategoriesTask;
 import com.bartlomiejskura.mymemories.task.EditMemoryTask;
 import com.bartlomiejskura.mymemories.utils.CircleTransform;
+import com.bumptech.glide.Glide;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -223,11 +224,7 @@ public class EditMemoryActivity extends AppCompatActivity implements OnMapReadyC
         //memory image
         imageUrl = getIntent().getStringExtra("imageUrl");
         if(imageUrl!=null){
-            Picasso.get()
-                    .load(imageUrl)
-                    .fit()
-                    .centerCrop()
-                    .into(memoryImage);
+            Glide.with(this).load(imageUrl).into(memoryImage);
         }else{
             deleteImageButton.setVisibility(View.GONE);
             memoryImage.setVisibility(View.GONE);
@@ -299,7 +296,7 @@ public class EditMemoryActivity extends AppCompatActivity implements OnMapReadyC
         addPersonButton.setOnClickListener(v -> {
             MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(EditMemoryActivity.this);
             builder.setTitle("Tag a Friend");
-            FriendsAdapter adapter1 = new FriendsAdapter(getApplicationContext(), friends);
+            FriendsAdapter adapter1 = new FriendsAdapter(getApplicationContext(), friends, this);
             builder.setAdapter(adapter1, (dialog, which) -> {
                 final User friend = friends.get(which);
                 LayoutInflater inflater = LayoutInflater.from(EditMemoryActivity.this);
@@ -406,7 +403,7 @@ public class EditMemoryActivity extends AppCompatActivity implements OnMapReadyC
                             memoryImage.setVisibility(View.VISIBLE);
                             deleteImage(memory.getImageUrl(), true);
                             memory.setImageUrl(uri.toString());
-                            Picasso.get().load(uri.toString()).into(memoryImage);
+                            Glide.with(this).load(imageUri).into(memoryImage);
                         }));
             }catch (Exception e){
                 System.out.println("ERROR:" + e.getMessage());
