@@ -85,8 +85,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
 
 
     private void changePassword(){
-        if(!newPassword1EditText.getText().toString().equals(newPassword2EditText.getText().toString())){
-            runOnUiThread(() -> Snackbar.make(changePasswordConstraintLayout, "Passwords given in fields \"New password\" and \"Confirm new password\" are not the same!", Snackbar.LENGTH_LONG).show());
+        if(!verifyData()){
             return;
         }
 
@@ -115,5 +114,33 @@ public class ChangePasswordActivity extends AppCompatActivity {
             runOnUiThread(()->changePasswordProgressIndicator.setVisibility(View.GONE));
             e.printStackTrace();
         }
+    }
+
+    private boolean verifyData(){
+        if(currentPasswordEditText.getText().toString().isEmpty()){
+            runOnUiThread(() -> Snackbar.make(changePasswordConstraintLayout, "Current password field cannot be empty", Snackbar.LENGTH_LONG).show());
+            return false;
+        }
+        if(newPassword1EditText.getText().toString().isEmpty()){
+            runOnUiThread(() -> Snackbar.make(changePasswordConstraintLayout, "New password field cannot be empty", Snackbar.LENGTH_LONG).show());
+            return false;
+        }
+        if(newPassword1EditText.getText().toString().length()<6){
+            runOnUiThread(() -> Snackbar.make(changePasswordConstraintLayout, "New password should be at least 6 characters long", Snackbar.LENGTH_LONG).show());
+            return false;
+        }
+        if(newPassword1EditText.getText().toString().length()>30){
+            runOnUiThread(() -> Snackbar.make(changePasswordConstraintLayout, "New password is too long", Snackbar.LENGTH_LONG).show());
+            return false;
+        }
+        if(newPassword2EditText.getText().toString().isEmpty()){
+            runOnUiThread(() -> Snackbar.make(changePasswordConstraintLayout, "Confirm new password field cannot be empty", Snackbar.LENGTH_LONG).show());
+            return false;
+        }
+        if(!newPassword2EditText.getText().toString().equals(newPassword1EditText.getText().toString())){
+            runOnUiThread(() -> Snackbar.make(changePasswordConstraintLayout, "Passwords given in fields \"New password\" and \"Confirm new password\" are not the same", Snackbar.LENGTH_LONG).show());
+            return false;
+        }
+        return true;
     }
 }

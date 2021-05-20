@@ -331,6 +331,10 @@ public class SettingsFragment extends Fragment {
 
     @SuppressLint("SetTextI18n")
     private void editUserInformation(Long id, String email, String firstName, String lastName, String birthday, String uri){
+        if(!verifyData(firstName, lastName)){
+            return;
+        }
+
         User user = new User(
                 id,
                 email,
@@ -396,5 +400,37 @@ public class SettingsFragment extends Fragment {
         }, YEAR, MONTH, DATE);
 
         datePickerDialog.show();
+    }
+
+    private boolean verifyData(String firstName, String lastName){
+        if(firstName.isEmpty()){
+            firstNameEditText.setText(sharedPreferences.getString("firstName", null));
+            if(getActivity()!=null){
+                ((MainActivity)getActivity()).showSnackbar("First name field cannot be empty");
+            }
+            return false;
+        }
+        if(firstName.length()>20){
+            firstNameEditText.setText(sharedPreferences.getString("firstName", null));
+            if(getActivity()!=null){
+                ((MainActivity)getActivity()).showSnackbar("First name cannot be longer than 20 characters");
+            }
+            return false;
+        }
+        if(lastName.isEmpty()){
+            secondNameEditText.setText(sharedPreferences.getString("lastName", null));
+            if(getActivity()!=null){
+                ((MainActivity)getActivity()).showSnackbar("Second name field cannot be empty");
+            }
+            return false;
+        }
+        if(lastName.length()>20){
+            secondNameEditText.setText(sharedPreferences.getString("lastName", null));
+            if(getActivity()!=null){
+                ((MainActivity)getActivity()).showSnackbar("Second name cannot be longer than 20 characters");
+            }
+            return false;
+        }
+        return true;
     }
 }

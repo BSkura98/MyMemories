@@ -166,12 +166,24 @@ public class RegisterActivity extends AppCompatActivity {
             firstNameLayout.setError("First name field cannot be empty");
             return false;
         }
+        if(firstNameEditText.getText().toString().length()>20){
+            firstNameLayout.setError("First name cannot be longer than 20 characters");
+            return false;
+        }
         if(lastNameEditText.getText().toString().isEmpty()){
             lastNameLayout.setError("Last name field cannot be empty");
             return false;
         }
+        if(lastNameEditText.getText().toString().length()>20){
+            lastNameLayout.setError("Last name cannot be longer than 20 characters");
+            return false;
+        }
         if(emailEditText.getText().toString().isEmpty()){
             emailLayout.setError("Email field cannot be empty");
+            return false;
+        }
+        if(emailEditText.getText().toString().length()>30){
+            emailLayout.setError("Email is too long");
             return false;
         }
         String[] checkArray = emailEditText.getText().toString().split("@");
@@ -197,7 +209,11 @@ public class RegisterActivity extends AppCompatActivity {
             return false;
         }
         if(passwordEditText.getText().toString().length()<6){
-            passwordLayout.setError("The password should be at least 6 characters long");
+            passwordLayout.setError("Password should be at least 6 characters long");
+            return false;
+        }
+        if(passwordEditText.getText().toString().length()>30){
+            passwordLayout.setError("Password is too long");
             return false;
         }
         if(repeatPasswordEditText.getText().toString().isEmpty()){
