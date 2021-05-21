@@ -238,7 +238,7 @@ public class EditMemoryActivity extends AppCompatActivity implements OnMapReadyC
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.priorities, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         prioritySpinner.setAdapter(adapter);
-        prioritySpinner.setSelection(memoryPriority==10?2:(memoryPriority==50?1:0));
+        prioritySpinner.setSelection(memoryPriority==10?0:(memoryPriority==50?1:2));
 
         //map fragment and delete location button
         mapFragment.getMapAsync(this);

@@ -181,6 +181,7 @@ public class AddMemoryActivity extends AppCompatActivity implements OnMapReadyCa
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.priorities, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         prioritySpinner.setAdapter(adapter);
+        prioritySpinner.setSelection(1);
 
         //memory image and delete image button
         deleteImageButton.setVisibility(View.GONE);
