@@ -462,7 +462,7 @@ public class EditMemoryActivity extends AppCompatActivity implements OnMapReadyC
                         }
                     });
                 }else{
-                    showPlacePicker(0, 0);
+                    showPlacePicker(51.75, 19.45);
                 }
             }
         }

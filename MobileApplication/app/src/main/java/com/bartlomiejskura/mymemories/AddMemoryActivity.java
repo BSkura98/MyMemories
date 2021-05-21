@@ -413,7 +413,7 @@ public class AddMemoryActivity extends AppCompatActivity implements OnMapReadyCa
                         }
                     });
                 }else{
-                    showPlacePicker(0, 0);
+                    showPlacePicker(51.75, 19.45);
                 }
             }
         }
