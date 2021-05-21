@@ -568,7 +568,7 @@ public class EditMemoryActivity extends AppCompatActivity implements OnMapReadyC
             calendar.set(Calendar.SECOND, 1);
         }
 
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         memory.setId(getIntent().getLongExtra("memoryId", 0));
         memory.setShortDescription(title);
         memory.setLongDescription(description==null?"":description);
@@ -680,7 +680,7 @@ public class EditMemoryActivity extends AppCompatActivity implements OnMapReadyC
     }
 
     private void selectTime() {
-        int HOUR = calendar.get(Calendar.HOUR);
+        int HOUR = calendar.get(Calendar.HOUR_OF_DAY);
         int MINUTE = calendar.get(Calendar.MINUTE);
         boolean is24HourFormat = true;
 

@@ -446,7 +446,7 @@ public class AddMemoryActivity extends AppCompatActivity implements OnMapReadyCa
             return;
         }
 
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Calendar calendar = Calendar.getInstance();
         if(year!=null&&month!=null&&day!=null){
             calendar.set(year, month, day, hour==null?0:hour, minute==null?0:minute);
@@ -569,7 +569,7 @@ public class AddMemoryActivity extends AppCompatActivity implements OnMapReadyCa
 
     private void selectTime() {
         Calendar calendar = Calendar.getInstance();
-        int HOUR = calendar.get(Calendar.HOUR);
+        int HOUR = calendar.get(Calendar.HOUR_OF_DAY);
         int MINUTE = calendar.get(Calendar.MINUTE);
         boolean is24HourFormat = true;
 

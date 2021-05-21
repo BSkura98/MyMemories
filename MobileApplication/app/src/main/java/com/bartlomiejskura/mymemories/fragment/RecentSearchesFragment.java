@@ -130,6 +130,9 @@ public class RecentSearchesFragment extends Fragment {
     }
 
     public void addRecentSearch(String search){
+        if(recentSearches==null){
+            return;
+        }
         recentSearches.remove(search);
 
         recentSearches.add(0, search);
