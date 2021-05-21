@@ -422,11 +422,7 @@ public class AddMemoryActivity extends AppCompatActivity implements OnMapReadyCa
     private void addMemory(String title, String description){
         runOnUiThread(()->addMemoryProgressIndicator.setVisibility(View.VISIBLE));
 
-        if (title.isEmpty()) {
-            runOnUiThread(() -> {
-                titleInputLayout.setError("Title field cannot be empty!");
-                addMemoryProgressIndicator.setVisibility(View.GONE);
-            });
+        if (!verifyData(title,description)) {
             return;
         }
 
@@ -485,6 +481,32 @@ public class AddMemoryActivity extends AppCompatActivity implements OnMapReadyCa
             runOnUiThread(()->addMemoryProgressIndicator.setVisibility(View.GONE));
             System.out.println("ERROR:" + e.getMessage());
         }
+    }
+
+    private boolean verifyData(String title, String description){
+        if (title.isEmpty()) {
+            runOnUiThread(() -> {
+                titleInputLayout.setError("Title field cannot be empty!");
+                addMemoryProgressIndicator.setVisibility(View.GONE);
+            });
+            return false;
+        }
+        if (title.length()>255) {
+            runOnUiThread(() -> {
+                titleInputLayout.setError("Title cannot be longer than 255 characters");
+                addMemoryProgressIndicator.setVisibility(View.GONE);
+            });
+            return false;
+        }
+        if (description.length()>10000) {
+            runOnUiThread(() -> {
+                titleInputLayout.setError("Description cannot be longer than 10000 characters");
+                addMemoryProgressIndicator.setVisibility(View.GONE);
+            });
+            return false;
+        }
+
+        return true;
     }
 
     private List<Category> getCategories(){

@@ -47,6 +47,8 @@
                     android:id="@+id/memoryTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="3"
                     android:text="Title"
                     android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Headline6" />
 
@@ -78,6 +80,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
+                    android:ellipsize="end"
+                    android:maxLines="5"
                     android:text="Description"
                     android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body2" />
 
