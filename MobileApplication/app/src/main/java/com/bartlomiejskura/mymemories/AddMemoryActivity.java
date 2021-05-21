@@ -486,6 +486,8 @@ public class AddMemoryActivity extends AppCompatActivity implements OnMapReadyCa
                 runOnUiThread(()->{
                     if(createMemoryTask.getError().contains("Unable to resolve host")){
                         Snackbar.make(addMemoryConstraintLayout, "Problem with the Internet connection", Snackbar.LENGTH_LONG).show();
+                    }else if(createMemoryTask.getError().contains("timeout")){
+                        Snackbar.make(addMemoryConstraintLayout, "Connection timed out", Snackbar.LENGTH_LONG).show();
                     }else{
                         Snackbar.make(addMemoryConstraintLayout, "A problem occurred", Snackbar.LENGTH_LONG).show();
                     }

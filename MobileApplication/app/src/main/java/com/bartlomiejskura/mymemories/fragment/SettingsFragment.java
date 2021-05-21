@@ -354,6 +354,8 @@ public class SettingsFragment extends Fragment {
                 if(getActivity() instanceof MainActivity){
                     if(editUserInformationTask.getError().contains("Unable to resolve host")){
                         ((MainActivity)getActivity()).showSnackbar("Problem with the Internet connection");
+                    }else if(editUserInformationTask.getError().contains("timeout")){
+                        ((MainActivity)getActivity()).showSnackbar("Connection timed out");
                     }else{
                         ((MainActivity)getActivity()).showSnackbar("A problem occurred");
                     }

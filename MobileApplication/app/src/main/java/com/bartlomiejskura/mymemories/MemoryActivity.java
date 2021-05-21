@@ -237,6 +237,8 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
                 runOnUiThread(()->{
                     if(task.getError().contains("Unable to resolve host")){
                         Snackbar.make(memoryConstraintLayout, "Problem with the Internet connection", Snackbar.LENGTH_LONG).show();
+                    }else if(task.getError().contains("timeout")){
+                        Snackbar.make(memoryConstraintLayout, "Connection timed out", Snackbar.LENGTH_LONG).show();
                     }else{
                         Snackbar.make(memoryConstraintLayout, "A problem occurred", Snackbar.LENGTH_LONG).show();
                     }
@@ -304,6 +306,8 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
                 runOnUiThread(()->{
                     if(task.getError().contains("Unable to resolve host")){
                         Snackbar.make(memoryConstraintLayout, "Problem with the Internet connection", Snackbar.LENGTH_LONG).show();
+                    }else if(task.getError().contains("timeout")){
+                        Snackbar.make(memoryConstraintLayout, "Connection timed out", Snackbar.LENGTH_LONG).show();
                     }else{
                         Snackbar.make(memoryConstraintLayout, "A problem occurred", Snackbar.LENGTH_LONG).show();
                     }

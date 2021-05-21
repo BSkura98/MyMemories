@@ -16,6 +16,7 @@ import com.bartlomiejskura.mymemories.adapter.MemoryListAdapter;
 import com.bartlomiejskura.mymemories.model.Memory;
 import com.bartlomiejskura.mymemories.task.SearchMemoriesTask;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -110,6 +111,8 @@ public class SearchResultsActivity extends AppCompatActivity {
                     messageTextView.setVisibility(View.VISIBLE);
                     if(task.getError().contains("Unable to resolve host")){
                         messageTextView.setText("Problem with the Internet connection");
+                    }else if(task.getError().contains("timeout")){
+                        messageTextView.setText("Connection timed out");
                     }else{
                         messageTextView.setText("A problem occurred");
                     }

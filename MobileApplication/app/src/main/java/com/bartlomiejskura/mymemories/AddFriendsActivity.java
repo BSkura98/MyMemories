@@ -126,6 +126,8 @@ public class AddFriendsActivity extends AppCompatActivity {
                     messageTextView.setVisibility(View.VISIBLE);
                     if(task.getError().contains("Unable to resolve host")){
                         messageTextView.setText("Problem with the Internet connection");
+                    }else if(task.getError().contains("timeout")){
+                        messageTextView.setText("Connection timed out");
                     }else{
                         messageTextView.setText("A problem occurred");
                     }

@@ -600,6 +600,8 @@ public class EditMemoryActivity extends AppCompatActivity implements OnMapReadyC
                 runOnUiThread(()->{
                     if(editMemoryTask.getError().contains("Unable to resolve host")){
                         Snackbar.make(editMemoryConstraintLayout, "Problem with the Internet connection", Snackbar.LENGTH_LONG).show();
+                    }else if(editMemoryTask.getError().contains("timeout")){
+                        Snackbar.make(editMemoryConstraintLayout, "Connection timed out", Snackbar.LENGTH_LONG).show();
                     }else{
                         Snackbar.make(editMemoryConstraintLayout, "A problem occurred", Snackbar.LENGTH_LONG).show();
                     }

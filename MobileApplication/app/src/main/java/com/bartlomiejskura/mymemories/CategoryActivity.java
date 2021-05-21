@@ -122,6 +122,8 @@ public class CategoryActivity extends AppCompatActivity implements ChangeCategor
                         Snackbar.make(categoryConstraintLayout, "Problem with the Internet connection", Snackbar.LENGTH_LONG).show();
                     }else if(task.getError().contains("409")){
                         Snackbar.make(categoryConstraintLayout, "Category with the given name already exists", Snackbar.LENGTH_LONG).show();
+                    }else if(task.getError().contains("timeout")){
+                        Snackbar.make(categoryConstraintLayout, "Connection timed out", Snackbar.LENGTH_LONG).show();
                     }else{
                         Snackbar.make(categoryConstraintLayout, "A problem occurred", Snackbar.LENGTH_LONG).show();
                     }
@@ -143,6 +145,8 @@ public class CategoryActivity extends AppCompatActivity implements ChangeCategor
                     messageTextView.setVisibility(View.VISIBLE);
                     if(task.getError().contains("Unable to resolve host")){
                         messageTextView.setText("Problem with the Internet connection");
+                    }else if(task.getError().contains("timeout")){
+                        messageTextView.setText("Connection timed out");
                     }else{
                         messageTextView.setText("A problem occurred");
                     }

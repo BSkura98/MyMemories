@@ -102,6 +102,8 @@ public class ChangePasswordActivity extends AppCompatActivity {
                 runOnUiThread(()->{
                     if(changePasswordTask.getError().contains("Unable to resolve host")){
                         Snackbar.make(changePasswordConstraintLayout, "Problem with the Internet connection", Snackbar.LENGTH_LONG).show();
+                    }else if(changePasswordTask.getError().contains("timeout")){
+                        Snackbar.make(changePasswordConstraintLayout, "Connection timed out", Snackbar.LENGTH_LONG).show();
                     }else{
                         Snackbar.make(changePasswordConstraintLayout, "A problem occurred", Snackbar.LENGTH_LONG).show();
                     }
