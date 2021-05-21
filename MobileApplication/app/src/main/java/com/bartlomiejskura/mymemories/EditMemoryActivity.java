@@ -328,6 +328,12 @@ public class EditMemoryActivity extends AppCompatActivity implements OnMapReadyC
 
         addCategoryButton.setOnClickListener(v -> {
             String category = categoryEditText.getText().toString().toLowerCase();
+            if(category.length()>20){
+                runOnUiThread(() -> {
+                    Snackbar.make(editMemoryConstraintLayout, "Category name cannot be longer than 20 characters", Snackbar.LENGTH_LONG).show();
+                });
+                return;
+            }
             if(!categories.contains(category)&&!category.isEmpty()){
                 initChipCategory(category);
             }

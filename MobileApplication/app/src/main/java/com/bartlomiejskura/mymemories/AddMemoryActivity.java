@@ -274,6 +274,12 @@ public class AddMemoryActivity extends AppCompatActivity implements OnMapReadyCa
             LayoutInflater inflater = LayoutInflater.from(AddMemoryActivity.this);
 
             String category = categoryEditText.getText().toString().toLowerCase();
+            if(category.length()>20){
+                runOnUiThread(() -> {
+                    Snackbar.make(addMemoryConstraintLayout, "Category name cannot be longer than 20 characters", Snackbar.LENGTH_LONG).show();
+                });
+                return;
+            }
             if(!categories.contains(category)&&!category.isEmpty()){
                 Chip chip = (Chip)inflater.inflate(R.layout.chip_with_close_icon, null, false);
                 chip.setText(category);

@@ -101,11 +101,22 @@ public class CategoryActivity extends AppCompatActivity implements ChangeCategor
                 runOnUiThread(()-> Snackbar.make(categoryConstraintLayout, "Incorrect category name", Snackbar.LENGTH_LONG).show());
                 return;
             }
+            if(name.equalsIgnoreCase(getIntent().getStringExtra("category"))){
+                return;
+            }
+            if(name.length()>20){
+                runOnUiThread(() -> {
+                    Snackbar.make(categoryConstraintLayout, "Category name cannot be longer than 20 characters", Snackbar.LENGTH_LONG).show();
+                });
+                return;
+            }
+            name = name.toLowerCase();
             EditCategoryTask task = new EditCategoryTask(this, new Category(categoryId, name, new User(sharedPreferences.getLong("userId", 0),sharedPreferences.getString("email","")), adapter.getMemories()));
             boolean result = task.execute().get();
+            String finalName = name;
             runOnUiThread(()->{
                 if(result){
-                    toolbarTextView.setText(name);
+                    toolbarTextView.setText(finalName);
                 }else{
                     if(task.getError().contains("Unable to resolve host")){
                         Snackbar.make(categoryConstraintLayout, "Problem with the Internet connection", Snackbar.LENGTH_LONG).show();
