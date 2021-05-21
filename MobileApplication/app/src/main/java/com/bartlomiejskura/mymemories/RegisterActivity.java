@@ -9,6 +9,8 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.Button;
@@ -73,6 +75,61 @@ public class RegisterActivity extends AppCompatActivity {
 
         signUpButton.setOnClickListener(v -> {
             registerUser();
+        });
+
+        firstNameEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                firstNameLayout.setError("");
+            }
+            @Override
+            public void afterTextChanged(Editable s) { }
+        });
+
+        lastNameEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                lastNameLayout.setError("");
+            }
+            @Override
+            public void afterTextChanged(Editable s) { }
+        });
+
+        emailEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                emailLayout.setError("");
+            }
+            @Override
+            public void afterTextChanged(Editable s) { }
+        });
+
+        passwordEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                passwordLayout.setError("");
+            }
+            @Override
+            public void afterTextChanged(Editable s) { }
+        });
+
+        repeatPasswordEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                repeatPasswordLayout.setError("");
+            }
+            @Override
+            public void afterTextChanged(Editable s) { }
         });
     }
 

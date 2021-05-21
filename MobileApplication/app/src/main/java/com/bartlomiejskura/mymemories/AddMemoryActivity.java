@@ -24,6 +24,8 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -344,6 +346,17 @@ public class AddMemoryActivity extends AppCompatActivity implements OnMapReadyCa
         });
 
         prioritySpinner.setOnItemSelectedListener(new OnItemSelectedListener());
+
+        titleEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                titleInputLayout.setError("");
+            }
+            @Override
+            public void afterTextChanged(Editable s) { }
+        });
     }
 
 
