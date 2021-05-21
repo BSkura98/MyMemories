@@ -181,9 +181,7 @@ public class MemoriesFragment extends Fragment {
 
     private void selectDate() {
         Calendar calendar = Calendar.getInstance();
-        int YEAR = calendar.get(Calendar.YEAR);
-        int MONTH = calendar.get(Calendar.MONTH);
-        int DATE = calendar.get(Calendar.DATE);
+        calendar.setTime(date);
 
         if(getContext()==null){
             return;
@@ -198,7 +196,7 @@ public class MemoriesFragment extends Fragment {
             dateButton.setText(dateText);
 
             new Thread(() -> getMemories(date)).start();
-        }, YEAR, MONTH, DATE);
+        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE));
 
         datePickerDialog.show();
     }
