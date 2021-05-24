@@ -612,10 +612,9 @@ public class EditMemoryActivity extends AppCompatActivity implements OnMapReadyC
             if(oldImageToDelete){
                 deleteImage(imageUrl, true);//usuwanie starego zdjęcia, które wcześniej było przypisane do wspomnienia
             }
-            Intent i = new Intent(getApplicationContext(), MainActivity.class);
-            i.putExtra("fragmentToLoad", "datesFragment");
-            i.putExtra("date", memory.getDate());
-            startActivity(i);
+            Intent i = new Intent();
+            setResult(Activity.RESULT_OK,i);
+            finish();
         }catch (Exception e){
             runOnUiThread(()->editMemoryProgressIndicator.setVisibility(View.GONE));
             System.out.println("ERROR:" + e.getMessage());

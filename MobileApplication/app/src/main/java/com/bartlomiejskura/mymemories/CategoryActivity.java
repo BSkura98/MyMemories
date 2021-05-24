@@ -1,5 +1,6 @@
 package com.bartlomiejskura.mymemories;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -7,7 +8,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
@@ -39,6 +42,7 @@ public class CategoryActivity extends AppCompatActivity implements ChangeCategor
     private MemoryListAdapter adapter;
     private Long categoryId;
     private SharedPreferences sharedPreferences;
+    private boolean categoryNameModified = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +90,7 @@ public class CategoryActivity extends AppCompatActivity implements ChangeCategor
     }
 
     private void setListeners(){
-        backButton.setOnClickListener(v -> super.onBackPressed());
+        backButton.setOnClickListener(v -> onBackPressed());
 
         editCategoryNameButton.setOnClickListener(v->{
             openChangeCategoryNameDialog();
@@ -114,6 +118,7 @@ public class CategoryActivity extends AppCompatActivity implements ChangeCategor
             EditCategoryTask task = new EditCategoryTask(this, new Category(categoryId, name, new User(sharedPreferences.getLong("userId", 0),sharedPreferences.getString("email","")), adapter.getMemories()));
             boolean result = task.execute().get();
             String finalName = name;
+            categoryNameModified = true;
             runOnUiThread(()->{
                 if(result){
                     toolbarTextView.setText(finalName);
@@ -134,10 +139,43 @@ public class CategoryActivity extends AppCompatActivity implements ChangeCategor
         }
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        int LAUNCH_SECOND_ACTIVITY = 1;
+
+        if (requestCode == LAUNCH_SECOND_ACTIVITY) {
+            if(resultCode == Activity.RESULT_OK){
+                new Thread(this::getMemories).start();
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                // Write your code if there's no result
+            }
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        int CATEGORY_MODIFIED = 123;
+
+        Intent i = new Intent();
+        if(categoryNameModified){
+            setResult(CATEGORY_MODIFIED,i);
+        }else{
+            setResult(Activity.RESULT_OK,i);
+        }
+        finish();
+    }
+
 
     @SuppressLint("SetTextI18n")
     public void getMemories(){
         try{
+            runOnUiThread(()->{
+                memoryList.setAdapter(null);
+                messageTextView.setVisibility(View.GONE);
+                categoryProgressIndicator.setVisibility(View.VISIBLE);
+            });
             GetMemoriesInCategoryTask task = new GetMemoriesInCategoryTask(this, categoryId);
             Memory[] memoryArray = task.execute().get();
             if(memoryArray ==null){

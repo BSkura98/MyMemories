@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bartlomiejskura.mymemories.MemoryActivity;
@@ -38,6 +39,7 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
     private Context context;
     private List<Memory> memories;
     private Activity activity;
+    private Fragment fragment;
     private List<Memory> hidden = new ArrayList<>();
     private SharedPreferences sharedPreferences;
     private Gson gson = new Gson();
@@ -187,6 +189,10 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
         return memories;
     }
 
+    public void setFragment(Fragment fragment){
+        this.fragment = fragment;
+    }
+
     class MyViewHolder extends RecyclerView.ViewHolder {
         TextView memoryTitle, memoryDate, memoryDescription, memoryFriends;
         LinearLayout memoryLinearLayout, memoryFriendLinearLayout;
@@ -209,13 +215,17 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
         }
 
         private void startMemoryActivity(int position){
+            int LAUNCH_SECOND_ACTIVITY = 1;
+
             Intent i = new Intent(activity.getApplicationContext(), MemoryActivity.class);
             i.putExtra("memory", gson.toJson(memories.get(position)));
-
             List<Category> categories = new ArrayList<>(memories.get(position).getCategories());
             i.putExtra("categories", gson.toJson(categories));
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            activity.getApplicationContext().startActivity(i);
+            if(fragment!=null){
+                fragment.startActivityForResult(i, LAUNCH_SECOND_ACTIVITY);
+            }else{
+                activity.startActivityForResult(i, LAUNCH_SECOND_ACTIVITY);
+            }
         }
     }
 }

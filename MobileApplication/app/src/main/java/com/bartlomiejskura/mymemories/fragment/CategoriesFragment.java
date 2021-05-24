@@ -1,6 +1,8 @@
 package com.bartlomiejskura.mymemories.fragment;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -61,6 +63,11 @@ public class CategoriesFragment extends Fragment {
             if(getActivity()==null){
                 throw new NullPointerException();
             }
+            getActivity().runOnUiThread(()->{
+                categoryList.setAdapter(null);
+                messageTextView.setVisibility(View.GONE);
+                categoriesProgressIndicator.setVisibility(View.VISIBLE);
+            });
             GetCategoriesTask task = new GetCategoriesTask(getActivity());
             Category[] categoryArray = task.execute().get();
             if(categoryArray ==null){
@@ -89,6 +96,7 @@ public class CategoriesFragment extends Fragment {
                             categories,
                             getActivity()
                     );
+                    adapter.setFragment(this);
                     categoriesProgressIndicator.setVisibility(View.GONE);
                     categoryList.setAdapter(adapter);
                     categoryList.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -99,6 +107,20 @@ public class CategoriesFragment extends Fragment {
                 getActivity().runOnUiThread(()->categoriesProgressIndicator.setVisibility(View.GONE));
             }
             e.printStackTrace();
+        }
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        int LAUNCH_SECOND_ACTIVITY = 1;
+        int CATEGORY_MODIFIED = 123;
+
+        if (requestCode == LAUNCH_SECOND_ACTIVITY) {
+            if(resultCode == CATEGORY_MODIFIED){
+                new Thread(this::getCategories).start();
+            }
         }
     }
 }

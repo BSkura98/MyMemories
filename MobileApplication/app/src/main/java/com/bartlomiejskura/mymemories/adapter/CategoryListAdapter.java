@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bartlomiejskura.mymemories.CategoryActivity;
@@ -19,13 +20,13 @@ import com.bartlomiejskura.mymemories.model.Memory;
 import com.bartlomiejskura.mymemories.model.Category;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapter.MyViewHolder> {
     private Context context;
     private List<Category> categories;
     private Activity activity;
+    private Fragment fragment;
 
     public CategoryListAdapter(Context context, List<Category> categories, Activity activity) {
         this.context = context;
@@ -58,7 +59,7 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
         return categories.size();
     }
 
-    public void sort(List<Category> categories){
+    private void sort(List<Category> categories){
         Collections.sort(categories, (category1, category2) -> {
             if(category1.getMemories()==null){
                 if(category2.getMemories()==null){
@@ -75,11 +76,15 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
         });
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder{
+    public void setFragment(Fragment fragment){
+        this.fragment = fragment;
+    }
+
+    class MyViewHolder extends RecyclerView.ViewHolder{
         TextView categoryName, memoryNumber, textView28;
         LinearLayout categoryLinearLayout;
 
-        public MyViewHolder(@NonNull View itemView) {
+        MyViewHolder(@NonNull View itemView) {
             super(itemView);
 
             categoryLinearLayout = itemView.findViewById(R.id.categoryLinearLayout);
@@ -87,15 +92,20 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
             memoryNumber = itemView.findViewById(R.id.memoryNumber);
             textView28 = itemView.findViewById(R.id.textView28);
 
-            categoryLinearLayout.setOnClickListener(v -> startMemoryActivity(getAdapterPosition()));
+            categoryLinearLayout.setOnClickListener(v -> startCategoryActivity(getAdapterPosition()));
         }
 
-        private void startMemoryActivity(int position){
+        private void startCategoryActivity(int position){
+            int LAUNCH_SECOND_ACTIVITY = 1;
+
             Intent i = new Intent(activity.getApplicationContext(), CategoryActivity.class);
             i.putExtra("category", categories.get(position).getName());
             i.putExtra("categoryId", categories.get(position).getId());
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            activity.getApplicationContext().startActivity(i);
+            if(fragment!=null){
+                fragment.startActivityForResult(i, LAUNCH_SECOND_ACTIVITY);
+            }else{
+                activity.startActivityForResult(i, LAUNCH_SECOND_ACTIVITY);
+            }
         }
     }
 }

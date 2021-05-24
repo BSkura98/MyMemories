@@ -1,6 +1,8 @@
 package com.bartlomiejskura.mymemories.fragment;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -62,6 +64,11 @@ public class FriendsMemoriesFragment extends Fragment {
             if(getActivity()==null){
                 throw new NullPointerException();
             }
+            getActivity().runOnUiThread(()->{
+                friendsMemoriesRecyclerView.setAdapter(null);
+                messageTextView.setVisibility(View.GONE);
+                friendsMemoriesProgressIndicator.setVisibility(View.VISIBLE);
+            });
             GetFriendsMemoriesTask task = new GetFriendsMemoriesTask(getActivity());
             Memory[] memoryArray = task.execute().get();
             if(memoryArray ==null){
@@ -90,6 +97,7 @@ public class FriendsMemoriesFragment extends Fragment {
                             memories,
                             getActivity()
                     );
+                    adapter.setFragment(this);
                     friendsMemoriesProgressIndicator.setVisibility(View.GONE);
                     friendsMemoriesRecyclerView.setAdapter(adapter);
                     friendsMemoriesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -100,6 +108,22 @@ public class FriendsMemoriesFragment extends Fragment {
                 getActivity().runOnUiThread(()->friendsMemoriesProgressIndicator.setVisibility(View.GONE));
             }
             e.printStackTrace();
+        }
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        int LAUNCH_SECOND_ACTIVITY = 1;
+
+        if (requestCode == LAUNCH_SECOND_ACTIVITY) {
+            if(resultCode == Activity.RESULT_OK){
+                new Thread(this::getMemories).start();
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                // Write your code if there's no result
+            }
         }
     }
 }

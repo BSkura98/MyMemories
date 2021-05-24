@@ -1,6 +1,7 @@
 package com.bartlomiejskura.mymemories.fragment;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -122,6 +123,21 @@ public class MemoriesFragment extends Fragment {
     }
 
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        int LAUNCH_SECOND_ACTIVITY = 1;
+
+        if (requestCode == LAUNCH_SECOND_ACTIVITY) {
+            if(resultCode == Activity.RESULT_OK){
+                new Thread(() -> getMemories(date)).start();
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                // Write your code if there's no result
+            }
+        }
+    }
+
     @SuppressLint("SetTextI18n")
     private void getMemories(Date date){
         try{
@@ -165,6 +181,7 @@ public class MemoriesFragment extends Fragment {
                                 memories,
                                 getActivity()
                         );
+                        adapter.setFragment(this);
                         memoriesFragmentProgressIndicator.setVisibility(View.GONE);
                         memoryList.setAdapter(adapter);
                         memoryList.setLayoutManager(new LinearLayoutManager(getContext()));

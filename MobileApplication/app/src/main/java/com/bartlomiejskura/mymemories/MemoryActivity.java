@@ -1,5 +1,6 @@
 package com.bartlomiejskura.mymemories;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
@@ -205,6 +206,23 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
         }
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        int LAUNCH_SECOND_ACTIVITY = 1;
+
+        if (requestCode == LAUNCH_SECOND_ACTIVITY) {
+            if(resultCode == Activity.RESULT_OK){
+                Intent i = new Intent();
+                setResult(Activity.RESULT_OK,i);
+                finish();
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                // Write your code if there's no result
+            }
+        }
+    }
+
 
     private String getPriorityOption(int priority){
         return priority<=10?"Low priority":(priority<=50?"Medium priority":"High priority");
@@ -228,11 +246,9 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
         try{
             Boolean result = task.execute().get();
             if(result){
-                Intent i = new Intent(this, MainActivity.class);
-                i.putExtra("date", memory.getDate());
-                i.putExtra("fragmentToLoad", "datesFragment");
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(i);
+                Intent i = new Intent();
+                setResult(Activity.RESULT_OK,i);
+                finish();
             }else{
                 runOnUiThread(()->{
                     if(task.getError().contains("Unable to resolve host")){
@@ -269,8 +285,7 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
         i.putExtra("memoryFriends", gson.toJson(memory.getMemoryFriends()));
         List<Category> categories = new ArrayList<>(memory.getCategories());
         i.putExtra("categories", gson.toJson(categories));
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(i);
+        startActivityForResult(i, 1);
     }
 
     public void showPopup(){

@@ -1,11 +1,13 @@
 package com.bartlomiejskura.mymemories;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -87,10 +89,31 @@ public class SearchResultsActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        int LAUNCH_SECOND_ACTIVITY = 1;
+
+        if (requestCode == LAUNCH_SECOND_ACTIVITY) {
+            if(resultCode == Activity.RESULT_OK){
+                new Thread(this::getMemories).start();
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                // Write your code if there's no result
+            }
+        }
+    }
+
 
     @SuppressLint("SetTextI18n")
     public void getMemories(){
         try{
+            runOnUiThread(()->{
+                memoryList.setAdapter(null);
+                messageTextView.setVisibility(View.GONE);
+                searchResultsProgressIndicator.setVisibility(View.VISIBLE);
+            });
+
             SearchMemoriesTask task = new SearchMemoriesTask(this, getIntent().getStringExtra("keyword"));
 
             String memoryPriorities = getIntent().getStringExtra("memoryPriorities");
