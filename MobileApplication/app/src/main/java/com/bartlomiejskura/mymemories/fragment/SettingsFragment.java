@@ -32,6 +32,8 @@ import com.bartlomiejskura.mymemories.R;
 import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.task.EditUserInformationTask;
 import com.bumptech.glide.Glide;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -53,6 +55,7 @@ public class SettingsFragment extends Fragment {
     private TextInputLayout textInputLayout, textInputLayout2, textInputLayout3;
     private LinearLayout emailLinearLayout;
     private TextView emailTextView;
+    private CircularProgressIndicator imageProgressIndicator;
 
     private static final int PICK_IMAGE_REQUEST = 1;
 
@@ -88,6 +91,7 @@ public class SettingsFragment extends Fragment {
         changePasswordButton = view.findViewById(R.id.changePasswordButton);
         emailLinearLayout = view.findViewById(R.id.linearLayout3);
         emailTextView = view.findViewById(R.id.textView24);
+        imageProgressIndicator = view.findViewById(R.id.imageProgressIndicator);
     }
 
     private void initValues(){
@@ -210,6 +214,9 @@ public class SettingsFragment extends Fragment {
         String date = sharedPreferences.getString("birthday", "");
         calendar.set(Integer.parseInt(date.substring(0, 4)), Integer.parseInt(date.substring(5, 7))-1, Integer.parseInt(date.substring(8, 10)), Integer.parseInt(date.substring(11, 13)), Integer.parseInt(date.substring(14, 16)));
         birthdayButton.setText(date.substring(8, 10) + "-" + date.substring(5, 7) + "-" + date.substring(0, 4));
+
+        //image progress indicator
+        imageProgressIndicator.setVisibility(View.GONE);
     }
 
 
@@ -225,11 +232,27 @@ public class SettingsFragment extends Fragment {
 
             try{
                 final StorageReference fileReference = storageReference.child(System.currentTimeMillis() + "." + getFileExtension(imageUri));
+                if(getActivity()!=null){
+                    getActivity().runOnUiThread(()->{
+                        imageProgressIndicator.setVisibility(View.VISIBLE);
+                        avatarImageView.setVisibility(View.INVISIBLE);
+                        changeAvatarButton.setOnClickListener(null);
+                        deleteAvatarButton.setOnClickListener(null);
+                    });
+                }
 
                 fileReference.putFile(imageUri)
                         .addOnSuccessListener(taskSnapshot -> taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(uri -> {
-                            deleteAvatarButton.setVisibility(View.VISIBLE);
-                            changeAvatarButton.setText("Change");
+                            if(getActivity()!=null){
+                                getActivity().runOnUiThread(()->{
+                                    imageProgressIndicator.setVisibility(View.GONE);
+                                    avatarImageView.setVisibility(View.VISIBLE);
+                                    deleteAvatarButton.setVisibility(View.VISIBLE);
+                                    changeAvatarButton.setText("Change");
+                                    changeAvatarButton.setOnClickListener(v -> openFileChooser());
+                                    deleteAvatarButton.setOnClickListener(v -> deleteProfilePicture());
+                                });
+                            }
                             Glide.with(this).load(imageUri).into(avatarImageView);
 
                             try{
@@ -257,9 +280,26 @@ public class SettingsFragment extends Fragment {
                             }catch (Exception e){
                                 System.out.println("ERROR:" + e.getMessage());
                             }
+                        })).addOnFailureListener(e -> getActivity().runOnUiThread(()->{
+                                imageProgressIndicator.setVisibility(View.GONE);
+                                avatarImageView.setVisibility(View.VISIBLE);
+                                changeAvatarButton.setText("Change");
+                                changeAvatarButton.setOnClickListener(v -> openFileChooser());
+                                deleteAvatarButton.setOnClickListener(v -> deleteProfilePicture());
+                                ((MainActivity)getActivity()).showSnackbar("A problem occurred while sending an image");
                         }));
             }catch (Exception e){
                 System.out.println("ERROR:" + e.getMessage());
+                if(getActivity()!=null){
+                    getActivity().runOnUiThread(()->{
+                        imageProgressIndicator.setVisibility(View.GONE);
+                        avatarImageView.setVisibility(View.VISIBLE);
+                        changeAvatarButton.setText("Change");
+                        changeAvatarButton.setOnClickListener(v -> openFileChooser());
+                        deleteAvatarButton.setOnClickListener(v -> deleteProfilePicture());
+                        ((MainActivity)getActivity()).showSnackbar("A problem occurred while sending an image");
+                    });
+                }
             }
         }
     }

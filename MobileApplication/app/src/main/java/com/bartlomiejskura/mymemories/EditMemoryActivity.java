@@ -61,6 +61,7 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.switchmaterial.SwitchMaterial;
@@ -103,6 +104,7 @@ public class EditMemoryActivity extends AppCompatActivity implements OnMapReadyC
     private ImageButton backButton;
     private LinearLayout addCategoriesLayout;
     private LinearProgressIndicator editMemoryProgressIndicator;
+    private CircularProgressIndicator imageProgressIndicator;
     private ConstraintLayout editMemoryConstraintLayout;
 
 
@@ -165,6 +167,7 @@ public class EditMemoryActivity extends AppCompatActivity implements OnMapReadyC
         addCategoriesLayout = findViewById(R.id.linearLayout);
         editMemoryProgressIndicator = findViewById(R.id.editMemoryProgressIndicator);
         editMemoryConstraintLayout = findViewById(R.id.editMemoryConstraintLayout);
+        imageProgressIndicator = findViewById(R.id.imageProgressIndicator);
     }
 
     private void initValues(){
@@ -258,6 +261,9 @@ public class EditMemoryActivity extends AppCompatActivity implements OnMapReadyC
 
         //progress indicator
         editMemoryProgressIndicator.setVisibility(View.GONE);
+
+        //image progress indicator
+        imageProgressIndicator.setVisibility(View.GONE);
     }
 
     @SuppressLint("SetTextI18n")
@@ -415,6 +421,11 @@ public class EditMemoryActivity extends AppCompatActivity implements OnMapReadyC
 
             try{
                 final StorageReference fileReference = storageReference.child(System.currentTimeMillis() + "." + getFileExtension(imageUri));
+                runOnUiThread(() -> {
+                    imageProgressIndicator.setVisibility(View.VISIBLE);
+                    selectImageButton.setText("");
+                    selectImageButton.setOnClickListener(null);
+                });
 
                 fileReference.putFile(imageUri)
                         .addOnSuccessListener(taskSnapshot -> taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(uri -> {
@@ -423,8 +434,23 @@ public class EditMemoryActivity extends AppCompatActivity implements OnMapReadyC
                             deleteImage(memory.getImageUrl(), true);
                             memory.setImageUrl(uri.toString());
                             Glide.with(this).load(imageUri).into(memoryImage);
+                            runOnUiThread(() -> {
+                                imageProgressIndicator.setVisibility(View.GONE);
+                                selectImageButton.setText("Select");
+                                selectImageButton.setOnClickListener(v->openFileChooser());
+                            });
+                        })).addOnFailureListener(e -> runOnUiThread(()->{
+                            imageProgressIndicator.setVisibility(View.GONE);
+                            selectImageButton.setText("Select");
+                            selectImageButton.setOnClickListener(v->openFileChooser());
+                            Snackbar.make(editMemoryConstraintLayout, "A problem occurred while sending an image", Snackbar.LENGTH_LONG).show();
                         }));
             }catch (Exception e){
+                runOnUiThread(() -> {
+                    imageProgressIndicator.setVisibility(View.GONE);
+                    selectImageButton.setText("Select");
+                    selectImageButton.setOnClickListener(v->openFileChooser());
+                });
                 System.out.println("ERROR:" + e.getMessage());
             }
         }else if (requestCode == Constants.PLACE_PICKER_REQUEST) {
