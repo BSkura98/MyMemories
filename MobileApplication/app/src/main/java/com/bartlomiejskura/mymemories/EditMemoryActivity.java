@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -46,8 +47,12 @@ import com.bartlomiejskura.mymemories.model.Category;
 import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.task.CreateOrGetCategoriesTask;
 import com.bartlomiejskura.mymemories.task.EditMemoryTask;
-import com.bartlomiejskura.mymemories.utils.CircleTransform;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -69,8 +74,6 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 import com.sucho.placepicker.AddressData;
 import com.sucho.placepicker.Constants;
 import com.sucho.placepicker.MapType;
@@ -307,24 +310,40 @@ public class EditMemoryActivity extends AppCompatActivity implements OnMapReadyC
             FriendsAdapter adapter1 = new FriendsAdapter(getApplicationContext(), friends, this);
             builder.setAdapter(adapter1, (dialog, which) -> {
                 final User friend = friends.get(which);
-                LayoutInflater inflater = LayoutInflater.from(EditMemoryActivity.this);
-                Chip chip = (Chip)inflater.inflate(R.layout.chip_with_close_icon, null, false);
-                chip.setText(friend.getFirstName()+" "+friend.getLastName());
-                Target target=getTargetOfPicasso(chip);
                 if(friend.getAvatarUrl()!=null){
-                    Picasso.get().load(friend.getAvatarUrl()).transform(new CircleTransform()).resize(20,20).into(target);
+                    Glide.with(this)
+                            .asBitmap().load(friend.getAvatarUrl()).circleCrop()
+                            .listener(new RequestListener<Bitmap>() {
+                                          @Override
+                                          public boolean onLoadFailed(@Nullable GlideException e, Object model, com.bumptech.glide.request.target.Target<Bitmap> target, boolean isFirstResource) {
+                                              addFriendChip(friend, ContextCompat.getDrawable(getApplicationContext(), R.drawable.default_avatar));
+                                              return false;
+                                          }
+
+                                          @Override
+                                          public boolean onResourceReady(Bitmap resource, Object model, com.bumptech.glide.request.target.Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
+                                              Drawable d = new BitmapDrawable(getResources(), resource);
+                                              addFriendChip(friend, d);
+                                              return true;
+                                          }
+                                      }
+                            ).submit();
                 }else{
-                    Picasso.get().load(R.drawable.default_avatar).transform(new CircleTransform()).resize(20,20).into(target);
+                    Glide.with(this)
+                            .asBitmap().load(R.drawable.default_avatar).circleCrop()
+                            .into(new CustomTarget<Bitmap>() {
+                                @Override
+                                public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                                    Drawable d = new BitmapDrawable(getResources(), resource);
+                                    addFriendChip(friend, d);
+                                }
+
+                                @Override
+                                public void onLoadCleared(@Nullable Drawable placeholder) {
+                                }
+                            });
                 }
 
-                chip.setOnCloseIconClickListener(v1 -> {
-                    friendsChipGroup.removeView(v1);
-                    memoryFriends.remove(friend);
-                    friends.add(friend);
-                });
-                chip.setCheckable(false);
-                memoryFriends.add(friend);
-                friendsChipGroup.addView(chip);
                 friends.remove(friend);
             });
             builder.show();
@@ -538,37 +557,51 @@ public class EditMemoryActivity extends AppCompatActivity implements OnMapReadyC
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
                 friend = gson.fromJson(object.toString(), User.class);
-                initChipMemoryFriend(friend);
+                if(friend.getAvatarUrl()!=null){
+                    User finalFriend = friend;
+                    Glide.with(this)
+                            .asBitmap().load(friend.getAvatarUrl()).circleCrop()
+                            .listener(new RequestListener<Bitmap>() {
+                                          @Override
+                                          public boolean onLoadFailed(@Nullable GlideException e, Object model, com.bumptech.glide.request.target.Target<Bitmap> target, boolean isFirstResource) {
+                                              addFriendChip(finalFriend, ContextCompat.getDrawable(getApplicationContext(), R.drawable.default_avatar));
+                                              return false;
+                                          }
+
+                                          @Override
+                                          public boolean onResourceReady(Bitmap resource, Object model, com.bumptech.glide.request.target.Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
+                                              Drawable d = new BitmapDrawable(getResources(), resource);
+                                              addFriendChip(finalFriend, d);
+                                              return true;
+                                          }
+                                      }
+                            ).submit();
+                }else{
+                    User finalFriend1 = friend;
+                    Glide.with(this)
+                            .asBitmap().load(R.drawable.default_avatar).circleCrop()
+                            .into(new CustomTarget<Bitmap>() {
+                                @Override
+                                public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                                    Drawable d = new BitmapDrawable(getResources(), resource);
+                                    addFriendChip(finalFriend1, d);
+                                }
+
+                                @Override
+                                public void onLoadCleared(@Nullable Drawable placeholder) {
+                                }
+                            });
+                }
+
+                for(User f:friends){
+                    if(f.getId().equals(friend.getId())){
+                        friends.remove(f);
+                        break;
+                    }
+                }
             }
         } catch (JSONException e) {
             e.printStackTrace();
-        }
-    }
-
-    @SuppressLint("SetTextI18n")
-    private void initChipMemoryFriend(final User friend){
-        LayoutInflater inflater = LayoutInflater.from(EditMemoryActivity.this);
-        Chip chip = (Chip)inflater.inflate(R.layout.chip_with_close_icon, null, false);
-        chip.setText(friend.getFirstName()+" "+friend.getLastName());
-        Target target=getTargetOfPicasso(chip);
-        if(friend.getAvatarUrl()!=null){
-            Picasso.get().load(friend.getAvatarUrl()).transform(new CircleTransform()).resize(20,20).into(target);
-        }else{
-            Picasso.get().load(R.drawable.default_avatar).transform(new CircleTransform()).resize(20,20).into(target);
-        }
-        chip.setOnCloseIconClickListener(v -> {
-            friendsChipGroup.removeView(v);
-            memoryFriends.remove(friend);
-            friends.add(friend);
-        });
-        chip.setCheckable(false);
-        memoryFriends.add(friend);
-        friendsChipGroup.addView(chip);
-        for(User user:friends){
-            if(user.getId().equals(friend.getId())){
-                friends.remove(user);
-                break;
-            }
         }
     }
 
@@ -761,24 +794,6 @@ public class EditMemoryActivity extends AppCompatActivity implements OnMapReadyC
         return friends;
     }
 
-    private Target getTargetOfPicasso(final Chip targetChip){
-        return new Target() {
-            @Override
-            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                Drawable d = new BitmapDrawable(getResources(), bitmap);
-                targetChip.setChipIcon(d);
-            }
-            @Override
-            public void onBitmapFailed(Exception e, Drawable errorDrawable) {
-                targetChip.setChipIcon(errorDrawable);
-            }
-            @Override
-            public void onPrepareLoad(Drawable placeHolderDrawable) {
-                targetChip.setChipIcon(placeHolderDrawable);
-            }
-        };
-    }
-
     private void getLocation(){
         fusedLocationProviderClient.getLastLocation().addOnCompleteListener(task -> {
             Location location = task.getResult();
@@ -825,6 +840,23 @@ public class EditMemoryActivity extends AppCompatActivity implements OnMapReadyC
                 .build(this);
 
         startActivityForResult(intent, Constants.PLACE_PICKER_REQUEST);
+    }
+
+    public void addFriendChip(User friend, Drawable drawable){
+        runOnUiThread(() -> {
+            LayoutInflater inflater = LayoutInflater.from(EditMemoryActivity.this);
+            Chip chip = (Chip)inflater.inflate(R.layout.chip_with_close_icon, null, false);
+            chip.setText(friend.getFirstName()+" "+friend.getLastName());
+            chip.setChipIcon(drawable);
+            chip.setOnCloseIconClickListener(v1 -> {
+                friendsChipGroup.removeView(v1);
+                memoryFriends.remove(friend);
+                friends.add(friend);
+            });
+            chip.setCheckable(false);
+            memoryFriends.add(friend);
+            friendsChipGroup.addView(chip);
+        });
     }
 
 
