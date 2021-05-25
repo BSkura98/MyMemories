@@ -31,12 +31,14 @@ import com.bartlomiejskura.mymemories.MainActivity;
 import com.bartlomiejskura.mymemories.R;
 import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.task.EditUserInformationTask;
+import com.bartlomiejskura.mymemories.utils.ImageUtil;
 import com.bumptech.glide.Glide;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -241,53 +243,56 @@ public class SettingsFragment extends Fragment {
                     });
                 }
 
-                fileReference.putFile(imageUri)
-                        .addOnSuccessListener(taskSnapshot -> taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(uri -> {
-                            if(getActivity()!=null){
-                                getActivity().runOnUiThread(()->{
-                                    imageProgressIndicator.setVisibility(View.GONE);
-                                    avatarImageView.setVisibility(View.VISIBLE);
-                                    deleteAvatarButton.setVisibility(View.VISIBLE);
-                                    changeAvatarButton.setText("Change");
-                                    changeAvatarButton.setOnClickListener(v -> openFileChooser());
-                                    deleteAvatarButton.setOnClickListener(v -> deleteProfilePicture());
-                                });
+                byte[] bytes = ImageUtil.compressImage(getActivity(), imageUri);
+                UploadTask uploadTask = fileReference.putBytes(bytes);
+                uploadTask.addOnSuccessListener(taskSnapshot -> {
+                    if(getActivity()!=null){
+                        getActivity().runOnUiThread(()->{
+                            imageProgressIndicator.setVisibility(View.GONE);
+                            avatarImageView.setVisibility(View.VISIBLE);
+                            deleteAvatarButton.setVisibility(View.VISIBLE);
+                            changeAvatarButton.setText("Change");
+                            changeAvatarButton.setOnClickListener(v -> openFileChooser());
+                            deleteAvatarButton.setOnClickListener(v -> deleteProfilePicture());
+                        });
+                    }
+                    Glide.with(this).load(imageUri).into(avatarImageView);
+
+                    fileReference.getDownloadUrl().addOnSuccessListener(uri -> {
+                        try{
+                            User user = new User(
+                                    sharedPreferences.getLong("userId", 0),
+                                    sharedPreferences.getString("email", null),
+                                    sharedPreferences.getString("firstName", null),
+                                    sharedPreferences.getString("lastName", null),
+                                    sharedPreferences.getString("birthday", null),
+                                    uri.toString());
+
+
+                            EditUserInformationTask editUserInformationTask =
+                                    new EditUserInformationTask(
+                                            user,
+                                            sharedPreferences);
+                            Boolean result = editUserInformationTask.execute().get();
+                            if(!result){
+                                return;
                             }
-                            Glide.with(this).load(imageUri).into(avatarImageView);
-
-                            try{
-                                User user = new User(
-                                        sharedPreferences.getLong("userId", 0),
-                                        sharedPreferences.getString("email", null),
-                                        sharedPreferences.getString("firstName", null),
-                                        sharedPreferences.getString("lastName", null),
-                                        sharedPreferences.getString("birthday", null),
-                                        uri.toString());
-
-
-                                EditUserInformationTask editUserInformationTask =
-                                        new EditUserInformationTask(
-                                                user,
-                                                sharedPreferences);
-                                Boolean result = editUserInformationTask.execute().get();
-                                if(!result){
-                                    return;
-                                }
-                                if(oldAvatarUrl!=null&&!oldAvatarUrl.isEmpty()){
-                                    StorageReference photoRef = FirebaseStorage.getInstance().getReference().getStorage().getReferenceFromUrl(oldAvatarUrl);
-                                    photoRef.delete();
-                                }
-                            }catch (Exception e){
-                                System.out.println("ERROR:" + e.getMessage());
+                            if(oldAvatarUrl!=null&&!oldAvatarUrl.isEmpty()){
+                                StorageReference photoRef = FirebaseStorage.getInstance().getReference().getStorage().getReferenceFromUrl(oldAvatarUrl);
+                                photoRef.delete();
                             }
-                        })).addOnFailureListener(e -> getActivity().runOnUiThread(()->{
-                                imageProgressIndicator.setVisibility(View.GONE);
-                                avatarImageView.setVisibility(View.VISIBLE);
-                                changeAvatarButton.setText("Change");
-                                changeAvatarButton.setOnClickListener(v -> openFileChooser());
-                                deleteAvatarButton.setOnClickListener(v -> deleteProfilePicture());
-                                ((MainActivity)getActivity()).showSnackbar("A problem occurred while sending an image");
-                        }));
+                        }catch (Exception e){
+                            System.out.println("ERROR:" + e.getMessage());
+                        }
+                    });
+                }).addOnFailureListener(e -> {
+                    imageProgressIndicator.setVisibility(View.GONE);
+                    avatarImageView.setVisibility(View.VISIBLE);
+                    changeAvatarButton.setText("Change");
+                    changeAvatarButton.setOnClickListener(v -> openFileChooser());
+                    deleteAvatarButton.setOnClickListener(v -> deleteProfilePicture());
+                    ((MainActivity)getActivity()).showSnackbar("A problem occurred while sending an image");
+                });
             }catch (Exception e){
                 System.out.println("ERROR:" + e.getMessage());
                 if(getActivity()!=null){

@@ -47,6 +47,7 @@ import com.bartlomiejskura.mymemories.model.Category;
 import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.task.CreateOrGetCategoriesTask;
 import com.bartlomiejskura.mymemories.task.EditMemoryTask;
+import com.bartlomiejskura.mymemories.utils.ImageUtil;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
@@ -73,6 +74,7 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
 import com.sucho.placepicker.AddressData;
 import com.sucho.placepicker.Constants;
@@ -446,24 +448,27 @@ public class EditMemoryActivity extends AppCompatActivity implements OnMapReadyC
                     selectImageButton.setOnClickListener(null);
                 });
 
-                fileReference.putFile(imageUri)
-                        .addOnSuccessListener(taskSnapshot -> taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(uri -> {
-                            deleteImageButton.setVisibility(View.VISIBLE);
-                            memoryImage.setVisibility(View.VISIBLE);
-                            deleteImage(memory.getImageUrl(), true);
-                            memory.setImageUrl(uri.toString());
-                            Glide.with(this).load(imageUri).into(memoryImage);
-                            runOnUiThread(() -> {
-                                imageProgressIndicator.setVisibility(View.GONE);
-                                selectImageButton.setText("Select");
-                                selectImageButton.setOnClickListener(v->openFileChooser());
-                            });
-                        })).addOnFailureListener(e -> runOnUiThread(()->{
-                            imageProgressIndicator.setVisibility(View.GONE);
-                            selectImageButton.setText("Select");
-                            selectImageButton.setOnClickListener(v->openFileChooser());
-                            Snackbar.make(editMemoryConstraintLayout, "A problem occurred while sending an image", Snackbar.LENGTH_LONG).show();
-                        }));
+                byte[] bytes = ImageUtil.compressImage(this, imageUri);
+                UploadTask uploadTask = fileReference.putBytes(bytes);
+                uploadTask.addOnSuccessListener(taskSnapshot -> {
+                    fileReference.getDownloadUrl().addOnSuccessListener(uri -> {
+                        deleteImage(memory.getImageUrl(), true);
+                        memory.setImageUrl(uri.toString());
+                    });
+                    deleteImageButton.setVisibility(View.VISIBLE);
+                    memoryImage.setVisibility(View.VISIBLE);
+                    Glide.with(this).load(imageUri).into(memoryImage);
+                    runOnUiThread(() -> {
+                        imageProgressIndicator.setVisibility(View.GONE);
+                        selectImageButton.setText("Select");
+                        selectImageButton.setOnClickListener(v->openFileChooser());
+                    });
+                }).addOnFailureListener(e -> {
+                    imageProgressIndicator.setVisibility(View.GONE);
+                    selectImageButton.setText("Select");
+                    selectImageButton.setOnClickListener(v->openFileChooser());
+                    Snackbar.make(editMemoryConstraintLayout, "A problem occurred while sending an image", Snackbar.LENGTH_LONG).show();
+                });
             }catch (Exception e){
                 runOnUiThread(() -> {
                     imageProgressIndicator.setVisibility(View.GONE);
@@ -669,7 +674,11 @@ public class EditMemoryActivity extends AppCompatActivity implements OnMapReadyC
                 return;
             }
             if(oldImageToDelete){
-                deleteImage(imageUrl, true);//usuwanie starego zdjęcia, które wcześniej było przypisane do wspomnienia
+                try{
+                    deleteImage(imageUrl, true);//usuwanie starego zdjęcia, które wcześniej było przypisane do wspomnienia
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
             }
             Intent i = new Intent();
             setResult(Activity.RESULT_OK,i);

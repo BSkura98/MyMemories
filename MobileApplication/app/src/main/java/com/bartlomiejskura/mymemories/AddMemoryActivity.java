@@ -50,6 +50,7 @@ import com.bartlomiejskura.mymemories.model.Category;
 import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.task.CreateMemoryTask;
 import com.bartlomiejskura.mymemories.task.CreateOrGetCategoriesTask;
+import com.bartlomiejskura.mymemories.utils.ImageUtil;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
@@ -65,6 +66,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -76,6 +79,7 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
 import com.sucho.placepicker.AddressData;
 import com.sucho.placepicker.Constants;
@@ -86,6 +90,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -402,24 +407,27 @@ public class AddMemoryActivity extends AppCompatActivity implements OnMapReadyCa
                     selectImageButton.setOnClickListener(null);
                 });
 
-                fileReference.putFile(imageUri)
-                        .addOnSuccessListener(taskSnapshot -> taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(uri -> {
-                            deleteImageButton.setVisibility(View.VISIBLE);
-                            memoryImage.setVisibility(View.VISIBLE);
-                            deleteImage(memory.getImageUrl(), true);
-                            memory.setImageUrl(uri.toString());
-                            Glide.with(this).load(imageUri).into(memoryImage);
-                            runOnUiThread(() -> {
-                                imageProgressIndicator.setVisibility(View.GONE);
-                                selectImageButton.setText("Select");
-                                selectImageButton.setOnClickListener(v->openFileChooser());
-                            });
-                        })).addOnFailureListener(e -> runOnUiThread(()->{
-                            imageProgressIndicator.setVisibility(View.GONE);
-                            selectImageButton.setText("Select");
-                            selectImageButton.setOnClickListener(v->openFileChooser());
-                            Snackbar.make(addMemoryConstraintLayout, "A problem occurred while sending an image", Snackbar.LENGTH_LONG).show();
-                        }));
+                byte[] bytes = ImageUtil.compressImage(this, imageUri);
+                UploadTask uploadTask = fileReference.putBytes(bytes);
+                uploadTask.addOnSuccessListener(taskSnapshot -> {
+                    fileReference.getDownloadUrl().addOnSuccessListener(uri -> {
+                        deleteImage(memory.getImageUrl(), true);
+                        memory.setImageUrl(uri.toString());
+                    });
+                    deleteImageButton.setVisibility(View.VISIBLE);
+                    memoryImage.setVisibility(View.VISIBLE);
+                    Glide.with(getApplicationContext()).load(imageUri).into(memoryImage);
+                    runOnUiThread(() -> {
+                        imageProgressIndicator.setVisibility(View.GONE);
+                        selectImageButton.setText("Select");
+                        selectImageButton.setOnClickListener(v->openFileChooser());
+                    });
+                }).addOnFailureListener(e -> {
+                    imageProgressIndicator.setVisibility(View.GONE);
+                    selectImageButton.setText("Select");
+                    selectImageButton.setOnClickListener(v->openFileChooser());
+                    Snackbar.make(addMemoryConstraintLayout, "A problem occurred while sending an image", Snackbar.LENGTH_LONG).show();
+                });
             }catch (Exception e){
                 runOnUiThread(() -> {
                     imageProgressIndicator.setVisibility(View.GONE);
