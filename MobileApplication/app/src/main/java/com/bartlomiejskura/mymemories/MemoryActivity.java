@@ -34,6 +34,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 
@@ -49,6 +50,7 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
     private ImageButton moreButton, editButton, untagYourselfButton;
     private ConstraintLayout memoryConstraintLayout;
     private View divider;
+    private LinearProgressIndicator memoryProgressIndicator;
 
     private Memory memory;
     private SharedPreferences sharedPreferences;
@@ -81,6 +83,7 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
         publicIcon =  findViewById(R.id.imageView8);
         publicTextView = findViewById(R.id.textView11);
         divider = findViewById(R.id.divider3);
+        memoryProgressIndicator = findViewById(R.id.memoryProgressIndicator);
     }
 
     private void initValues(){
@@ -173,6 +176,9 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
         if(memory.getLongDescription().isEmpty()){
             divider.setVisibility(View.GONE);
         }
+
+        //progress indicator
+        memoryProgressIndicator.setVisibility(View.GONE);
     }
 
     private void setListeners(){
@@ -241,6 +247,7 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
     }
 
     private void deleteMemory(){
+        runOnUiThread(() -> memoryProgressIndicator.setVisibility(View.VISIBLE));
         Long memoryId = memory.getId();
         DeleteMemoryTask task = new DeleteMemoryTask(this, memoryId);
         try{
@@ -251,6 +258,7 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
                 finish();
             }else{
                 runOnUiThread(()->{
+                    runOnUiThread(() -> memoryProgressIndicator.setVisibility(View.GONE));
                     if(task.getError().contains("Unable to resolve host")){
                         Snackbar.make(memoryConstraintLayout, "Problem with the Internet connection", Snackbar.LENGTH_LONG).show();
                     }else if(task.getError().contains("timeout")){
@@ -262,6 +270,7 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
             }
         }catch (Exception e){
             runOnUiThread(()->{
+                runOnUiThread(() -> memoryProgressIndicator.setVisibility(View.GONE));
                 Snackbar.make(memoryConstraintLayout, "A problem occurred", Snackbar.LENGTH_LONG).show();
             });
             e.printStackTrace();

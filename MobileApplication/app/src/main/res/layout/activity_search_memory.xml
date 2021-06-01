@@ -8,7 +8,9 @@
 
     <include
         android:id="@+id/toolbar_search"
-        layout="@layout/toolbar_search" />
+        layout="@layout/toolbar_search"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/fragmentContainer"

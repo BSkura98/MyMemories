@@ -70,7 +70,6 @@ public class AddFriendsActivity extends AppCompatActivity {
         searchButton.setVisibility(View.GONE);
 
         //search view
-        customizeSearchView(userSearchView);
         userSearchView.setIconifiedByDefault(false);
 
         //progress indicator
@@ -160,20 +159,6 @@ public class AddFriendsActivity extends AppCompatActivity {
                 usersRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
             }
         });
-    }
-
-    private void customizeSearchView(SearchView searchView) {
-        int searchTextId = getResources().getIdentifier("android:id/search_src_text", null, null);
-        EditText searchBox = searchView.findViewById(searchTextId);
-        searchBox.setBackgroundColor(Color.WHITE);
-        searchBox.getLayoutParams().height = LinearLayout.LayoutParams.MATCH_PARENT;
-        int search_plateId = getResources().getIdentifier("android:id/search_plate", null, null);
-        View mSearchPlate = searchView.findViewById(search_plateId);
-        mSearchPlate.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-
-        int searchCloseImageId = getResources().getIdentifier("android:id/search_close_btn", null, null);
-        ImageView searchClose = searchView.findViewById(searchCloseImageId);// change color
-        searchClose.setBackgroundColor(Color.WHITE);
     }
 
     public void showSnackbar(String message){
