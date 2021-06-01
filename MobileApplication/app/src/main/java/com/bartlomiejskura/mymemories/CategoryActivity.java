@@ -25,6 +25,7 @@ import com.bartlomiejskura.mymemories.model.User;
 import com.bartlomiejskura.mymemories.task.EditCategoryTask;
 import com.bartlomiejskura.mymemories.task.GetMemoriesInCategoryTask;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
@@ -37,6 +38,7 @@ public class CategoryActivity extends AppCompatActivity implements ChangeCategor
     private Toolbar toolbar;
     private ImageButton backButton, editCategoryNameButton;
     private CircularProgressIndicator categoryProgressIndicator;
+    private LinearProgressIndicator categoryNameProgressIndicator;
     private ConstraintLayout categoryConstraintLayout;
 
     private MemoryListAdapter adapter;
@@ -64,6 +66,7 @@ public class CategoryActivity extends AppCompatActivity implements ChangeCategor
         messageTextView = findViewById(R.id.categoryMessageTextView);
         editCategoryNameButton = findViewById(R.id.editButton);
         categoryConstraintLayout = findViewById(R.id.categoryConstraintLayout);
+        categoryNameProgressIndicator = findViewById(R.id.categoryNameProgressIndicator);
     }
 
     private void initValues(){
@@ -87,6 +90,9 @@ public class CategoryActivity extends AppCompatActivity implements ChangeCategor
 
         //message TextView showing problems
         messageTextView.setVisibility(View.GONE);
+
+        //category name change progress indicator
+        categoryNameProgressIndicator.setVisibility(View.GONE);
     }
 
     private void setListeners(){
@@ -102,7 +108,7 @@ public class CategoryActivity extends AppCompatActivity implements ChangeCategor
     public void applyCategoryName(String name) {
         try{
             if(name.isEmpty()){
-                runOnUiThread(()-> Snackbar.make(categoryConstraintLayout, "Incorrect category name", Snackbar.LENGTH_LONG).show());
+                runOnUiThread(()-> Snackbar.make(categoryConstraintLayout, "Category name cannot be empty", Snackbar.LENGTH_LONG).show());
                 return;
             }
             if(name.equalsIgnoreCase(getIntent().getStringExtra("category"))){
@@ -114,6 +120,7 @@ public class CategoryActivity extends AppCompatActivity implements ChangeCategor
                 });
                 return;
             }
+            runOnUiThread(()->categoryNameProgressIndicator.setVisibility(View.VISIBLE));
             name = name.toLowerCase();
             EditCategoryTask task = new EditCategoryTask(this, new Category(categoryId, name, new User(sharedPreferences.getLong("userId", 0),sharedPreferences.getString("email","")), adapter.getMemories()));
             boolean result = task.execute().get();
@@ -133,9 +140,14 @@ public class CategoryActivity extends AppCompatActivity implements ChangeCategor
                         Snackbar.make(categoryConstraintLayout, "A problem occurred", Snackbar.LENGTH_LONG).show();
                     }
                 }
+                categoryNameProgressIndicator.setVisibility(View.GONE);
             });
         }catch (Exception e){
             e.printStackTrace();
+            runOnUiThread(()->{
+                categoryNameProgressIndicator.setVisibility(View.GONE);
+                Snackbar.make(categoryConstraintLayout, "A problem occurred", Snackbar.LENGTH_LONG).show();
+            });
         }
     }
 

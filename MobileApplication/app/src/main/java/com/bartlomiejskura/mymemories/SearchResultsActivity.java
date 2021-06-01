@@ -60,11 +60,13 @@ public class SearchResultsActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         //keyword text view
-        if(getIntent().getStringExtra("keyword").isEmpty()){
+        /*if(getIntent().getStringExtra("keyword").isEmpty()){
             keywordTextView.setVisibility(View.GONE);
         }else{
             keywordTextView.setText("Results for: "+getIntent().getStringExtra("keyword"));
-        }
+        }*/
+        //always hidden in order to make layout clearer
+        keywordTextView.setVisibility(View.GONE);
 
         //recycler view with memories
         new Thread(this::getMemories).start();

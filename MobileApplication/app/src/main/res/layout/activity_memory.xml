@@ -50,7 +50,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="20dp"
                 android:text="Description"
-                android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body1"
+                android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body2"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout11" />
@@ -62,7 +62,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="15dp"
                 android:paddingBottom="20dp"
-                android:text="Last modified:"
+                android:text="Last modification:"
                 android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Caption"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/map" />
@@ -82,7 +82,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginEnd="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

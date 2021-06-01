@@ -23,6 +23,7 @@ import com.google.android.material.progressindicator.CircularProgressIndicator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 public class CategoriesFragment extends Fragment {
@@ -91,6 +92,17 @@ public class CategoriesFragment extends Fragment {
                     messageTextView.setVisibility(View.VISIBLE);
                     categoriesProgressIndicator.setVisibility(View.GONE);
                 }else{
+                    //for(Category category:categories){
+                    //    if(category.getMemories().size()==0){
+                    //        categories.remove(category);
+                    //    }
+                    //}
+                    for (Iterator<Category> iterator = categories.iterator(); iterator.hasNext(); ) {
+                        Category category = iterator.next();
+                        if (category.getMemories().size()==0) {
+                            iterator.remove();
+                        }
+                    }
                     adapter = new CategoryListAdapter(
                             getContext(),
                             categories,
