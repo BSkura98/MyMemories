@@ -9,7 +9,7 @@
         android:id="@+id/categoryList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipToPadding="true"
+        android:clipToPadding="false"
         android:paddingTop="5dp"
         android:paddingBottom="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
