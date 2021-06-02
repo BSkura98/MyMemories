@@ -52,7 +52,11 @@ public class CategoryService {
         try{
             Category c = categoryRepository.findByNameAndUserId(category.getName(), category.getUser().getID());
             if(c != null){
-                throw new DuplicateEntryException();
+                if(c.getMemories().size()==0){
+                    categoryRepository.delete(c);
+                }else{
+                    throw new DuplicateEntryException();
+                }
             }
         }catch (NullPointerException ignored){ }
 
