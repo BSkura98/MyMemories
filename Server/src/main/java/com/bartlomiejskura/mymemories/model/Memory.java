@@ -13,13 +13,13 @@ public class Memory {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long ID;
 
-    private String shortDescription;
-    private String longDescription;
+    private String title;
+    private String description;
     private String imageUrl;
-    private LocalDateTime creationDate;
+    private LocalDateTime modificationDate;
     private LocalDateTime date;
-    private int memoryPriority;
-    private Boolean publicToFriends;
+    private int priority;
+    private Boolean isPublicToFriends;
     private Double longitude;
     private Double latitude;
     @ManyToOne
@@ -49,28 +49,28 @@ public class Memory {
         this.ID = ID;
     }
 
-    public String getShortDescription() {
-        return shortDescription;
+    public String getTitle() {
+        return title;
     }
 
-    public void setShortDescription(String shortDescription) {
-        this.shortDescription = shortDescription;
+    public void setTitle(String shortDescription) {
+        this.title = shortDescription;
     }
 
-    public String getLongDescription() {
-        return longDescription;
+    public String getDescription() {
+        return description;
     }
 
-    public void setLongDescription(String longDescription) {
-        this.longDescription = longDescription;
+    public void setDescription(String longDescription) {
+        this.description = longDescription;
     }
 
-    public LocalDateTime getCreationDate() {
-        return creationDate;
+    public LocalDateTime getModificationDate() {
+        return modificationDate;
     }
 
-    public void setCreationDate(LocalDateTime creationDate) {
-        this.creationDate = creationDate;
+    public void setModificationDate(LocalDateTime creationDate) {
+        this.modificationDate = creationDate;
     }
 
     public LocalDateTime getDate() {
@@ -81,12 +81,12 @@ public class Memory {
         this.date = date;
     }
 
-    public int getMemoryPriority() {
-        return memoryPriority;
+    public int getPriority() {
+        return priority;
     }
 
-    public void setMemoryPriority(int memoryPriority) {
-        this.memoryPriority = memoryPriority;
+    public void setPriority(int memoryPriority) {
+        this.priority = memoryPriority;
     }
 
     public User getMemoryOwner() {
@@ -117,12 +117,12 @@ public class Memory {
         this.imageUrl = imageUrl;
     }
 
-    public Boolean getPublicToFriends() {
-        return publicToFriends;
+    public Boolean getIsPublicToFriends() {
+        return isPublicToFriends;
     }
 
-    public void setPublicToFriends(Boolean publicToFriends) {
-        this.publicToFriends = publicToFriends;
+    public void setIsPublicToFriends(Boolean publicToFriends) {
+        this.isPublicToFriends = publicToFriends;
     }
 
     public List<Category> getCategories() {

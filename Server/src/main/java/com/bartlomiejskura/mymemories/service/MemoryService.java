@@ -119,15 +119,15 @@ public class MemoryService {
         }
 
         return memories.stream()
-                .filter(keyword!=null?memory -> memory.getLongDescription().toLowerCase().contains(keyword.toLowerCase())||
-                        memory.getShortDescription().toLowerCase().contains(keyword.toLowerCase()):memory -> true)
+                .filter(keyword!=null?memory -> memory.getDescription().toLowerCase().contains(keyword.toLowerCase())||
+                        memory.getTitle().toLowerCase().contains(keyword.toLowerCase()): memory -> true)
                 .filter(hasImage!=null?memory -> (memory.getImageUrl()!=null&&!memory.getImageUrl().isEmpty())==hasImage:memory -> true)
-                .filter(creationDateStart!=null?memory -> memory.getCreationDate().isAfter(creationDateStart):memory -> true)
-                .filter(creationDateEnd!=null?memory -> memory.getCreationDate().isBefore(creationDateEnd):memory -> true)
+                .filter(creationDateStart!=null?memory -> memory.getModificationDate().isAfter(creationDateStart): memory -> true)
+                .filter(creationDateEnd!=null?memory -> memory.getModificationDate().isBefore(creationDateEnd): memory -> true)
                 .filter(dateStart!=null?memory -> memory.getDate().isAfter(dateStart):memory -> true)
                 .filter(dateEnd!=null?memory -> memory.getDate().isBefore(dateEnd):memory -> true)
-                .filter(!memoryPriorityList.isEmpty()?memory -> memoryPriorityList.contains(memory.getMemoryPriority()):memory -> true)
-                .filter(publicToFriends!=null?memory -> memory.getPublicToFriends().equals(publicToFriends):memory -> true)
+                .filter(!memoryPriorityList.isEmpty()?memory -> memoryPriorityList.contains(memory.getPriority()): memory -> true)
+                .filter(publicToFriends!=null?memory -> memory.getIsPublicToFriends().equals(publicToFriends): memory -> true)
                 .filter(!categoryList.isEmpty()?memory -> !Collections.disjoint(memory.getCategories(), categoryList):memory -> true)
                 .collect(Collectors.toList());
     }
@@ -173,7 +173,7 @@ public class MemoryService {
 
         for(User u:friends){
             for(Memory m:memoryRepository.findAllByMemoryOwner(u)){
-                if(m.getPublicToFriends()){
+                if(m.getIsPublicToFriends()){
                     publicMemories.add(m);
                 }
             }

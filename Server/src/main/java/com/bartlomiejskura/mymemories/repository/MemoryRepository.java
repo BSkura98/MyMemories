@@ -20,6 +20,6 @@ public interface MemoryRepository extends JpaRepository<Memory, Long> {
     @Query("SELECT m FROM Memory m WHERE m.memoryOwner = ?1 AND ?2 member m.categories")
     List<Memory> findAllByMemoryOwnerAndCategory(User memoryOwner, Category category);
 
-    @Query("SELECT m FROM Memory m WHERE m.longDescription like %?1% or m.shortDescription like %?1%")
+    @Query("SELECT m FROM Memory m WHERE m.description like %?1% or m.title like %?1%")
     List<Memory> search(String keyword);
 }
