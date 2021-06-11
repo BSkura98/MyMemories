@@ -65,7 +65,7 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
         //title
         Typeface typeface = ResourcesCompat.getFont(context,R.font.quando);
         holder.memoryTitle.setTypeface(typeface);
-        holder.memoryTitle.setText(memories.get(position).getShortDescription());
+        holder.memoryTitle.setText(memories.get(position).getTitle());
 
         //date
         if(memories.get(position).getDate().endsWith("0")){
@@ -76,13 +76,13 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
 
         //card view stroke
         holder.cardView.setStrokeWidth(4);
-        holder.cardView.setStrokeColor(activity.getResources().getColor(memories.get(position).getMemoryPriority()>=90?R.color.colorAccent:
-                (memories.get(position).getMemoryPriority()>=50)?R.color.colorAccentVeryLight:R.color.white));
+        holder.cardView.setStrokeColor(activity.getResources().getColor(memories.get(position).getPriority()>=90?R.color.colorAccent:
+                (memories.get(position).getPriority()>=50)?R.color.colorAccentVeryLight:R.color.white));
 
-        if(memories.get(position).getLongDescription()==null||memories.get(position).getLongDescription().isEmpty()){
+        if(memories.get(position).getDescription()==null||memories.get(position).getDescription().isEmpty()){
             holder.memoryDescription.setVisibility(View.GONE);
         }else{
-            holder.memoryDescription.setText(memories.get(position).getLongDescription());
+            holder.memoryDescription.setText(memories.get(position).getDescription());
         }
 
         if(memories.get(position).getImageUrl()==null){
@@ -107,7 +107,7 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
 
             }
         }else{
-            if(memories.get(position).getPublicToFriends()){//jeśli wspomnienie jest oznaczone jako publiczne
+            if(memories.get(position).getIsPublicToFriends()){//jeśli wspomnienie jest oznaczone jako publiczne
                 User memoryOwner= memories.get(position).getMemoryOwner();
                 StringBuilder friendsText= new StringBuilder(memoryOwner.getFirstName()+" "+ memoryOwner.getLastName());
                 if(memories.get(position).getMemoryFriends().size()>0){//jeśli wspomnienie jest wspólne, lecz znajomy nie oznaczył konkretnego użytkownika w nim
@@ -153,14 +153,14 @@ public class MemoryListAdapter extends RecyclerView.Adapter<MemoryListAdapter.My
         List<Memory> memoriesToHide = new ArrayList<>();
         List<Memory> memoriesToShow = new ArrayList<>();
         for(Memory memory:memories){
-            if(!(memory.getMemoryPriority()>=memoryPriority)){
+            if(!(memory.getPriority()>=memoryPriority)){
                 memoriesToHide.add(memory);
             }
         }
         memories.removeAll(memoriesToHide);
         hidden.addAll(memoriesToHide);
         for(Memory memory:hidden){
-            if(memory.getMemoryPriority()>=memoryPriority){
+            if(memory.getPriority()>=memoryPriority){
                 memoriesToShow.add(memory);
             }
         }

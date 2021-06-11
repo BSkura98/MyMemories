@@ -5,68 +5,68 @@ import java.util.List;
 
 public class Memory {
     private Long id;
-    private String shortDescription;
-    private String longDescription;
-    private String creationDate;
+    private String title;
+    private String description;
+    private String modificationDate;
     private String date;
-    private int memoryPriority;
+    private int priority;
     private User memoryOwner;
     private List<Category> categories;
     private String imageUrl;
     private List<User> memoryFriends;
-    private Boolean publicToFriends;
+    private Boolean isPublicToFriends;
     private Double longitude;
     private Double latitude;
 
     public Memory(){}
 
-    public Memory(Long id, String shortDescription, String longDescription, String creationDate, String date, User memoryOwner, int memoryPriority, List<Category> categories, List<User> memoryFriends, Boolean publicToFriends) {
+    public Memory(Long id, String title, String description, String modificationDate, String date, User memoryOwner, int priority, List<Category> categories, List<User> memoryFriends, Boolean isPublicToFriends) {
         this.id = id;
-        this.shortDescription = shortDescription;
-        this.longDescription = longDescription;
-        this.creationDate = creationDate;
+        this.title = title;
+        this.description = description;
+        this.modificationDate = modificationDate;
         this.date = date;
         this.memoryOwner = memoryOwner;
-        this.memoryPriority = memoryPriority;
+        this.priority = priority;
         this.categories = categories;
         this.memoryFriends = memoryFriends;
-        this.publicToFriends = publicToFriends;
+        this.isPublicToFriends = isPublicToFriends;
     }
 
-    public Memory(String shortDescription, String longDescription, String creationDate, String date, User memoryOwner, int memoryPriority, List<Category> categories, List<User> memoryFriends, Boolean publicToFriends) {
-        this.shortDescription = shortDescription;
-        this.longDescription = longDescription;
-        this.creationDate = creationDate;
+    public Memory(String title, String description, String modificationDate, String date, User memoryOwner, int priority, List<Category> categories, List<User> memoryFriends, Boolean isPublicToFriends) {
+        this.title = title;
+        this.description = description;
+        this.modificationDate = modificationDate;
         this.date = date;
         this.memoryOwner = memoryOwner;
-        this.memoryPriority = memoryPriority;
+        this.priority = priority;
         this.categories = categories;
         this.memoryFriends = memoryFriends;
-        this.publicToFriends = publicToFriends;
+        this.isPublicToFriends = isPublicToFriends;
     }
 
-    public String getShortDescription() {
-        return shortDescription;
+    public String getTitle() {
+        return title;
     }
 
-    public void setShortDescription(String shortDescription) {
-        this.shortDescription = shortDescription;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public String getLongDescription() {
-        return longDescription;
+    public String getDescription() {
+        return description;
     }
 
-    public void setLongDescription(String longDescription) {
-        this.longDescription = longDescription;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public String getCreationDate() {
-        return creationDate;
+    public String getModificationDate() {
+        return modificationDate;
     }
 
-    public void setCreationDate(String creationDate) {
-        this.creationDate = creationDate;
+    public void setModificationDate(String modificationDate) {
+        this.modificationDate = modificationDate;
     }
 
     public String getDate() {
@@ -93,12 +93,12 @@ public class Memory {
         this.id = id;
     }
 
-    public int getMemoryPriority() {
-        return memoryPriority;
+    public int getPriority() {
+        return priority;
     }
 
-    public void setMemoryPriority(int memoryPriority) {
-        this.memoryPriority = memoryPriority;
+    public void setPriority(int priority) {
+        this.priority = priority;
     }
 
     public List<Category> getCategories() {
@@ -134,12 +134,12 @@ public class Memory {
         }
     }
 
-    public Boolean getPublicToFriends() {
-        return publicToFriends;
+    public Boolean getIsPublicToFriends() {
+        return isPublicToFriends;
     }
 
-    public void setPublicToFriends(Boolean publicToFriends) {
-        this.publicToFriends = publicToFriends;
+    public void setIsPublicToFriends(Boolean isPublicToFriends) {
+        this.isPublicToFriends = isPublicToFriends;
     }
 
     public Double getLongitude() {

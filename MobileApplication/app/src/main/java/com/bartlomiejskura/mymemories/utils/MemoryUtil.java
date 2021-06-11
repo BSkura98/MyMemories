@@ -26,7 +26,7 @@ public class MemoryUtil {
                 return friendsText.toString();
             }
         }else{
-            if(memory.getPublicToFriends()){//jeśli wspomnienie jest oznaczone jako publiczne
+            if(memory.getIsPublicToFriends()){//jeśli wspomnienie jest oznaczone jako publiczne
                 User memoryOwner= memory.getMemoryOwner();
                 StringBuilder friendsText= new StringBuilder(memoryOwner.getFirstName()+" "+ memoryOwner.getLastName());
                 if(memory.getMemoryFriends().size()>0){//jeśli wspomnienie jest wspólne, lecz znajomy nie oznaczył konkretnego użytkownika w nim

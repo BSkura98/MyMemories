@@ -96,17 +96,17 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
     @SuppressLint({"SetTextI18n", "CheckResult"})
     private void prepareViews(){
         //title text view
-        titleTextView.setText(memory.getShortDescription());
+        titleTextView.setText(memory.getTitle());
 
         //description text view
-        if(memory.getLongDescription().isEmpty()){
+        if(memory.getDescription().isEmpty()){
             descriptionTextView.setVisibility(View.GONE);
         }else{
-            descriptionTextView.setText(memory.getLongDescription());
+            descriptionTextView.setText(memory.getDescription());
         }
 
         //priority text view
-        priorityTextView.setText(getPriorityOption(memory.getMemoryPriority()));
+        priorityTextView.setText(getPriorityOption(memory.getPriority()));
 
         //date text view
         if(memory.getDate().endsWith("0")){
@@ -116,7 +116,7 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
         }
 
         //creation date text view
-        String creationDate = memory.getCreationDate();
+        String creationDate = memory.getModificationDate();
         creationDateTextView.setText(DateUtil.formatDateTime(creationDate));
 
         //memory friends text view (users tagged in memory)
@@ -134,7 +134,7 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
         }
 
         //text view and icon related to public memory
-        if(!memory.getPublicToFriends()){
+        if(!memory.getIsPublicToFriends()){
             publicIcon.setImageResource(R.drawable.ic_lock_outline);
             publicTextView.setText("Private");
             //findViewById(R.id.imageView8).setVisibility(View.GONE);
@@ -173,7 +173,7 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
         }
 
         //divider
-        if(memory.getLongDescription().isEmpty()){
+        if(memory.getDescription().isEmpty()){
             divider.setVisibility(View.GONE);
         }
 
@@ -281,13 +281,13 @@ public class MemoryActivity extends AppCompatActivity implements OnMapReadyCallb
         Gson gson = new Gson();
 
         Intent i = new Intent(getApplicationContext(), EditMemoryActivity.class);
-        i.putExtra("title", memory.getShortDescription());
-        i.putExtra("description", memory.getLongDescription());
+        i.putExtra("title", memory.getTitle());
+        i.putExtra("description", memory.getDescription());
         i.putExtra("date", memory.getDate());
         i.putExtra("memoryId", memory.getId());
-        i.putExtra("memoryPriority", memory.getMemoryPriority());
+        i.putExtra("memoryPriority", memory.getPriority());
         i.putExtra("imageUrl", memory.getImageUrl());
-        i.putExtra("isMemoryPublic", memory.getPublicToFriends());
+        i.putExtra("isMemoryPublic", memory.getIsPublicToFriends());
         i.putExtra("latitude", memory.getLatitude());
         i.putExtra("longitude", memory.getLongitude());
 

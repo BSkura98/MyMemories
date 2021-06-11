@@ -18,7 +18,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Address;
@@ -26,7 +25,6 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
@@ -42,7 +40,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bartlomiejskura.mymemories.adapter.FriendsAdapter;
 import com.bartlomiejskura.mymemories.model.Memory;
@@ -511,15 +508,15 @@ public class AddMemoryActivity extends AppCompatActivity implements OnMapReadyCa
                 return;
             }
         }
-        memory.setShortDescription(title);
-        memory.setLongDescription(description==null?"":description);
-        memory.setCreationDate(sdf.format(Calendar.getInstance().getTime()).replace(" ", "T"));
+        memory.setTitle(title);
+        memory.setDescription(description==null?"":description);
+        memory.setModificationDate(sdf.format(Calendar.getInstance().getTime()).replace(" ", "T"));
         memory.setDate(sdf.format(calendar.getTime()).replace(" ", "T"));
         memory.setMemoryOwner(new User(sharedPreferences.getLong("userId", 0), sharedPreferences.getString("email", "")));
-        memory.setMemoryPriority(memoryPriority);
+        memory.setPriority(memoryPriority);
         memory.setCategories(categories);
         memory.setMemoryFriends(memoryFriends);
-        memory.setPublicToFriends(makeMemoryPublic);
+        memory.setIsPublicToFriends(makeMemoryPublic);
         memory.setLatitude(latitude);
         memory.setLongitude(longitude);
 

@@ -629,15 +629,15 @@ public class EditMemoryActivity extends AppCompatActivity implements OnMapReadyC
 
         @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         memory.setId(getIntent().getLongExtra("memoryId", 0));
-        memory.setShortDescription(title);
-        memory.setLongDescription(description==null?"":description);
-        memory.setCreationDate(sdf.format(Calendar.getInstance().getTime()).replace(" ", "T"));
+        memory.setTitle(title);
+        memory.setDescription(description==null?"":description);
+        memory.setModificationDate(sdf.format(Calendar.getInstance().getTime()).replace(" ", "T"));
         memory.setDate(sdf.format(calendar.getTime()).replace(" ", "T"));
         memory.setMemoryOwner(new User(sharedPreferences.getLong("userId", 0), sharedPreferences.getString("email", "")));
-        memory.setMemoryPriority(memoryPriority);
+        memory.setPriority(memoryPriority);
         memory.setCategories(categories);
         memory.setMemoryFriends(memoryFriends);
-        memory.setPublicToFriends(makeMemoryPublic);
+        memory.setIsPublicToFriends(makeMemoryPublic);
         memory.setLatitude(latitude);
         memory.setLongitude(longitude);
 
