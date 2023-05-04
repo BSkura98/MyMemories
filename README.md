@@ -13,6 +13,7 @@ The aim of this project was to create a mobile system for keeping a personal jou
 * Java Persistance API
 * MySQL
 * Firebase Storage
+* Heroku
 
 ## Features
 * Material Design
@@ -28,12 +29,5 @@ The aim of this project was to create a mobile system for keeping a personal jou
 * Publish memories and tag friends
 * Account settings
 
-To-do list:
-* Renaming categories
-* Change the color in the mobile application
-* Minimize the number of server-side functions
-* Improve data validation in forms
-
-
 ## Status
-Project is _in progress_
+Project is _finished_
